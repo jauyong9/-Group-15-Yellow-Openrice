@@ -7,6 +7,7 @@
     <meta name="description" content="Restaurant Guide">
     <meta name="keywords" content="Yellow, Openrice">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"">
+    <link rel="stylesheet" href="css/style.css">
     <link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
     <link href='https://fonts.googleapis.com/css?family=Acme' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -15,10 +16,12 @@
 Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
 23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="js/LoginForm.js"></script>
+    <script src="js/script.js"></script>
 
   </head>
 
-  <body style="font-family: 'Acme', 'ABeeZee';">
+  <body style="font-family: 'Acme', 'ABeeZee';" onload="init();">
     <header class="container text-center" style="background-image:url('../images/header_background.png'); background-size:contain; background-position:center;">
       <h1 class="text-warning p-4">Yellopenrice</h1>
       <h1 class="text-warning p-4">Restaurant Guide</h1>
@@ -26,7 +29,7 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
 
     <nav class="container navbar navbar-light bg-light justify-content-between">
       <h4><a class="navbar-brand mx-2" href="#Home">Home</a></h4>
-      <h4><a class="navbar-brand mx-2" href="#fav-course">Login</a></h4>
+      <h4><a class="navbar-brand mx-2" href="#fav-course" onclick="login();">Login</a></h4>
       <form class="form-inline">
         <input class="form-control" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fa fa-search"></i></button>
@@ -54,6 +57,30 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
       <footer class="text-center card mt-3">
         <p>Created by: Group15</p>
       </footer>
+
+
+      <div id="loginForm" class="col-md-4 border">
+              <img src="../images/restaurant.jpg" style="height: 160px; width: 100%; padding-bottom: 20px; object-fit: cover;"></img>
+              <section id="inner-wrapper" class="login">
+                <article>
+                  <form id="loginSubmitForm" onsubmit="loginSubmit(this);">
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-envelope"> </i></span>
+                        <input id="loginEmail" type="email" class="form-control" placeholder="Email Address">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-key"> </i></span>
+                        <input id="loginPassword" type="password" class="form-control" placeholder="Password">
+                      </div>
+                    </div>
+                      <button type="submit" class="btn btn-warning btn-block">Login</button>
+                  </form>
+                </article>
+              </section>
+      </div>
     </div>
   </body>
 
