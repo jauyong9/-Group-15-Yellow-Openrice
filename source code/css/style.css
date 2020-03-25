@@ -1,0 +1,13 @@
+#loginForm {
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    margin-top: -50px;
+    margin-left: -50px;
+    padding-bottom: 15px;
+    background-color: rgb(1,27,50);
+    color: yellow;
+    border-radius: 3%;
+    /*width: 100px;
+    height: 100px;*/
+}​
