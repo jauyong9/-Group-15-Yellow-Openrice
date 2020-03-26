@@ -7,6 +7,8 @@
     <meta name="description" content="Restaurant Guide">
     <meta name="keywords" content="Yellow, Openrice">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- undone -->
+    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
     <link rel="stylesheet" href="css/style.css">
     <link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
     <link href='https://fonts.googleapis.com/css?family=Acme' rel='stylesheet'>
@@ -19,8 +21,7 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <script src="js/script.js"></script>
-
+    <script src="js/script.js"></script><script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
   </head>
 
   <body style="font-family: 'Acme', 'ABeeZee';" onload="init();">
@@ -79,17 +80,21 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
                   <form id="loginSubmitForm" onsubmit="loginSubmit(this);">
                     <div class="form-group">
                       <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-envelope"> </i></span>
+                        <span class="input-group-addon"><i class="fa fa-envelope fa-fw"> </i></span>
                         <input id="loginEmail" type="email" class="form-control" placeholder="Email Address" required>
                       </div>
                     </div>
                     <div class="form-group">
                       <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-key"> </i></span>
+                        <span class="input-group-addon"><i class="fa fa-key fa-fw"> </i></span>
                         <input id="loginPassword" type="password" class="form-control" placeholder="Password" required>
                       </div>
                     </div>
                       <button type="submit" class="btn btn-warning btn-block">Login</button>
+                      <div id="my-signin2" class="btn btn-primary btn-block">
+                        <i class="fa fa-google fa-fw" aria-hidden="true"></i>
+                        Sign in with Google
+                      </div>
                   </form>
                 </article>
               </section>
@@ -102,25 +107,25 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
                   <form id="loginSubmitForm" onsubmit="return registerSubmit(this);">
                     <div class="form-group">
                       <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-user"> </i></span>
+                        <span class="input-group-addon"><i class="fa fa-user fa-fw"> </i></span>
                         <input id="registerName" type="text" class="form-control" placeholder="Nick Name" required>
                       </div>
                     </div>
                     <div class="form-group">
                       <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-envelope"> </i></span>
+                        <span class="input-group-addon"><i class="fa fa-envelope fa-fw"> </i></span>
                         <input id="registerEmail" type="email" class="form-control" placeholder="Email Address" required>
                       </div>
                     </div>
                     <div class="form-group">
                       <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-key"> </i></span>
+                        <span class="input-group-addon"><i class="fa fa-key fa-fw"> </i></span>
                         <input id="registerPassword" type="password" class="form-control" placeholder="Password" required>
                       </div>
                     </div>
                     <div class="form-group">
                       <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-key"> </i></span>
+                        <span class="input-group-addon"><i class="fa fa-key fa-fw"> </i></span>
                         <input id="registerRePassword" type="password" class="form-control" placeholder="Enter Password Again" required>
                       </div>
                     </div>
