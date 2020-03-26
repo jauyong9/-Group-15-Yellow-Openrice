@@ -47,7 +47,81 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
           )
         }
       }
+      class RegisterForm extends React.Component{
+        render() {
+          return (
+            <div className="form" id="registerForm">
+              <img src="../images/restaurant2.jpg" style={{height: '160px', width: '100%', paddingBottom: '20px', objectFit: 'cover'}} />
+              <section id="inner-wrapper" className="login">
+                <article>
+                  <form id="loginSubmitForm" onsubmit="return registerSubmit(this);">
+                    <div className="form-group">
+                      <div className="input-group">
+                        <span className="input-group-addon"><i className="fa fa-user fa-fw"> </i></span>
+                        <input id="registerName" type="text" className="form-control" placeholder="Nick Name" required />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <div className="input-group">
+                        <span className="input-group-addon"><i className="fa fa-envelope fa-fw"> </i></span>
+                        <input id="registerEmail" type="email" className="form-control" placeholder="Email Address" required />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <div className="input-group">
+                        <span className="input-group-addon"><i className="fa fa-key fa-fw"> </i></span>
+                        <input id="registerPassword" type="password" className="form-control" placeholder="Password" required />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <div className="input-group">
+                        <span className="input-group-addon"><i className="fa fa-key fa-fw"> </i></span>
+                        <input id="registerRePassword" type="password" className="form-control" placeholder="Enter Password Again" required />
+                      </div>
+                    </div>
+                    <button type="submit" className="btn btn-warning btn-block">Register</button>
+                  </form>
+                </article>
+              </section>
+            </div>
+          );
+        }
+      }
+      class LoginForm extends React.Component{
+        render() {
+          return (
+            <div className="form" id="loginForm">
+              <img src="../images/restaurant.jpg" style={{height: '160px', width: '100%', paddingBottom: '20px', objectFit: 'cover'}} />
+              <section id="inner-wrapper" className="login">
+                <article>
+                  <form id="loginSubmitForm" onsubmit="loginSubmit(this);">
+                    <div className="form-group">
+                      <div className="input-group">
+                        <span className="input-group-addon"><i className="fa fa-envelope fa-fw"> </i></span>
+                        <input id="loginEmail" type="email" className="form-control" placeholder="Email Address" required />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <div className="input-group">
+                        <span className="input-group-addon"><i className="fa fa-key fa-fw"> </i></span>
+                        <input id="loginPassword" type="password" className="form-control" placeholder="Password" required />
+                      </div>
+                    </div>
+                    <button type="submit" className="btn btn-warning btn-block">Login</button>
+                    <div id="my-signin2" />
+                  </form>
+                </article>
+              </section>
+            </div>
+          );
+        }
+      }
+
+
+
       ReactDOM.render(<Nav />, document.getElementById('navbar'));
+      ReactDOM.render(<LoginForm />, document.getElementById('login'));
+      ReactDOM.render(<RegisterForm />, document.getElementById('register'));
     </script>
 
     <div class="container">
@@ -72,65 +146,8 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
         <p>Created by: Group15</p>
       </footer>
 
-
-      <div class="form" id="loginForm" class="col-md-4 border">
-              <img src="../images/restaurant.jpg" style="height: 160px; width: 100%; padding-bottom: 20px; object-fit: cover;"></img>
-              <section id="inner-wrapper" class="login">
-                <article>
-                  <form id="loginSubmitForm" onsubmit="loginSubmit(this);">
-                    <div class="form-group">
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-envelope fa-fw"> </i></span>
-                        <input id="loginEmail" type="email" class="form-control" placeholder="Email Address" required>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-key fa-fw"> </i></span>
-                        <input id="loginPassword" type="password" class="form-control" placeholder="Password" required>
-                      </div>
-                    </div>
-                      <button type="submit" class="btn btn-warning btn-block">Login</button>
-                      <div id="my-signin2"></div>
-                  </form>
-                </article>
-              </section>
-      </div>
-
-      <div class="form" id="registerForm" class="col-md-4 border">
-              <img src="../images/restaurant2.jpg" style="height: 160px; width: 100%; padding-bottom: 20px; object-fit: cover;"></img>
-              <section id="inner-wrapper" class="login">
-                <article>
-                  <form id="loginSubmitForm" onsubmit="return registerSubmit(this);">
-                    <div class="form-group">
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-user fa-fw"> </i></span>
-                        <input id="registerName" type="text" class="form-control" placeholder="Nick Name" required>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-envelope fa-fw"> </i></span>
-                        <input id="registerEmail" type="email" class="form-control" placeholder="Email Address" required>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-key fa-fw"> </i></span>
-                        <input id="registerPassword" type="password" class="form-control" placeholder="Password" required>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-key fa-fw"> </i></span>
-                        <input id="registerRePassword" type="password" class="form-control" placeholder="Enter Password Again" required>
-                      </div>
-                    </div>
-                      <button type="submit" class="btn btn-warning btn-block">Register</button>
-                  </form>
-                </article>
-              </section>
-      </div>
+      <div id="login"></div>
+      <div id="register"></div>
     </div>
   </body>
 
