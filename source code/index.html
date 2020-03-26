@@ -32,36 +32,44 @@
 
     <Nav id="navbar"></Nav>
     <script type="text/babel">
-      let username = 'aaa';
-      function LoginUser(){
-        if(username){
-          return (
-            <div className="dropdown">
-              <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <h4 className="d-inline navbar-brand">{username}</h4>
-              </button>
-              <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a className="dropdown-item" href="#">Profile</a>
-                <a className="dropdown-item" href="#">Logout</a>
-              </div>
-            </div>);
-        }
-        return <a className="navbar-brand mx-2" onClick={login}>Login</a>;
-      }
-      function ShowRegister(){
-        if(username){
-          return ;
-        }
-        return <a className="navbar-brand mx-2" onClick={register}>Register</a>;
-      }
-
       class Nav extends React.Component{
+        constructor(props) {
+          super(props);
+          this.state ={username: props.username};
+          this.LogoutUser = this.LogoutUser.bind(this);
+        }
+
+        LogoutUser(){
+          this.setState({username: null});
+        }
+        
+        LoginUser(){
+          if(this.state.username){
+            return (
+              <div className="dropdown">
+                <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <h4 className="d-inline navbar-brand">{this.state.username}</h4>
+                </button>
+                <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a className="dropdown-item" href="#">Profile</a>
+                  <a className="dropdown-item" href="#" onClick={this.LogoutUser}>Logout</a>
+                </div>
+              </div>);
+          }
+          return <a className="navbar-brand mx-2" onClick={login}>Login</a>;
+        }
+        ShowRegister(){
+          if(this.state.username){
+            return ;
+          }
+          return <a className="navbar-brand mx-2" onClick={register}>Register</a>;
+        }
         render(){
           return(
             <nav className="container navbar navbar-light bg-light justify-content-between">
               <h4><a className="navbar-brand mx-2">Home</a></h4>
-              <h4>{ShowRegister()}</h4>
-              <h4>{LoginUser()}</h4>
+              <h4>{this.ShowRegister()}</h4>
+              <h4>{this.LoginUser()}</h4>
               <form className="form-inline">
                 <input className="form-control" type="search" placeholder="Search" aria-label="Search"/>
                 <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><i className="fa fa-search"></i></button>
@@ -142,7 +150,7 @@
 
 
 
-      ReactDOM.render(<Nav />, document.getElementById('navbar'));
+      ReactDOM.render(<Nav username='abab'/>, document.getElementById('navbar'));
       ReactDOM.render(<LoginForm />, document.getElementById('login'));
       ReactDOM.render(<RegisterForm />, document.getElementById('register'));
     </script>
