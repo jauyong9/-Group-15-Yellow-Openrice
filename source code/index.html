@@ -32,13 +32,29 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
 
     <Nav id="navbar"></Nav>
     <script type="text/babel">
+      let username = '';
+      function LoginUser(){
+        if(username){
+          return (
+            <div className="dropdown">
+              <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <h4 className="d-inline navbar-brand">{username}</h4>
+              </button>
+              <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a className="dropdown-item" href="#">Profile</a>
+                <a className="dropdown-item" href="#">Logout</a>
+              </div>
+            </div>);
+        }
+        return <a className="navbar-brand mx-2" onClick={login}>Login</a>;
+      }
       class Nav extends React.Component{
         render(){
           return(
             <nav className="container navbar navbar-light bg-light justify-content-between">
               <h4><a className="navbar-brand mx-2">Home</a></h4>
               <h4><a className="navbar-brand mx-2" onClick={register}>Register</a></h4>
-              <h4><a className="navbar-brand mx-2" onClick={login}>Login</a></h4>
+              <h4>{LoginUser()}</h4>
               <form className="form-inline">
                 <input className="form-control" type="search" placeholder="Search" aria-label="Search"/>
                 <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><i className="fa fa-search"></i></button>
