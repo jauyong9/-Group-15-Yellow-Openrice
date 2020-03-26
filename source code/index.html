@@ -32,7 +32,7 @@
 
     <Nav id="navbar"></Nav>
     <script type="text/babel">
-      let username = '';
+      let username = 'aaa';
       function LoginUser(){
         if(username){
           return (
@@ -48,12 +48,19 @@
         }
         return <a className="navbar-brand mx-2" onClick={login}>Login</a>;
       }
+      function ShowRegister(){
+        if(username){
+          return ;
+        }
+        return <a className="navbar-brand mx-2" onClick={register}>Register</a>;
+      }
+
       class Nav extends React.Component{
         render(){
           return(
             <nav className="container navbar navbar-light bg-light justify-content-between">
               <h4><a className="navbar-brand mx-2">Home</a></h4>
-              <h4><a className="navbar-brand mx-2" onClick={register}>Register</a></h4>
+              <h4>{ShowRegister()}</h4>
               <h4>{LoginUser()}</h4>
               <form className="form-inline">
                 <input className="form-control" type="search" placeholder="Search" aria-label="Search"/>
