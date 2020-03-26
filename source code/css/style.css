@@ -1,9 +1,9 @@
 .form {
     position: absolute;
     top: 35%;
-    left: 20%;
+    left: 50%;
     margin-top: -50px;
-    margin-left: -50px;
+    margin-left: -250px;
     padding-bottom: 15px;
     background-color: rgb(233,233,233);
     color: yellow;
