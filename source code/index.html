@@ -6,7 +6,7 @@
     <meta name="author" content="Group15">
     <meta name="description" content="Restaurant Guide">
     <meta name="keywords" content="Yellow, Openrice">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
     <link href='https://fonts.googleapis.com/css?family=Acme' rel='stylesheet'>
@@ -16,43 +16,7 @@
 Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
 23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-                              
-    <script>
-            // When the page load
-            function init() {
-              $("#loginForm").hide();
-            }
-
-            // When user clicks the login button in the page
-            function login() {
-              $("#loginForm").fadeIn();
-            }
-            // Clost the login form
-            function closeLoginForm() {
-              $("#loginForm").fadeOut();
-              $("#loginEmail").val('');
-              $("#loginPassword").val('');
-            }
-
-            // When user clicks outside the login form
-            $(document).mouseup(function(e)
-            {
-                var container = $("#loginForm");
-
-                // if the target of the click isn't the container nor a descendant of the container
-                if (!container.is(e.target) && container.has(e.target).length === 0)
-                {
-                    closeLoginForm();
-                }
-            });
-
-            // When user clicks the login button in the login form.
-            function loginSubmit(e) {
-              e.submit();
-              closeLoginForm();
-            }
-
-      </script>
+    <script src="js/script.js"></script>
 
   </head>
 
@@ -64,7 +28,7 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
 
     <nav class="container navbar navbar-light bg-light justify-content-between">
       <h4><a class="navbar-brand mx-2">Home</a></h4>
-      <h4><a class="navbar-brand mx-2">Sign Up</a></h4>
+      <h4><a class="navbar-brand mx-2" onclick="register()">Register</a></h4>
       <h4><a class="navbar-brand mx-2" onclick="login();">Login</a></h4>
       <form class="form-inline">
         <input class="form-control" type="search" placeholder="Search" aria-label="Search">
@@ -79,7 +43,7 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
 
         </section>
 
-        <section id="closet-restaurant" class="col-sm col-md-5 col-lg-4 card p-3 mt-3"">
+        <section id="closet-restaurant" class="col-sm col-md-5 col-lg-4 card p-3 mt-3">
           <h2 class="text-left px-4 ">Closest Restaurant</h2>
           <div class="table-responsive">
             <table id="table-closet-restaurant" class="table table-striped table-bordered table-hover mt-4">
@@ -95,7 +59,7 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
       </footer>
 
 
-      <div id="loginForm" class="col-md-4 border">
+      <div class="form" id="loginForm" class="col-md-4 border">
               <img src="../images/restaurant.jpg" style="height: 160px; width: 100%; padding-bottom: 20px; object-fit: cover;"></img>
               <section id="inner-wrapper" class="login">
                 <article>
@@ -103,16 +67,51 @@ Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf
                     <div class="form-group">
                       <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-envelope"> </i></span>
-                        <input id="loginEmail" type="email" class="form-control" placeholder="Email Address">
+                        <input id="loginEmail" type="email" class="form-control" placeholder="Email Address" required>
                       </div>
                     </div>
                     <div class="form-group">
                       <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-key"> </i></span>
-                        <input id="loginPassword" type="password" class="form-control" placeholder="Password">
+                        <input id="loginPassword" type="password" class="form-control" placeholder="Password" required>
                       </div>
                     </div>
                       <button type="submit" class="btn btn-warning btn-block">Login</button>
+                  </form>
+                </article>
+              </section>
+      </div>
+
+      <div class="form" id="registerForm" class="col-md-4 border">
+              <img src="../images/restaurant2.jpg" style="height: 160px; width: 100%; padding-bottom: 20px; object-fit: cover;"></img>
+              <section id="inner-wrapper" class="login">
+                <article>
+                  <form id="loginSubmitForm" onsubmit="return registerSubmit(this);">
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"> </i></span>
+                        <input id="registerName" type="text" class="form-control" placeholder="Nick Name" required>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-envelope"> </i></span>
+                        <input id="registerEmail" type="email" class="form-control" placeholder="Email Address" required>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-key"> </i></span>
+                        <input id="registerPassword" type="password" class="form-control" placeholder="Password" required>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-key"> </i></span>
+                        <input id="registerRePassword" type="password" class="form-control" placeholder="Enter Password Again" required>
+                      </div>
+                    </div>
+                      <button type="submit" class="btn btn-warning btn-block">Register</button>
                   </form>
                 </article>
               </section>
