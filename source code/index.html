@@ -30,19 +30,30 @@
       <h1 class="text-warning p-4">Restaurant Guide</h1>
     </header>
 
+    <button type="button" onclick="testLogin('testName')" name="button">testLogin</button>
+
     <Nav id="navbar"></Nav>
+
+    <script>
+      function testLogin(username){
+        window.helloComponent.SetUserName(username);
+      }
+    </script>
+
     <script type="text/babel">
+
       class Nav extends React.Component{
         constructor(props) {
           super(props);
           this.state ={username: props.username};
           this.LogoutUser = this.LogoutUser.bind(this);
         }
-
         LogoutUser(){
           this.setState({username: null});
         }
-        
+        SetUserName(name){
+          this.setState({username: name});
+        }
         LoginUser(){
           if(this.state.username){
             return (
@@ -78,6 +89,7 @@
           )
         }
       }
+
       class RegisterForm extends React.Component{
         render() {
           return (
@@ -150,7 +162,7 @@
 
 
 
-      ReactDOM.render(<Nav username='abab'/>, document.getElementById('navbar'));
+      ReactDOM.render(<Nav username='abab' ref={(element) => {window.helloComponent = element}}/>, document.getElementById('navbar'));
       ReactDOM.render(<LoginForm />, document.getElementById('login'));
       ReactDOM.render(<RegisterForm />, document.getElementById('register'));
     </script>
