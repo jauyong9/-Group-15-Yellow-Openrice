@@ -48,12 +48,21 @@
           super(props);
           this.state ={username: props.username};
           this.LogoutUser = this.LogoutUser.bind(this);
+          this.ToProfile = this.ToProfile.bind(this);
+          this.ToHome = this.ToHome.bind(this);
         }
         LogoutUser(){
           this.setState({username: null});
+          this.ToHome();
         }
         SetUserName(name){
           this.setState({username: name});
+        }
+        ToProfile() {
+          this.props.handleChangePage('Profile');
+        }
+        ToHome() {
+          this.props.handleChangePage('Home');
         }
         LoginUser(){
           if(this.state.username){
@@ -63,7 +72,7 @@
                   <h4 className="d-inline navbar-brand">{this.state.username}</h4>
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a className="dropdown-item" href="#">Profile</a>
+                  <a className="dropdown-item" href="#" onClick={this.ToProfile}>Profile</a>
                   <a className="dropdown-item" href="#" onClick={this.LogoutUser}>Logout</a>
                 </div>
               </div>);
@@ -79,7 +88,7 @@
         render(){
           return(
             <nav className="container navbar navbar-light bg-light justify-content-between">
-              <h4><a className="navbar-brand mx-2">Home</a></h4>
+              <h4><a className="navbar-brand mx-2" onClick={this.ToHome}>Home</a></h4>
               <h4>{this.ShowRegister()}</h4>
               <h4>{this.LoginUser()}</h4>
               <form className="form-inline">
@@ -176,27 +185,34 @@
       function CloesestRestaurant() {
         return (
           <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
-            <h2 className="text-left px-4 ">Closest Restaurant</h2>
+            <h4 className="text-left px-4 ">Closest Restaurant</h4>
             <div className="table-responsive">
               <table id="table-closet-restaurant" className="table table-striped table-bordered table-hover mt-4">
+              <tr><td>3100 Restaurant (200M)</td></tr>
+              <tr><td>Project Restaurant (1000M)</td></tr>
+              <tr><td>三日月 Restaurant (9999M)</td></tr>
               </table>
             </div>
           </section>
         );
       }
 
-      function Map() {
+      function MapItem() {
         return (
           <section id="map" className="col-sm col-md-7 col-lg-8 card p-3 mt-3">
-          <a href="map.html">Map (beta version)</a>
+            <iframe src="https://raw.githack.com/jauyong9/-Group-15-Yellow-Openrice/master/source%20code/map.html" height={200}>
+
+            </iframe>
+            <a href="https://raw.githack.com/jauyong9/-Group-15-Yellow-Openrice/master/source%20code/map.html"> Detailed Map (beta version)</a>
           </section>
         );
       }
 
       function Home() {
+        console.log('check');
         return (
             <div className="row">
-              <Map />
+              <MapItem />
               <CloesestRestaurant />
             </div>
           );
@@ -210,25 +226,72 @@
         );
       }
 
-      function Content() {
+      function Profile() {
         return (
           <div className="container">
-            <Home />
-            <Footer />
+            <h3>Profile Page</h3>
+            <h4>Username: testName</h4>
+            <h4>Email: testName@gmail.com</h4>
+            <h4>Join Date: 25/03/2020</h4>
           </div>
         );
       }
 
-      function App() {
-        return (
-          <div>
-            <Header />
-            <Nav username='' ref={(element) => {window.helloComponent = element}}/>
-            <Content />
-            <LoginForm />
-            <RegisterForm />
-          </div>
-        );
+      class Content extends React.Component {
+        constructor(props) {
+          super(props);
+        }
+
+        getPage() {
+
+          if (this.props.page == 'Home') {
+            return (<Home />);
+          }
+          else if (this.props.page == 'Profile') {
+            return (<Profile />);
+          }
+          else {
+            return (<div></div>);
+          }
+
+        }
+
+        render() {
+          return (
+            <div className="container">
+              {this.getPage()}
+              <Footer />
+            </div>
+          );
+        }
+
+      }
+
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {page: 'Home'};
+          this.handleChangePage = this.handleChangePage.bind(this);
+        }
+
+        handleChangePage(to) {
+          this.setState({page: to});
+        }
+
+        render() {
+          return (
+            <div>
+              <Header />
+              <Nav  username=''
+                    ref={(element) => {window.helloComponent = element}}
+                    handleChangePage={this.handleChangePage}
+              />
+              <Content page={this.state.page} />
+              <LoginForm />
+              <RegisterForm />
+            </div>
+          );
+        }
       }
 
       ReactDOM.render(<App />, document.getElementById('root'));
