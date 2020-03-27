@@ -21,7 +21,7 @@
     <script>
       var map;
       var src = 'https://www.google.com/maps/d/kml?mid=1XVU_sGw1TH9sQZd2WhOBwGQLgiBUeWWF';
-	    
+
       function initMap() {
 	  
 	  var styledMapType = new google.maps.StyledMapType(
@@ -77,16 +77,16 @@
           center: {lat: 22.3552691, lng: 114.0691068},
           zoom: 11.5
         });
-	      
-	var kmlLayer = new google.maps.kmlLayer(src, {
-	  suppressInfoWindows: true,
-	  preserveViewport: false,
-	  map: map
-	});
-		//map.data.loadGeoJson('map.json');
+
+        var kmlLayer = new google.maps.KmlLayer(src, {
+          suppressInfoWindows: true,
+          preserveViewport: false,
+          map: map
+        });
       }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVeetoouOilr4Sb_urexF_aHVzvhjjMqM&callback=initMap"
-    async defer></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVeetoouOilr4Sb_urexF_aHVzvhjjMqM&callback=initMap">
+    </script>
   </body>
 </html>
