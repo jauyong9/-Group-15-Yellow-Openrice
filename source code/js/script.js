@@ -50,7 +50,7 @@ function registerSubmit(e) {
 
 
 // When user clicks outside the login/register form
-$(document).mouseup(function(e)
+$(document).bind( "mouseup touchend", function(e)
 {
     var container = $("#loginForm");
 
