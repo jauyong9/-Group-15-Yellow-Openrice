@@ -1,7 +1,7 @@
 // When the page load
 function init() {
-  $("#loginForm").hide();
-  $("#registerForm").hide();
+  $(".form").hide();
+  $(".form").css("visibility", "visible");
 }
 
 // When user clicks the login button in the page
