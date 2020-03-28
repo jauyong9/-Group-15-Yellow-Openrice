@@ -71,7 +71,7 @@
           if(this.state.username){
             return (
               <div className="dropdown">
-                <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button className="btn dropdown-toggle nav-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <h4 className="d-inline navbar-brand">{this.state.username}</h4>
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -80,18 +80,18 @@
                 </div>
               </div>);
           }
-          return <a className="navbar-brand mx-2" onClick={login}>Login</a>;
+          return <a className="navbar-brand mx-2" onClick={login}><span className="nav-btn">Login</span></a>;
         }
         ShowRegister(){
           if(this.state.username){
             return ;
           }
-          return <a className="navbar-brand mx-2" onClick={register}>Register</a>;
+          return <a className="navbar-brand mx-2" onClick={register}><span className="nav-btn">Register</span></a>;
         }
         render(){
           return(
-            <nav className="container navbar navbar-light bg-light justify-content-between">
-              <h4><a className="navbar-brand mx-2" onClick={this.ToHome}>Home</a></h4>
+            <nav className="container navbar navbar-light bg-light justify-content-between nav">
+              <h4><a className="navbar-brand mx-2" onClick={this.ToHome}><span className="nav-btn">Home</span></a></h4>
               <h4>{this.ShowRegister()}</h4>
               <h4>{this.LoginUser()}</h4>
               <form className="form-inline">

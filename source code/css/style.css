@@ -1,3 +1,7 @@
+.nav-btn:hover {
+  color: rgb(252, 206, 48);
+}
+
 .form {
     position: absolute;
     top: 35%;
