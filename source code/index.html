@@ -75,8 +75,8 @@
                   <h4 className="d-inline navbar-brand">{this.state.username}</h4>
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a className="dropdown-item" href="#" onClick={this.ToProfile}>Profile</a>
-                  <a className="dropdown-item" href="#" onClick={this.LogoutUser}>Logout</a>
+                  <a className="dropdown-item" href="javascript:;" onClick={this.ToProfile}>Profile</a>
+                  <a className="dropdown-item" href="javascript:;" onClick={this.LogoutUser}>Logout</a>
                 </div>
               </div>);
           }
@@ -275,12 +275,24 @@
       }
 
       class App extends React.Component {
+        componentDidMount() {
+            window.onpopstate = this.onBackOrForwardButtonEvent;
+        }
+
+
+        onBackOrForwardButtonEvent = (e) => {
+            e.preventDefault();
+            this.setState({
+              page: e.state.page
+            });
+        };
+
         constructor(props) {
           super(props);
           this.state = {page: 'Home', status: 'Not connected to the backend server'};
           this.handleChangePage = this.handleChangePage.bind(this);
           this.callAPI();
-          console.log(props.URL);
+          window.history.replaceState({page: this.state.page}, null, "");
         }
 
         callAPI() {
@@ -296,6 +308,7 @@
         }
 
         handleChangePage(to) {
+          window.history.pushState({page: this.state.page}, null, "");
           this.setState({page: to});
         }
 
