@@ -1,6 +1,7 @@
 const express = require('express'); const app = express();
 const bodyParser = require("body-parser");
 
+var cors = require('cors');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var serverURL = 'mongodb://csci3100_15:csci3100_15@localhost/csci3100';
@@ -19,6 +20,11 @@ db.once('open', function() {
 var UserSchema = mongoose.Schema({
   userId: {
     type: Number,
+    required: true,
+    unique: true
+  },
+  email: {
+    type: String,
     required: true,
     unique: true
   },
@@ -114,8 +120,10 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
+app.use(cors()); // allow index.html to connect
+
 app.all('/*', function (req, res) {
-    res.send("Hello World from CSCI 3100 Group 15 Backend Server!");
+    res.json({response: "Hello World from CSCI 3100 Group 15 Backend Server!"});
 });
 
 // listen to port 3000

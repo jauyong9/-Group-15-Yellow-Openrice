@@ -277,8 +277,22 @@
       class App extends React.Component {
         constructor(props) {
           super(props);
-          this.state = {page: 'Home'};
+          this.state = {page: 'Home', status: 'Not connected to the backend server'};
           this.handleChangePage = this.handleChangePage.bind(this);
+          this.callAPI();
+          console.log(props.URL);
+        }
+
+        callAPI() {
+          fetch(this.props.URL)
+            .then(response => response.json())
+            .then(data => {
+              this.setState({
+                page: 'Home',
+                status: data['response']
+              });
+              console.log(data);
+            });
         }
 
         handleChangePage(to) {
@@ -288,6 +302,7 @@
         render() {
           return (
             <div>
+              <h3>{this.state.status}</h3>
               <Header />
               <Nav  username=''
                     ref={(element) => {window.helloComponent = element}}
@@ -301,7 +316,7 @@
         }
       }
 
-      ReactDOM.render(<App />, document.getElementById('root'));
+      ReactDOM.render(<App URL='http://localhost:3000'/>, document.getElementById('root'));
 
     </script>
 
