@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -104,42 +105,162 @@
       }
 
       class RegisterForm extends React.Component{
-        handleSubmit() {
-          $("#registerForm").fadeOut();
+        constructor(props) {
+          super(props);
+          this.state = {
+            nameError: '',
+            emailError: '',
+            passwordError: '',
+            againPasswordError: '',
+            name: '',
+            email: '',
+            password: '',
+            againPassword: ''
+          };
+          this.handleReigster = this.handleReigster.bind(this);
+          this.generateError = this.generateError.bind(this);
+          this.handleInputChange = this.handleInputChange.bind(this);
         }
+        isEmail(mail) {
+          var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          return mail.match(mailformat) != null;
+        }
+
+        generateError() {
+          let hasError = false;
+
+          if (this.state.name == '') {
+            this.setState({nameError: 'Nick name must not be empty'});
+            hasError = true;
+          }
+          else {
+            this.setState({nameError: ''});
+          }
+
+          if (!this.isEmail(this.state.email)) {
+            this.setState({emailError: 'Email format incorrect!'});
+            hasError = true;
+          }
+          else {
+            this.setState({emailError: ''});
+          }
+
+          if (this.state.password != this.state.againPassword) {
+            this.setState({
+              passwordError: 'Two passwords must be equal.',
+              againPasswordError: 'Two passwords must be equal.'
+            });
+            hasError = true;
+          }
+          else if (this.state.password == '') {
+            this.setState({
+              passwordError: 'Password cannot be empty.',
+              againPasswordError: 'Password cannot be empty.'
+            });
+            hasError = true;
+          }
+          else {
+            this.setState({
+              passwordError: '',
+              againPasswordError: ''
+            });
+          }
+
+          return hasError;
+        }
+
+        handleReigster() {
+          const hasError = this.generateError();
+          if (hasError) {
+              $("#registerForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
+          }
+          else {
+              $("#registerForm").fadeOut();
+          }
+        }
+
+        handleInputChange(e){
+            const target = e.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+            this.setState({
+                [name]: value
+            });
+        }
+
         render() {
+          let inputError = {
+            color: 'red',
+            paddingLeft: '20px'
+          };
           return (
             <div className="form" id="registerForm">
               <img src="../images/restaurant2.jpg" style={{height: '160px', width: '100%', paddingBottom: '20px', objectFit: 'cover'}} />
               <section id="inner-wrapper" className="login">
                 <article>
-                  <form id="loginSubmitForm" onSubmit={this.handleSubmit}>
+                  <form id="loginSubmitForm">
                     <div className="form-group">
                       <div className="input-group">
                         <span className="input-group-addon"><i className="fa fa-user fa-fw"> </i></span>
-                        <input id="registerName" type="text" className="form-control" placeholder="Nick Name" required />
+                        <input
+                          id="registerName"
+                          type="text"
+                          name="name"
+                          className="form-control"
+                          placeholder="Nick Name"
+                          onChange={this.handleInputChange}
+                          value={this.state.name}
+                        />
                       </div>
+                      <p style={inputError}>{this.state.nameError}</p>
                     </div>
                     <div className="form-group">
                       <div className="input-group">
                         <span className="input-group-addon"><i className="fa fa-envelope fa-fw"> </i></span>
-                        <input id="registerEmail" type="email" className="form-control" placeholder="Email Address" required />
+                        <input
+                          id="registerEmail"
+                          type="text"
+                          name="email"
+                          className="form-control"
+                          placeholder="Email Address"
+                          onChange={this.handleInputChange}
+                          value={this.state.email}
+                        />
                       </div>
+                      <p style={inputError}>{this.state.emailError}</p>
                     </div>
                     <div className="form-group">
                       <div className="input-group">
                         <span className="input-group-addon"><i className="fa fa-key fa-fw"> </i></span>
-                        <input id="registerPassword" type="password" className="form-control" placeholder="Password" required />
+                        <input
+                          id="registerPassword"
+                          type="password"
+                          className="form-control"
+                          placeholder="Password"
+                          name="password"
+                          onChange={this.handleInputChange}
+                          value={this.state.password}
+                        />
                       </div>
+                      <p style={inputError}>{this.state.passwordError}</p>
                     </div>
                     <div className="form-group">
                       <div className="input-group">
                         <span className="input-group-addon"><i className="fa fa-key fa-fw"> </i></span>
-                        <input id="registerRePassword" type="password" className="form-control" placeholder="Enter Password Again" required />
+                        <input
+                          id="registerRePassword"
+                          type="password"
+                          name="againPassword"
+                          className="form-control"
+                          placeholder="Enter Password Again"
+                          onChange={this.handleInputChange}
+                          value={this.state.againPassword}
+                        />
                       </div>
+                      <p style={inputError}>{this.state.againPasswordError}</p>
                     </div>
-                    <button type="submit" className="btn btn-warning btn-block">Register</button>
                   </form>
+                  <button className="btn btn-warning btn-block" onClick={this.handleReigster}>Register</button>
                 </article>
               </section>
             </div>
