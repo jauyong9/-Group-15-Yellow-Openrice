@@ -122,6 +122,34 @@ app.use(bodyParser.json());
 
 app.use(cors()); // allow index.html to connect
 
+// Register
+app.post('/register', function(req, res) {
+  User.findOne().sort('-userId').exec(function(err, item) {
+    if (err)
+      res.json({response: err});
+    let newId = (item == null ? 0 : item.userId) + 1;
+    var usr = new User({
+      userId: newId,
+      email: req.body['email'],
+      name: req.body['name'],
+      password: req.body['password']
+    });
+
+    usr.save(function(err) {
+      if (err)
+        res.json({response: `Email is in use`, ref: err});
+      else {
+        res.status(201);
+        res.json({
+          response: `Register Successful`,
+          userId: newId,
+          name: usr.name
+        });
+      }
+    });
+  });
+});
+
 app.all('/*', function (req, res) {
     res.json({response: "Hello World from CSCI 3100 Group 15 Backend Server!"});
 });

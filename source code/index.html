@@ -175,6 +175,22 @@
               $("#registerForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
           }
           else {
+            // Simple POST request with a JSON body using fetch
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({  email: this.state.email,
+                                        name: this.state.name,
+                                        password: this.state.password})
+            };
+
+            fetch(this.props.URL + '/register', requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                  console.log(data);
+                  alert(data.response);
+                });
+
               $("#registerForm").fadeOut();
           }
         }
@@ -444,7 +460,7 @@
               />
               <Content page={this.state.page} />
               <LoginForm />
-              <RegisterForm />
+              <RegisterForm URL={this.props.URL}/>
             </div>
           );
         }
