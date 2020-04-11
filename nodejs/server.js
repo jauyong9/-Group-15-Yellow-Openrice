@@ -39,6 +39,14 @@ var UserSchema = mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  iconUrl: {
+    type: String,
+    required: false
+  },
+  joinDate: {
+    type: Date,
+    default: Date.Now
   }
 });
 var User = mongoose.model('User', UserSchema);
@@ -128,6 +136,7 @@ app.use(cors()); // allow index.html to connect
 
 // Login
 app.post('/login', (req, res) => {
+  console.log(req);
   User.findOne({
       email: req.body.email
   })
@@ -140,16 +149,15 @@ app.post('/login', (req, res) => {
             email: user.email,
             name: user.name
         }
-        console.log(process.env.SECRET_KEY);
         let token = jwt.sign(payload, SECRET_KEY, {
           expiresIn: 1440
         })
-        res.send(token)
+        res.json({response: 'success', message: 'login successful', token: token})
       } else {
-        res.json({error: "user does not exist / password is incorrect"})
+        res.json({response: 'fail', message: "user does not exist / password is incorrect"})
       }
     } else {
-      res.json({error: "user does not exist / password is incorrect"})
+      res.json({response: 'fail', message: "user does not exist / password is incorrect"})
     }
   })
   .catch(err => {
@@ -163,26 +171,47 @@ app.post('/register', function(req, res) {
     if (err)
       res.json({response: err});
     let newId = (item == null ? 0 : item.userId) + 1;
+    const today = new Date();
     var usr = new User({
       userId: newId,
       email: req.body['email'],
       name: req.body['name'],
-      password: bcrypt.hashSync(req.body['password'])
+      password: bcrypt.hashSync(req.body['password']),
+      joinDate: today
     });
 
     usr.save(function(err) {
       if (err)
-        res.json({response: `Email is in use`, ref: err});
+        res.json({response: `fail`, message: `Email is in use`, ref: err});
       else {
         res.status(201);
         res.json({
-          response: `Register Successful`,
+          response: `success`,
+          message: `Register Successful`,
           userId: newId,
           name: usr.name
         });
       }
     });
   });
+});
+
+// Profile
+app.get('/profile', (req, res) => {
+  var decoded = jwt.verify(req.headers['authorization'], SECRET_KEY)
+  User.findOne({
+    _id: decoded._id
+  })
+  .then(user => {
+    if (user) {
+      res.json(user)
+    } else {
+      res.send("User does not exist")
+    }
+  })
+  .catch(err => {
+    res.send("Error: " + err)
+  })
 });
 
 app.all('/*', function (req, res) {

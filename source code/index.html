@@ -56,6 +56,7 @@
           this.ToHome = this.ToHome.bind(this);
         }
         LogoutUser(){
+          this.props.handleChangeToken('');
           this.setState({username: null});
           this.ToHome();
         }
@@ -69,11 +70,11 @@
           this.props.handleChangePage('Home');
         }
         LoginUser(){
-          if(this.state.username){
+          if(this.props.username){
             return (
               <div className="dropdown">
                 <button className="btn dropdown-toggle nav-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <h4 className="d-inline navbar-brand">{this.state.username}</h4>
+                  <h4 className="d-inline navbar-brand">{this.props.username}</h4>
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <a className="dropdown-item" href="javascript:;" onClick={this.ToProfile}>Profile</a>
@@ -84,7 +85,7 @@
           return <a className="navbar-brand mx-2" onClick={login}><span className="nav-btn">Login</span></a>;
         }
         ShowRegister(){
-          if(this.state.username){
+          if(this.props.username){
             return ;
           }
           return <a className="navbar-brand mx-2" onClick={register}><span className="nav-btn">Register</span></a>;
@@ -115,7 +116,8 @@
             name: '',
             email: '',
             password: '',
-            againPassword: ''
+            againPassword: '',
+            registerResult: ''
           };
           this.handleReigster = this.handleReigster.bind(this);
           this.generateError = this.generateError.bind(this);
@@ -188,10 +190,24 @@
                 .then(response => response.json())
                 .then(data => {
                   console.log(data);
-                  alert(data.response);
+                  let success = {
+                    color: 'green',
+                    paddingLeft: '20px'
+                  };
+                  let fail = {
+                    color: 'red',
+                    paddingLeft: '20px'
+                  };
+                  if (data.response == 'success') {
+                      $("#registerForm").fadeOut();
+                  }
+                  else {
+                      $("#registerForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
+                      this.setState({emailError: data.message});
+                  }
                 });
 
-              $("#registerForm").fadeOut();
+
           }
         }
 
@@ -277,6 +293,7 @@
                     </div>
                   </form>
                   <button className="btn btn-warning btn-block" onClick={this.handleReigster}>Register</button>
+                  <p style={this.state.registerResultStyle}>{this.state.registerResult}</p>
                 </article>
               </section>
             </div>
@@ -287,39 +304,143 @@
 
         constructor(props) {
           super(props);
-          this.handleSubmit = this.handleSubmit.bind(this);
+          this.handleLogin = this.handleLogin.bind(this);
+          this.generateError = this.generateError.bind(this);
+          this.handleInputChange = this.handleInputChange.bind(this);
+
+          this.state = {
+            email: '',
+            password: '',
+            emailError: '',
+            passwordError: ''
+          };
         }
 
-        handleSubmit() {
-          $("#loginForm").fadeOut();
+        isEmail(mail) {
+          var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          return mail.match(mailformat) != null;
         }
+
+        generateError() {
+          let hasError = false;
+
+          if (!this.isEmail(this.state.email)) {
+            this.setState({emailError: 'Email format incorrect!'});
+            hasError = true;
+          }
+          else {
+            this.setState({emailError: ''});
+          }
+
+          if (this.state.password == '') {
+            this.setState({
+              passwordError: 'Password cannot be empty.'
+            });
+            hasError = true;
+          }
+          else {
+            this.setState({passwordError: ''});
+          }
+
+          return hasError;
+        }
+
+        handleLogin() {
+          const hasError = this.generateError();
+          if (hasError) {
+              $("#loginForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
+          }
+          else {
+            // Simple POST request with a JSON body using fetch
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({  email: this.state.email,
+                                        password: this.state.password})
+            };
+
+            fetch(this.props.URL + '/login', requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                  console.log(data);
+                  let success = {
+                    color: 'green',
+                    paddingLeft: '20px'
+                  };
+                  let fail = {
+                    color: 'red',
+                    paddingLeft: '20px'
+                  };
+                  if (data.response == 'success') {
+                      $("#loginForm").fadeOut();
+                      this.props.handleChangeToken(data.token);
+                  }
+                  else {
+                      $("#loginForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
+                      this.setState({passwordError: data.message});
+                  }
+                });
+
+
+          }
+        }
+
+        handleInputChange(e){
+            const target = e.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+            this.setState({
+                [name]: value
+            });
+        }
+
         render() {
+          let inputError = {
+            color: 'red',
+            paddingLeft: '20px'
+          };
           return (
             <div className="form" id="loginForm">
               <img src="../images/restaurant.jpg" style={{height: '160px', width: '100%', paddingBottom: '20px', objectFit: 'cover'}} />
               <section id="inner-wrapper" className="login">
                 <article>
-                  <form id="loginSubmitForm" onSubmit={this.handleSubmit}>
+                  <form id="loginSubmitForm">
                     <div className="form-group">
                       <div className="input-group">
                         <span className="input-group-addon"><i className="fa fa-envelope fa-fw"> </i></span>
-                        <input id="loginEmail" type="email" className="form-control" placeholder="Email Address" required />
+                        <input
+                          type="text"
+                          name="email"
+                          className="form-control"
+                          placeholder="Email Address"
+                          onChange={this.handleInputChange}
+                          value={this.state.email}
+                        />
                       </div>
+                      <p style={inputError}>{this.state.emailError}</p>
                     </div>
                     <div className="form-group">
                       <div className="input-group">
                         <span className="input-group-addon"><i className="fa fa-key fa-fw"> </i></span>
-                        <input id="loginPassword" type="password" className="form-control" placeholder="Password" required />
+                        <input
+                          type="password"
+                          className="form-control"
+                          placeholder="Password"
+                          name="password"
+                          onChange={this.handleInputChange}
+                          value={this.state.password}
+                        />
                       </div>
+                      <p style={inputError}>{this.state.passwordError}</p>
                     </div>
-                    <button type="submit" className="btn btn-warning btn-block">Login</button>
-                    <div id="my-signin2" />
                   </form>
+                  <button className="btn btn-warning btn-block" onClick={this.handleLogin}>Login</button>
                 </article>
               </section>
             </div>
           );
         }
+
       }
 
       function CloesestRestaurant() {
@@ -416,7 +537,6 @@
             window.onpopstate = this.onBackOrForwardButtonEvent;
         }
 
-
         onBackOrForwardButtonEvent = (e) => {
             e.preventDefault();
             this.setState({
@@ -426,10 +546,36 @@
 
         constructor(props) {
           super(props);
-          this.state = {page: 'Home', status: 'Not connected to the backend server'};
+          this.state = {
+            page: 'Home',
+            status: 'Not connected to the backend server',
+            token: '',
+            username: ''
+          };
           this.handleChangePage = this.handleChangePage.bind(this);
+          this.handleChangeToken = this.handleChangeToken.bind(this);
+          this.loadProfile = this.loadProfile.bind(this);
           this.callAPI();
           window.history.replaceState({page: this.state.page}, null, "");
+        }
+
+        loadProfile(token) {
+          this.setState({username: ''}); // logout first
+
+          if (token != '') {
+
+            const requestOptions = {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json', 'authorization': token }
+            };
+
+            fetch(this.props.URL + '/profile', requestOptions)
+              .then(response => response.json())
+              .then(user => {
+                console.log(user);
+                this.setState({username: user.name});
+              });
+          }
         }
 
         callAPI() {
@@ -449,17 +595,25 @@
           this.setState({page: to});
         }
 
+        handleChangeToken(token) {
+          this.setState({token: token});
+          this.loadProfile(token);
+        }
+
         render() {
           return (
             <div>
               <h3>{this.state.status}</h3>
               <Header />
-              <Nav  username=''
+              <Nav  username={this.state.username}
                     ref={(element) => {window.helloComponent = element}}
                     handleChangePage={this.handleChangePage}
+                    handleChangeToken={this.handleChangeToken}
               />
               <Content page={this.state.page} />
-              <LoginForm />
+              <LoginForm  URL={this.props.URL}
+                          handleChangeToken={this.handleChangeToken}
+              />
               <RegisterForm URL={this.props.URL}/>
             </div>
           );
