@@ -161,7 +161,8 @@ app.post('/login', (req, res) => {
     }
   })
   .catch(err => {
-    res.send('error: ' + err)
+    console.log(err);
+    res.json({response: 'fail', message: "user does not exist / password is incorrect", error: err})
   })
 });
 
