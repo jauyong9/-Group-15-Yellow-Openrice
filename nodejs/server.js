@@ -1,10 +1,14 @@
+const SECRET_KEY = 'CSCI3100_GROUP15';
 const express = require('express'); const app = express();
 const bodyParser = require("body-parser");
 
 var cors = require('cors');
 var mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
+var bcrypt = require('bcrypt-nodejs')
 var Schema = mongoose.Schema;
 var serverURL = 'mongodb://csci3100_15:csci3100_15@localhost/csci3100';
+
 mongoose.connect(serverURL);
 
 /* Connect to the database: begins */
@@ -122,6 +126,37 @@ app.use(bodyParser.json());
 
 app.use(cors()); // allow index.html to connect
 
+// Login
+app.post('/login', (req, res) => {
+  User.findOne({
+      email: req.body.email
+  })
+  .then(user => {
+    if (user) {
+      if (bcrypt.compareSync(req.body.password, user.password)) {
+        const payload = {
+            _id: user._id,
+            userId: user.userId,
+            email: user.email,
+            name: user.name
+        }
+        console.log(process.env.SECRET_KEY);
+        let token = jwt.sign(payload, SECRET_KEY, {
+          expiresIn: 1440
+        })
+        res.send(token)
+      } else {
+        res.json({error: "user does not exist / password is incorrect"})
+      }
+    } else {
+      res.json({error: "user does not exist / password is incorrect"})
+    }
+  })
+  .catch(err => {
+    res.send('error: ' + err)
+  })
+});
+
 // Register
 app.post('/register', function(req, res) {
   User.findOne().sort('-userId').exec(function(err, item) {
@@ -132,7 +167,7 @@ app.post('/register', function(req, res) {
       userId: newId,
       email: req.body['email'],
       name: req.body['name'],
-      password: req.body['password']
+      password: bcrypt.hashSync(req.body['password'])
     });
 
     usr.save(function(err) {
