@@ -1,4 +1,3 @@
-const SECRET_KEY = 'CSCI3100_GROUP15';
 const apiUrl = 'http://localhost:3000';
 const express = require('express'); const app = express();
 const bodyParser = require("body-parser");
@@ -6,20 +5,22 @@ const bodyParser = require("body-parser");
 var cors = require('cors');
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
-var bcrypt = require('bcrypt-nodejs')
+var bcrypt = require('bcrypt-nodejs');
 var nodemailer = require('nodemailer');
+var config = require('./config.json');
+
+const SECRET_KEY = config.SECRET_KEY;
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'your@gmail.com',
-    pass: 'yourpassword'
+    user: config.email,
+    pass: config.password
   }
 });
 
-
 var Schema = mongoose.Schema;
-var serverURL = 'mongodb://csci3100_15:csci3100_15@localhost/csci3100';
+var serverURL = 'mongodb://localhost/hkrestguide';
 
 mongoose.connect(serverURL);
 
@@ -226,7 +227,7 @@ app.post('/register', function(req, res) {
 
         // Send verification email
         var mailOptions = {
-          from: '2020.csci3100.gp15@do-not-reply.com',
+          from: '2020.hkrestguide.gp@gmail.com',
           to: user.email,
           subject: 'Thank you for registering HK Restaurant Guide!',
           text: `
@@ -237,7 +238,7 @@ app.post('/register', function(req, res) {
             Please click this link to activate your account: ${link}
 
             Best,
-            CSCI 3100 Group 15
+            HK Restaurant Guide
           `
         };
 
@@ -313,7 +314,7 @@ app.get('/activate/:token', function (req, res) {
 });
 
 app.all('/*', function (req, res) {
-    res.json({response: "Hello World from CSCI 3100 Group 15 Backend Server!"});
+    res.json({response: "Hello World from HK Restaurant Guide Backend Server!"});
 });
 
 
