@@ -22,6 +22,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
     <script src="js/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
     <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
   </head>
 
@@ -70,11 +71,14 @@
           this.props.handleChangePage('Home');
         }
         LoginUser(){
+          const typeStyle = {
+            color: '#9b870c'
+          };
           if(this.props.username){
             return (
               <div className="dropdown">
                 <button className="btn dropdown-toggle nav-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <h4 className="d-inline navbar-brand">{this.props.username}</h4>
+                  <h4 className="d-inline navbar-brand">{this.props.username} <span style={typeStyle}>({this.props.userType})</span></h4>
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <a className="dropdown-item" href="javascript:;" onClick={this.ToProfile}>Profile</a>
@@ -119,7 +123,7 @@
             againPassword: '',
             registerResult: ''
           };
-          this.handleReigster = this.handleReigster.bind(this);
+          this.handleRegister = this.handleRegister.bind(this);
           this.generateError = this.generateError.bind(this);
           this.handleInputChange = this.handleInputChange.bind(this);
         }
@@ -171,7 +175,7 @@
           return hasError;
         }
 
-        handleReigster() {
+        handleRegister() {
           const hasError = this.generateError();
           if (hasError) {
               $("#registerForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
@@ -199,6 +203,7 @@
                     paddingLeft: '20px'
                   };
                   if (data.response == 'success') {
+                      this.props.handleChangeToken(data.token);
                       $("#registerForm").fadeOut();
                   }
                   else {
@@ -292,7 +297,7 @@
                       <p style={inputError}>{this.state.againPasswordError}</p>
                     </div>
                   </form>
-                  <button className="btn btn-warning btn-block" onClick={this.handleReigster}>Register</button>
+                  <button className="btn btn-warning btn-block" onClick={this.handleRegister}>Register</button>
                   <p style={this.state.registerResultStyle}>{this.state.registerResult}</p>
                 </article>
               </section>
@@ -535,6 +540,8 @@
       class App extends React.Component {
         componentDidMount() {
             window.onpopstate = this.onBackOrForwardButtonEvent;
+            if (Cookies.get('token'))
+              this.handleChangeToken(Cookies.get('token'));
         }
 
         onBackOrForwardButtonEvent = (e) => {
@@ -550,7 +557,8 @@
             page: 'Home',
             status: 'Not connected to the backend server',
             token: '',
-            username: ''
+            username: '',
+            userType: ''
           };
           this.handleChangePage = this.handleChangePage.bind(this);
           this.handleChangeToken = this.handleChangeToken.bind(this);
@@ -572,8 +580,7 @@
             fetch(this.props.URL + '/profile', requestOptions)
               .then(response => response.json())
               .then(user => {
-                console.log(user);
-                this.setState({username: user.name});
+                this.setState({username: user.name, userType: user.type});
               });
           }
         }
@@ -596,6 +603,7 @@
         }
 
         handleChangeToken(token) {
+          Cookies.set('token', token, { expires: 7 })
           this.setState({token: token});
           this.loadProfile(token);
         }
@@ -606,6 +614,7 @@
               <h3>{this.state.status}</h3>
               <Header />
               <Nav  username={this.state.username}
+                    userType={this.state.userType}
                     ref={(element) => {window.helloComponent = element}}
                     handleChangePage={this.handleChangePage}
                     handleChangeToken={this.handleChangeToken}
@@ -614,7 +623,9 @@
               <LoginForm  URL={this.props.URL}
                           handleChangeToken={this.handleChangeToken}
               />
-              <RegisterForm URL={this.props.URL}/>
+              <RegisterForm URL={this.props.URL}
+                          handleChangeToken={this.handleChangeToken}
+              />
             </div>
           );
         }

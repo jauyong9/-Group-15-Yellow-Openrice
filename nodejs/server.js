@@ -1,4 +1,5 @@
 const SECRET_KEY = 'CSCI3100_GROUP15';
+const apiUrl = 'http://localhost:3000';
 const express = require('express'); const app = express();
 const bodyParser = require("body-parser");
 
@@ -6,6 +7,17 @@ var cors = require('cors');
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt-nodejs')
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: '2020.csci3100.gp15@gmail.com',
+    pass: '2020.Csci3100.Gp15'
+  }
+});
+
+
 var Schema = mongoose.Schema;
 var serverURL = 'mongodb://csci3100_15:csci3100_15@localhost/csci3100';
 
@@ -47,6 +59,10 @@ var UserSchema = mongoose.Schema({
   joinDate: {
     type: Date,
     default: Date.Now
+  },
+  type: {
+    type: String,
+    default: 'Unverifed User'
   }
 });
 var User = mongoose.model('User', UserSchema);
@@ -136,7 +152,6 @@ app.use(cors()); // allow index.html to connect
 
 // Login
 app.post('/login', (req, res) => {
-  console.log(req);
   User.findOne({
       email: req.body.email
   })
@@ -173,7 +188,7 @@ app.post('/register', function(req, res) {
       res.json({response: err});
     let newId = (item == null ? 0 : item.userId) + 1;
     const today = new Date();
-    var usr = new User({
+    var user = new User({
       userId: newId,
       email: req.body['email'],
       name: req.body['name'],
@@ -181,17 +196,59 @@ app.post('/register', function(req, res) {
       joinDate: today
     });
 
-    usr.save(function(err) {
+    user.save(function(err) {
       if (err)
         res.json({response: `fail`, message: `Email is in use`, ref: err});
       else {
         res.status(201);
+        const payload = {
+            _id: user._id,
+            userId: user.userId,
+            email: user.email,
+            name: user.name
+        }
+        let token = jwt.sign(payload, SECRET_KEY, {
+          expiresIn: 1440
+        })
         res.json({
           response: `success`,
           message: `Register Successful`,
-          userId: newId,
-          name: usr.name
+          userId: user.userId,
+          name: user.name,
+          token: token
         });
+
+        let activateToken = jwt.sign(payload, SECRET_KEY, {
+          expiresIn: 2880
+        })
+
+        const link = apiUrl + '/activate/' + activateToken;
+
+        // Send verification email
+        var mailOptions = {
+          from: '2020.csci3100.gp15@do-not-reply.com',
+          to: user.email,
+          subject: 'Thank you for registering HK Restaurant Guide!',
+          text: `
+            Dear ${user.name},
+
+            Thank you for registering HK Restaurant.
+
+            Please click this link to activate your account: ${link}
+
+            Best,
+            CSCI 3100 Group 15
+          `
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
+        });
+
       }
     });
   });
@@ -215,9 +272,51 @@ app.get('/profile', (req, res) => {
   })
 });
 
+// Delete all users
+app.delete('/all_users', function(req, res) {
+    User.deleteMany({}, function(err) {
+      if (err) {
+        res.send(err);
+      }
+      else {
+        res.send('Deleted all users');
+      }
+    });
+});
+
+app.get('/activate/:token', function (req, res) {
+    var decoded = jwt.verify(req.params['token'], SECRET_KEY)
+    User.findOne({
+      _id: decoded._id
+    })
+    .then(user => {
+      if (user) {
+        const filter = {_id: user._id}
+        const update = {type: 'User'}
+
+        User.findOneAndUpdate(filter, update, function(err, doc) {
+         if (err)
+           res.send(err);
+         else if (doc == null)
+           res.json({response: 'fail', message:'the link is not valid'});
+         else {
+           User.findOne(filter, function(err, doc) {
+             res.json({response: 'success', message:'Activate successful. Please login again'});
+           });
+         }
+       })
+     }
+    })
+    .catch(err => {
+      res.send("Error: " + err)
+    })
+});
+
 app.all('/*', function (req, res) {
     res.json({response: "Hello World from CSCI 3100 Group 15 Backend Server!"});
 });
+
+
 
 // listen to port 3000
 const server = app.listen(3000);
