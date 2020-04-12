@@ -12,8 +12,8 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: '2020.csci3100.gp15@gmail.com',
-    pass: '2020.Csci3100.Gp15'
+    user: 'your@gmail.com',
+    pass: 'yourpassword'
   }
 });
 
