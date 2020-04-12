@@ -1,8 +1,21 @@
 .nav-btn:hover {
   color: rgb(252, 206, 48);
 }
+body {
+	z-index: 0;
+}
+.mask {
+	position: absolute;
+	z-index: 1;
+	width: 200%;
+	height: 200%;
+	top: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, .75);
+}
 
 .form {
+	z-index: 2;
     position: absolute;
     top: 35%;
     left: 50%;
@@ -12,6 +25,6 @@
     background-color: rgb(233,233,233);
     color: yellow;
     border-radius: 3%;
-    width: 400px;
+    width: 370px;
     visibility: hidden;
 }​

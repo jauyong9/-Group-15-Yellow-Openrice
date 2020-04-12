@@ -55,6 +55,8 @@
           this.LogoutUser = this.LogoutUser.bind(this);
           this.ToProfile = this.ToProfile.bind(this);
           this.ToHome = this.ToHome.bind(this);
+		  this.ClickLogin = this.ClickLogin.bind(this);
+		  this.ClickRegister = this.ClickRegister.bind(this);
         }
         LogoutUser(){
           this.props.handleChangeToken('');
@@ -86,13 +88,22 @@
                 </div>
               </div>);
           }
-          return <a className="navbar-brand mx-2" onClick={login}><span className="nav-btn">Login</span></a>;
+          return <a className="navbar-brand mx-2" onClick={this.ClickLogin}><span className="nav-btn">Login</span></a>;
         }
+		
+		ClickLogin() {
+			$("#loginForm").fadeIn();
+			this.props.handleToggleMask();
+		}
+		ClickRegister() {
+			$("#registerForm").fadeIn();
+			this.props.handleToggleMask();
+		}
         ShowRegister(){
           if(this.props.username){
             return ;
           }
-          return <a className="navbar-brand mx-2" onClick={register}><span className="nav-btn">Register</span></a>;
+          return <a className="navbar-brand mx-2" onClick={this.ClickRegister}><span className="nav-btn">Register</span></a>;
         }
         render(){
           return(
@@ -104,6 +115,7 @@
                 <input className="form-control" type="search" placeholder="Search" aria-label="Search"/>
                 <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><i className="fa fa-search"></i></button>
               </form>
+			  
             </nav>
           )
         }
@@ -205,6 +217,7 @@
                   if (data.response == 'success') {
                       this.props.handleChangeToken(data.token);
                       $("#registerForm").fadeOut();
+					  this.props.handleToggleMask();
                   }
                   else {
                       $("#registerForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
@@ -379,6 +392,7 @@
                   if (data.response == 'success') {
                       $("#loginForm").fadeOut();
                       this.props.handleChangeToken(data.token);
+					  this.props.handleToggleMask();
                   }
                   else {
                       $("#loginForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
@@ -466,10 +480,10 @@
       function MapItem() {
         return (
           <section id="map" className="col-sm col-md-7 col-lg-8 card p-3 mt-3">
-            <iframe src="https://raw.githack.com/jauyong9/-Group-15-Yellow-Openrice/master/source%20code/map.html" height={350}>
+            <iframe src="map.html" height={350}>
 
             </iframe>
-            <a href="https://raw.githack.com/jauyong9/-Group-15-Yellow-Openrice/master/source%20code/map.html"> Detailed Map (beta version)</a>
+            <a href="map.html"> Detailed Map (beta version)</a>
           </section>
         );
       }
@@ -491,15 +505,15 @@
         );
       }
 
-      function Profile() {
+      function Profile(props) {
         return (
           <div>
             <div className="card">
               <img src="https://image.flaticon.com/icons/svg/21/21104.svg" style={{width: '100%', height: '150'}} />
-              <h1>test Name</h1>
-              <p className="title">VIP User</p>
-              <p>testName@gmail.com</p>
-              <p>Join Date: 25/03/2020</p>
+              <h1>{props.user.name}</h1>
+              <p className="title">({props.user.type})</p>
+              <p>{props.user.email}</p>
+              <p>Join Date: {props.user.joinDate}</p>
               <p><button type="submit" className="btn btn-warning btn-block">Change Password</button></p>
               <p><button type="submit" className="btn btn-warning btn-block">Change Icon</button></p>
             </div>
@@ -510,6 +524,7 @@
       class Content extends React.Component {
         constructor(props) {
           super(props);
+		  this.getPage = this.getPage.bind(this);
         }
 
         getPage() {
@@ -518,7 +533,7 @@
             return (<Home />);
           }
           else if (this.props.page == 'Profile') {
-            return (<Profile />);
+            return (<Profile user={this.props.user}/>);
           }
           else {
             return (<div></div>);
@@ -558,8 +573,10 @@
             status: 'Not connected to the backend server',
             token: '',
             username: '',
-            userType: ''
+            userType: '',
+			mask: false
           };
+		  this.handleToggleMask = this.handleToggleMask.bind(this);
           this.handleChangePage = this.handleChangePage.bind(this);
           this.handleChangeToken = this.handleChangeToken.bind(this);
           this.loadProfile = this.loadProfile.bind(this);
@@ -581,6 +598,7 @@
               .then(response => response.json())
               .then(user => {
                 this.setState({username: user.name, userType: user.type});
+				this.setState({user: user});
               });
           }
         }
@@ -607,8 +625,14 @@
           this.setState({token: token});
           this.loadProfile(token);
         }
-
+		
+		handleToggleMask() {
+		  this.setState({mask: !this.state.mask});
+		}
+		
         render() {
+		  const mask = (<span className="mask" onClick={this.handleToggleMask}></span>);
+		  
           return (
             <div>
               <h3>{this.state.status}</h3>
@@ -618,14 +642,20 @@
                     ref={(element) => {window.helloComponent = element}}
                     handleChangePage={this.handleChangePage}
                     handleChangeToken={this.handleChangeToken}
+					handleToggleMask={this.handleToggleMask}
               />
-              <Content page={this.state.page} />
+              <Content 	page={this.state.page} 
+						user={this.state.user}
+			  />
               <LoginForm  URL={this.props.URL}
                           handleChangeToken={this.handleChangeToken}
+						  handleToggleMask={this.handleToggleMask}
               />
               <RegisterForm URL={this.props.URL}
                           handleChangeToken={this.handleChangeToken}
+						  handleToggleMask={this.handleToggleMask}
               />
+			  {this.state.mask && mask}			  
             </div>
           );
         }
