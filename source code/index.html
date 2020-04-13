@@ -205,7 +205,6 @@
             fetch(this.props.URL + '/register', requestOptions)
                 .then(response => response.json())
                 .then(data => {
-                  console.log(data);
                   let success = {
                     color: 'green',
                     paddingLeft: '20px'
@@ -382,7 +381,6 @@
             fetch(this.props.URL + '/login', requestOptions)
                 .then(response => response.json())
                 .then(data => {
-                  console.log(data);
                   let success = {
                     color: 'green',
                     paddingLeft: '20px'
@@ -654,7 +652,6 @@
                 page: 'Home',
                 status: data['response']
               });
-              console.log(data);
             });
         }
 
@@ -670,7 +667,6 @@
         }
 
         handlePopupMsg(msg) {
-          console.log('called handlePopupMsg on ' + msg);
           this.setState({popupMsg: msg});
         }
 
