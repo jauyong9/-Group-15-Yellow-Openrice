@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Yellopenrice</title>
+    <title>HK Restaurant Guide</title>
     <meta name="author" content="Group15">
     <meta name="description" content="Restaurant Guide">
     <meta name="keywords" content="Yellow, Openrice">
@@ -90,7 +90,7 @@
           }
           return <a className="navbar-brand mx-2" onClick={this.ClickLogin}><span className="nav-btn">Login</span></a>;
         }
-		
+
 		ClickLogin() {
 			$("#loginForm").fadeIn();
 			this.props.handleToggleMask();
@@ -115,7 +115,7 @@
                 <input className="form-control" type="search" placeholder="Search" aria-label="Search"/>
                 <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><i className="fa fa-search"></i></button>
               </form>
-			  
+
             </nav>
           )
         }
@@ -217,7 +217,9 @@
                   if (data.response == 'success') {
                       this.props.handleChangeToken(data.token);
                       $("#registerForm").fadeOut();
-					  this.props.handleToggleMask();
+					            this.props.handleToggleMask();
+                      const msg = `Thank you for your registration. An email has been sent to ${this.state.email}. Please click the link in the email to activate your account`;
+                      this.props.handlePopupMsg(msg);
                   }
                   else {
                       $("#registerForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
@@ -552,6 +554,45 @@
 
       }
 
+      class Popup extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {};
+        }
+        componentWillReceiveProps(nextProps) {
+          $('#myModal').on('hidden.bs.modal', function () {
+            nextProps.handlePopupMsg(''); // change the pop message to empty when dismiss
+          })
+        }
+        componentDidMount() {
+          $("#myModal").modal('show');
+        }
+        render() {
+          if (this.props.msg) {
+            return (
+              <div className="modal fade" id="myModal" role="dialog">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <img src="../images/email-banner.jpg" className="img-fluid" style={{height: '175px', width: '100%'}}/>
+                    </div>
+                    <div className="modal-body">
+                      <p>{this.props.msg}</p>
+                    </div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          else {
+            return (<div></div>);
+          }
+        }
+      }
+
       class App extends React.Component {
         componentDidMount() {
             window.onpopstate = this.onBackOrForwardButtonEvent;
@@ -574,11 +615,13 @@
             token: '',
             username: '',
             userType: '',
-			mask: false
+			      mask: false,
+            popupMsg: ''
           };
 		  this.handleToggleMask = this.handleToggleMask.bind(this);
           this.handleChangePage = this.handleChangePage.bind(this);
           this.handleChangeToken = this.handleChangeToken.bind(this);
+          this.handlePopupMsg = this.handlePopupMsg.bind(this);
           this.loadProfile = this.loadProfile.bind(this);
           this.callAPI();
           window.history.replaceState({page: this.state.page}, null, "");
@@ -598,7 +641,7 @@
               .then(response => response.json())
               .then(user => {
                 this.setState({username: user.name, userType: user.type});
-				this.setState({user: user});
+				        this.setState({user: user});
               });
           }
         }
@@ -625,14 +668,20 @@
           this.setState({token: token});
           this.loadProfile(token);
         }
-		
-		handleToggleMask() {
-		  this.setState({mask: !this.state.mask});
-		}
-		
+
+        handlePopupMsg(msg) {
+          console.log('called handlePopupMsg on ' + msg);
+          this.setState({popupMsg: msg});
+        }
+
+    		handleToggleMask() {
+    		  this.setState({mask: !this.state.mask});
+    		}
+
         render() {
-		  const mask = (<span className="mask" onClick={this.handleToggleMask}></span>);
-		  
+		      const mask = (<span className="mask" onClick={this.handleToggleMask}></span>);
+          const popup = (<Popup msg={this.state.popupMsg} handlePopupMsg={this.handlePopupMsg}/>);
+
           return (
             <div>
               <h3>{this.state.status}</h3>
@@ -644,7 +693,7 @@
                     handleChangeToken={this.handleChangeToken}
 					handleToggleMask={this.handleToggleMask}
               />
-              <Content 	page={this.state.page} 
+              <Content 	page={this.state.page}
 						user={this.state.user}
 			  />
               <LoginForm  URL={this.props.URL}
@@ -653,9 +702,11 @@
               />
               <RegisterForm URL={this.props.URL}
                           handleChangeToken={this.handleChangeToken}
+                          handlePopupMsg={this.handlePopupMsg}
 						  handleToggleMask={this.handleToggleMask}
               />
-			  {this.state.mask && mask}			  
+			        {this.state.mask && mask}
+              {this.state.popupMsg != '' && popup}
             </div>
           );
         }
