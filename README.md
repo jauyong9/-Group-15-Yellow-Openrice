@@ -3,4 +3,4 @@
 
 
 Preview:
-https://raw.githack.com/jauyong9/-Group-15-Yellow-Openrice/master/source%20code/index.html
+https://raw.githack.com/jauyong9/-Group-15-Yellow-Openrice/master/frontend/index.html
