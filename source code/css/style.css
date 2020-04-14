@@ -17,7 +17,7 @@ body {
 .form {
 	z-index: 2;
     position: absolute;
-    top: 35%;
+    top: 25%;
     left: 50%;
     margin-top: -50px;
     margin-left: -200px;

@@ -88,7 +88,7 @@
                 </div>
               </div>);
           }
-          return <a className="navbar-brand mx-2" onClick={this.ClickLogin}><span className="nav-btn">Login</span></a>;
+          return <a className="btn navbar-brand mx-2" onClick={this.ClickLogin}><span className="nav-btn">Login</span></a>;
         }
 
 		ClickLogin() {
@@ -103,12 +103,13 @@
           if(this.props.username){
             return ;
           }
-          return <a className="navbar-brand mx-2" onClick={this.ClickRegister}><span className="nav-btn">Register</span></a>;
+          return <a className="btn navbar-brand mx-2" onClick={this.ClickRegister}><span className="nav-btn">Register</span></a>;
         }
         render(){
           return(
             <nav className="container navbar navbar-light bg-light justify-content-between nav">
-              <h4><a className="navbar-brand mx-2" onClick={this.ToHome}><span className="nav-btn">Home</span></a></h4>
+              <h4><a className="btn navbar-brand mx-2" onClick={this.ToHome}><span className="nav-btn">Home</span></a></h4>
+
               <h4>{this.ShowRegister()}</h4>
               <h4>{this.LoginUser()}</h4>
               <form className="form-inline">
@@ -462,15 +463,50 @@
 
       }
 
-      function CloesestRestaurant() {
+      class RestShortInfo extends React.Component {
+        constructor(props) {
+          super(props);
+          this.toRestaurant = this.toRestaurant.bind(this);
+        }
+        toRestaurant() {
+          this.props.handleChangePage('Restaurant', this.props.name);
+        }
+        render() {
+          return (
+            <div className="btn" onClick={this.toRestaurant}>
+              {this.props.name} ({this.props.distance}M)
+            </div>
+          );
+        }
+      }
+
+      function CloesestRestaurant(props) {
         return (
           <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
             <h4 className="text-left px-4 ">Closest Restaurant</h4>
             <div className="table-responsive">
               <table id="table-closet-restaurant" className="table table-striped table-bordered table-hover mt-4">
-              <tr><td>Restaurant 001 (200M)</td></tr>
-              <tr><td>Restaurant 002 (1000M)</td></tr>
-              <tr><td>Restaurant 003 (9999M)</td></tr>
+              <tr>
+                <td>
+                  <RestShortInfo  name="Restaurant 001"
+                                  distance={100}
+                                  handleChangePage={props.handleChangePage}/>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <RestShortInfo  name="Restaurant 002"
+                                  distance={200}
+                                  handleChangePage={props.handleChangePage}/>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <RestShortInfo  name="Restaurant 003"
+                                  distance={300}
+                                  handleChangePage={props.handleChangePage}/>
+                </td>
+              </tr>
               </table>
             </div>
           </section>
@@ -488,11 +524,11 @@
         );
       }
 
-      function Home() {
+      function Home(props) {
         return (
             <div className="row">
               <MapItem />
-              <CloesestRestaurant />
+              <CloesestRestaurant handleChangePage={props.handleChangePage}/>
             </div>
           );
       }
@@ -521,6 +557,12 @@
         );
       }
 
+      function Restaurant(props) {
+        return (
+          <div>{props.name}</div>
+        );
+      }
+
       class Content extends React.Component {
         constructor(props) {
           super(props);
@@ -530,10 +572,13 @@
         getPage() {
 
           if (this.props.page == 'Home') {
-            return (<Home />);
+            return (<Home handleChangePage={this.props.handleChangePage}/>);
           }
           else if (this.props.page == 'Profile') {
             return (<Profile user={this.props.user}/>);
+          }
+          else if (this.props.page == 'Restaurant') {
+            return (<Restaurant name={this.props.parameter}/>);
           }
           else {
             return (<div></div>);
@@ -614,7 +659,8 @@
             username: '',
             userType: '',
 			      mask: false,
-            popupMsg: ''
+            popupMsg: '',
+            toParameter: ''
           };
 		  this.handleToggleMask = this.handleToggleMask.bind(this);
           this.handleChangePage = this.handleChangePage.bind(this);
@@ -649,15 +695,16 @@
             .then(response => response.json())
             .then(data => {
               this.setState({
-                page: 'Home',
                 status: data['response']
               });
             });
         }
 
-        handleChangePage(to) {
+        handleChangePage(to, parameter) {
           window.history.pushState({page: this.state.page}, null, "");
           this.setState({page: to});
+          if (parameter)
+            this.setState({toParameter: parameter})
         }
 
         handleChangeToken(token) {
@@ -691,6 +738,8 @@
               />
               <Content 	page={this.state.page}
 						user={this.state.user}
+            handleChangePage={this.handleChangePage}
+            parameter={this.state.toParameter}
 			  />
               <LoginForm  URL={this.props.URL}
                           handleChangeToken={this.handleChangeToken}
