@@ -1,7 +1,10 @@
 const apiUrl = 'http://localhost:3000';
-const express = require('express'); const app = express();
+const express = require('express');
+const app = express();
 const bodyParser = require("body-parser");
+const datasource = 'https://raw.githack.com/LiWaiYip/mynewrepository/master/map.json';
 
+var request = require("request")
 var cors = require('cors');
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
@@ -103,6 +106,9 @@ var RestaurantSchema = mongoose.Schema({
     type: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     required: true,
     default: []
+  },
+  description: {
+    type: String
   }
 });
 var Restaurant = mongoose.model('Restaurant', RestaurantSchema);
@@ -273,18 +279,6 @@ app.get('/profile', (req, res) => {
   })
 });
 
-// Delete all users
-app.delete('/all_users', function(req, res) {
-    User.deleteMany({}, function(err) {
-      if (err) {
-        res.send(err);
-      }
-      else {
-        res.send('Deleted all users');
-      }
-    });
-});
-
 app.get('/activate/:token', function (req, res) {
     var decoded = jwt.verify(req.params['token'], SECRET_KEY)
     User.findOne({
@@ -311,6 +305,89 @@ app.get('/activate/:token', function (req, res) {
     .catch(err => {
       res.send("Error: " + err)
     })
+});
+
+// Get All Restaurant
+app.get('/restaurant', function(req, res) {
+  Restaurant.find({}).exec(function(err, restaurants) {
+    if (err)
+       res.send(err);
+    if (restaurants == null || restaurants.length == 0)
+       res.send('No result is found');
+
+    var result = [];
+    restaurants.forEach(function(restaurant) {
+                  result.push(restaurant);
+                  if (result.length == restaurants.length)
+                    res.send(result.join(''));
+
+    });
+  });
+});
+
+// Add all Restaurants from datasource
+app.post('/load_datasource', function(req, res) {
+  // TODO: verify admin account before adding
+  request({
+    url: datasource,
+    json: true
+  }, function (error, response, body) {
+      if (!error && response.statusCode === 200) {
+          var restaurants = body.features
+
+          var responses = []
+
+          for (var i = 0; i < restaurants.length; i++) {
+                const rest = new Restaurant({
+                  restId: i,
+                  name: restaurants[i].properties.Name,
+                  longitude: restaurants[i].geometry.coordinates[0],
+                  latitude: restaurants[i].geometry.coordinates[1],
+                  description: restaurants[i].properties.description
+                });
+
+                rest.save(function(err) {
+
+                  if (err)
+                    responses.push(`Fail for adding ${rest.name} because ${err} \n`);
+                  else
+                    responses.push(`Successful for adding ${rest.name} \n`);
+
+                  if (responses.length == restaurants.length) {
+                      res.send(responses.join('\n'));
+                  }
+                });
+
+           }
+
+       }
+     });
+});
+
+
+// Delete all restaurants
+app.delete('/all_restaurants', function(req, res) {
+    Restaurant.deleteMany({}, function(err) {
+      if (err) {
+        res.send(err);
+      }
+      else {
+        res.send('Deleted all restaurants');
+      }
+    });
+});
+
+
+// Delete all users
+app.delete('/all_users', function(req, res) {
+    User.deleteMany({}, function(err) {
+      if (err) {
+        res.send(err);
+      }
+      else {
+        res.send('Deleted all users');
+      }
+    });
 });
 
 app.all('/*', function (req, res) {
