@@ -364,7 +364,7 @@ app.post('/load_datasource', function(req, res) {
      });
 });
 
-app.get('restaurant/:id', function(req, res) {
+app.get('/restaurant/:id', function(req, res) {
   Restaurant
   .find({restId: req.params['id']})
   .exec(function(err, rest) {
