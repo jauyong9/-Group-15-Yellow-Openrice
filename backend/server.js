@@ -364,6 +364,38 @@ app.post('/load_datasource', function(req, res) {
      });
 });
 
+app.get('restaurant/:id', function(req, res) {
+  Restaurant
+  .find({restId: req.params['id']})
+  .exec(function(err, rest) {
+    if (err)
+      res.json({'response': 'fail', 'message': err})
+    else if (!rest)
+      res.json({'response': 'fail', 'message': 'no restaurant with this id'})
+    else
+      res.json({'response': 'success', 'restaurant': rest})
+  });
+});
+
+// Get K closest restaurant from (latitude, longitude)
+app.get('/closest_restaurants/:k/:lat/:lon', function(req, res) {
+    const k = Number(req.params['k']);
+    const lat = req.params['lat'];
+    const lon = req.params['lon'];
+    // TODO: sort by lat and lon
+    Restaurant
+    .find({})
+    .limit(k)
+    .exec(function(err, rests) {
+      if (err)
+        res.json({'response': 'fail', 'message': err})
+      else if (!rests)
+        res.json({'response': 'fail', 'message': 'no restaurant found'})
+      else
+        res.json({'response': 'success', 'restaurants': rests});
+    });
+});
+
 
 // Delete all restaurants
 app.delete('/all_restaurants', function(req, res) {
