@@ -382,17 +382,53 @@ app.get('/closest_restaurants/:k/:lat/:lon', function(req, res) {
     const k = Number(req.params['k']);
     const lat = req.params['lat'];
     const lon = req.params['lon'];
-    // TODO: sort by lat and lon
+    const distance = function(lat1, lon1, lat2, lon2, unit) { // source: https://www.geodatasource.com/developers/javascript
+    	if ((lat1 == lat2) && (lon1 == lon2)) {
+    		return 0;
+    	}
+    	else {
+    		var radlat1 = Math.PI * lat1/180;
+    		var radlat2 = Math.PI * lat2/180;
+    		var theta = lon1-lon2;
+    		var radtheta = Math.PI * theta/180;
+    		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    		if (dist > 1) {
+    			dist = 1;
+    		}
+    		dist = Math.acos(dist);
+    		dist = dist * 180/Math.PI;
+    		dist = dist * 60 * 1.1515;
+    		if (unit=="K") { dist = dist * 1.609344 }
+    		if (unit=="N") { dist = dist * 0.8684 }
+    		return dist;
+    	}
+    }
+
+
     Restaurant
     .find({})
-    .limit(k)
     .exec(function(err, rests) {
       if (err)
         res.json({'response': 'fail', 'message': err})
       else if (!rests)
         res.json({'response': 'fail', 'message': 'no restaurant found'})
-      else
-        res.json({'response': 'success', 'restaurants': rests});
+      else {
+        rests = JSON.parse(JSON.stringify(rests)) // clone it so we can add extra distance field
+
+        ret = []
+
+        for ( i = 0; i < rests.length; i++) {
+          rests[i]["distance"] = distance(rests[i].latitude,rests[i].longitude,req.params['lat'],req.params['lon'], 'K');
+          rests[i]["distance"] = Math.floor(rests[i]["distance"] * 1000);
+        }
+
+        rests.sort(function(a, b) {
+          return a.distance - b.distance;
+        });
+
+
+        res.json({'response': 'success', 'restaurants': rests.slice(0, Math.min(k, rests.length))});
+      }
     });
 });
 

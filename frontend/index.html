@@ -480,18 +480,25 @@
         }
       }
 
-      class CloesestRestaurant extends React.Component {
+      class ClosestRestaurant extends React.Component {
         constructor(props) {
           super(props);
           this.getRestaurants = this.getRestaurants.bind(this);
+          this.fetchKClosestRest = this.fetchKClosestRest.bind(this);
           this.state = {isLoading: true};
-          // Simple POST request with a JSON body using fetch
+
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(this.fetchKClosestRest);
+          }
+        }
+
+        fetchKClosestRest(pos) {
           const requestOptions = {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' }
           };
 
-          fetch(`${props.URL}/closest_restaurants/${props.k}/${props.lat}/${props.lon}`, requestOptions)
+          fetch(`${this.props.URL}/closest_restaurants/${this.props.k}/${pos.coords.latitude}/${pos.coords.longitude}`, requestOptions)
               .then(response => response.json())
               .then(data => {
 
@@ -511,7 +518,7 @@
               <tr>
                 <td>
                   <RestShortInfo  name={this.state.restaurants[i].name}
-                                  distance={100}
+                                  distance={this.state.restaurants[i].distance}
                                   handleChangePage={this.props.handleChangePage}/>
                 </td>
               </tr>
@@ -560,10 +567,8 @@
         return (
             <div className="row">
               <MapItem />
-              <CloesestRestaurant URL={props.URL}
+              <ClosestRestaurant URL={props.URL}
                                   k={3}
-                                  lat={10}
-                                  lon={10}
                                   handleChangePage={props.handleChangePage}
               />
             </div>
