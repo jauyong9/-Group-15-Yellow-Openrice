@@ -354,12 +354,12 @@ app.get('/load_datasource', function(req, res) {
                 rest.save(function(err) {
 
                   if (err)
-                    responses.push(`Fail for adding ${rest.name} because ${err} \n`);
+                    responses.push(`Fail for adding ${rest.name} because ${err}`);
                   else
-                    responses.push(`Successful for adding ${rest.name} \n`);
+                    responses.push(`Successful for adding ${rest.name}`);
 
                   if (responses.length == restaurants.length) {
-                      res.send(responses.join('\n'));
+                      res.json({'response':responses});
                   }
                 });
 
@@ -423,14 +423,14 @@ app.get('/closest_restaurants/:k/:lat/:lon', function(req, res) {
         ret = []
 
         for ( i = 0; i < rests.length; i++) {
-          rests[i]["distance"] = distance(rests[i].latitude,rests[i].longitude,req.params['lat'],req.params['lon'], 'K');
+          rests[i]["distance"] = distance(rests[i].latitude,rests[i].longitude,req.params['lat'],req.params['lon'], 'N');
           rests[i]["distance"] = Math.floor(rests[i]["distance"] * 1000);
         }
 
         rests.sort(function(a, b) {
           return a.distance - b.distance;
         });
-
+		
 
         res.json({'response': 'success', 'restaurants': rests.slice(0, Math.min(k, rests.length))});
       }

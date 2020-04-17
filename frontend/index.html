@@ -564,9 +564,9 @@
           }
           else {
             return (
-              <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3" style={{maxHeight: 400, overflow: 'scroll'}} onScroll={this.loadMore}>
+              <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
                 <h4 className="text-left px-4 ">Closest Restaurant</h4>
-                <div className="table-responsive">
+                <div className="table-responsive" style={{maxHeight: 400, overflow: 'scroll'}} onScroll={this.loadMore}>
                   <table id="table-closet-restaurant" className="table table-striped table-bordered table-hover mt-4">
                   {this.getRestaurants()}
                   </table>
