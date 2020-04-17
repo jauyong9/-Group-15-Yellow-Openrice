@@ -469,12 +469,19 @@
           this.toRestaurant = this.toRestaurant.bind(this);
         }
         toRestaurant() {
-          this.props.handleChangePage('Restaurant', this.props.name);
+          this.props.handleChangePage('Restaurant', this.props.rest.name);
         }
         render() {
           return (
-            <div className="btn" onClick={this.toRestaurant}>
-              {this.props.name} ({this.props.distance}M)
+            <div className="btn" onClick={this.toRestaurant} style={{width: '100%'}}>
+              <p>{this.props.rest.name}</p>
+              <p>{this.props.rest.distance}M</p>
+              <p>
+                <img src="../images/like.png" style={{width: 25, height: 25}}/> &nbsp;
+                {this.props.rest.likes} &nbsp;
+                <img src="../images/dislike.png" style={{width: 25, height: 25}}/> &nbsp;
+                {this.props.rest.dislikes}
+              </p>
             </div>
           );
         }
@@ -485,27 +492,35 @@
           super(props);
           this.getRestaurants = this.getRestaurants.bind(this);
           this.fetchKClosestRest = this.fetchKClosestRest.bind(this);
-          this.state = {isLoading: true};
+          this.setPos = this.setPos.bind(this);
+          this.loadMore = this.loadMore.bind(this);
+          this.state = {isLoading: true, k: props.k, isBackgroundLoading: false};
 
           if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.fetchKClosestRest);
+            navigator.geolocation.getCurrentPosition(this.setPos);
           }
         }
 
-        fetchKClosestRest(pos) {
+        setPos(pos) {
+          this.setState({pos: pos})
+          this.fetchKClosestRest();
+        }
+
+        fetchKClosestRest() {
           const requestOptions = {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' }
           };
 
-          fetch(`${this.props.URL}/closest_restaurants/${this.props.k}/${pos.coords.latitude}/${pos.coords.longitude}`, requestOptions)
+          const url = `${this.props.URL}/closest_restaurants/${this.state.k}/${this.state.pos.coords.latitude}/${this.state.pos.coords.longitude}`
+
+          fetch(url, requestOptions)
               .then(response => response.json())
               .then(data => {
 
                 if (data.response == 'success') {
-                    console.log(data);
                     this.setState({restaurants: data.restaurants})
-                    this.setState({isLoading: false})
+                    this.setState({isLoading: false, isBackgroundLoading: false})
                 }
               });
         }
@@ -517,8 +532,7 @@
             restaurants.push((
               <tr>
                 <td>
-                  <RestShortInfo  name={this.state.restaurants[i].name}
-                                  distance={this.state.restaurants[i].distance}
+                  <RestShortInfo  rest={this.state.restaurants[i]}
                                   handleChangePage={this.props.handleChangePage}/>
                 </td>
               </tr>
@@ -528,10 +542,19 @@
           return restaurants
         }
 
+        loadMore(e) {
+          var obj = e.target
+
+          if (obj.scrollTop + obj.clientHeight >= obj.scrollHeight-10 && !this.state.isBackgroundLoading) {
+            this.setState({k: this.state.k+3, isBackgroundLoading: true})
+            this.fetchKClosestRest();
+          }
+        }
+
         render() {
           if (this.state.isLoading) {
             return (
-              <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
+              <section className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
                 <h4 className="text-left px-4 ">Closest Restaurant</h4>
                 <img src="../images/loading.gif" style={{width: 100, height: 100}}/>
               </section>
@@ -539,12 +562,13 @@
           }
           else {
             return (
-              <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
+              <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3" style={{maxHeight: 400, overflow: 'scroll'}} onScroll={this.loadMore}>
                 <h4 className="text-left px-4 ">Closest Restaurant</h4>
                 <div className="table-responsive">
                   <table id="table-closet-restaurant" className="table table-striped table-bordered table-hover mt-4">
                   {this.getRestaurants()}
                   </table>
+                  {this.state.isBackgroundLoading && <img src="../images/loading.gif" style={{width: 50, height: 50}}/>}
                 </div>
               </section>
             );
@@ -568,7 +592,7 @@
             <div className="row">
               <MapItem />
               <ClosestRestaurant URL={props.URL}
-                                  k={3}
+                                  k={10}
                                   handleChangePage={props.handleChangePage}
               />
             </div>

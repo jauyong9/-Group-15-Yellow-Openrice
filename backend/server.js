@@ -326,7 +326,7 @@ app.get('/restaurant', function(req, res) {
 });
 
 // Add all Restaurants from datasource
-app.post('/load_datasource', function(req, res) {
+app.get('/load_datasource', function(req, res) {
   // TODO: verify admin account before adding
   request({
     url: datasource,
