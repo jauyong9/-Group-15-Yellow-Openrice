@@ -469,7 +469,7 @@
           this.toRestaurant = this.toRestaurant.bind(this);
         }
         toRestaurant() {
-          this.props.handleChangePage('Restaurant', this.props.rest.name);
+          this.props.handleChangePage('Restaurant', this.props.rest);
         }
         render() {
           return (
@@ -477,10 +477,12 @@
               <p>{this.props.rest.name}</p>
               <p>{this.props.rest.distance}M</p>
               <p>
+                <img src="../images/view.png" style={{width: 25, height: 25}}/> &nbsp;
+                {this.props.rest.views} &nbsp;
                 <img src="../images/like.png" style={{width: 25, height: 25}}/> &nbsp;
-                {this.props.rest.likes} &nbsp;
+                {this.props.rest.likes.length} &nbsp;
                 <img src="../images/dislike.png" style={{width: 25, height: 25}}/> &nbsp;
-                {this.props.rest.dislikes}
+                {this.props.rest.dislikes.length} &nbsp;
               </p>
             </div>
           );
@@ -623,10 +625,28 @@
         );
       }
 
-      function Restaurant(props) {
-        return (
-          <div>{props.name}</div>
-        );
+      class Restaurant extends React.Component {
+        constructor(props) {
+          super(props);
+
+          const requestOptions = {
+              method: 'GET'
+          };
+
+          fetch(props.URL + '/view/restaurant/' + props.rest.restId, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+              console.log(data)
+            });
+        }
+
+        render() {
+          return (
+            <div>{this.props.rest.name}</div>
+          );
+        }
+
+
       }
 
       class Content extends React.Component {
@@ -644,7 +664,7 @@
             return (<Profile user={this.props.user}/>);
           }
           else if (this.props.page == 'Restaurant') {
-            return (<Restaurant name={this.props.parameter}/>);
+            return (<Restaurant rest={this.props.parameter} token={this.props.token} URL={this.props.URL}/>);
           }
           else {
             return (<div></div>);
@@ -807,6 +827,7 @@
             handleChangePage={this.handleChangePage}
             parameter={this.state.toParameter}
             URL={this.props.URL}
+            token={this.state.token}
 			  />
               <LoginForm  URL={this.props.URL}
                           handleChangeToken={this.handleChangeToken}

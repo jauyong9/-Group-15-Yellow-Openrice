@@ -93,11 +93,16 @@ var RestaurantSchema = mongoose.Schema({
     type: [String]
   },
   likes: {
-    type: Number,
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     required: true,
-    default: 0
+    default: []
   },
   dislikes: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    required: true,
+    default: []
+  },
+  views: {
     type: Number,
     required: true,
     default: 0
@@ -303,7 +308,7 @@ app.get('/activate/:token', function (req, res) {
      }
     })
     .catch(err => {
-      res.send("Error: " + err)
+      res.json({response: 'fail', err: err})
     })
 });
 
@@ -432,6 +437,32 @@ app.get('/closest_restaurants/:k/:lat/:lon', function(req, res) {
     });
 });
 
+
+// Add View
+app.get('/view/restaurant/:restId', function(req, res) {
+  Restaurant.findOne({
+    restId: req.params['restId']
+  })
+  .then(rest => {
+    if (rest) {
+      const filter = {restId: req.params['restId']}
+      const update = {views: rest.views+1}
+
+      Restaurant.findOneAndUpdate(filter, update, function(err, doc) {
+       if (err)
+          res.send(err);
+       else if (doc == null)
+          res.json({response: 'fail', message:'the link is not valid'});
+       else
+          res.json({response: 'OK'});
+     })
+   }
+  })
+  .catch(err => {
+    res.json({response: 'fail', err: err})
+  })
+
+});
 
 // Delete all restaurants
 app.delete('/all_restaurants', function(req, res) {
