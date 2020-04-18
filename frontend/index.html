@@ -470,7 +470,7 @@
           this.select = this.select.bind(this);
         }
         toRestaurant() {
-          this.props.handleChangePage('Restaurant', this.props.rest);
+          this.props.handleChangePage('Restaurant', this.props.rest.restId);
         }
         select() {
           if (this.props.selected) { // deselect
@@ -626,6 +626,7 @@
           super(props)
           this.state = {lon: 0, lat: 0, zoom: 0}
           this.handleChangeMapPos = this.handleChangeMapPos.bind(this);
+          window.history.replaceState({page: 'Home'}, null, `?page=home`);
         }
 
         handleChangeMapPos(longitude, latitude, zoom) {
@@ -657,20 +658,34 @@
         );
       }
 
-      function Profile(props) {
-        return (
-          <div>
-            <div className="card">
-              <img src="https://image.flaticon.com/icons/svg/21/21104.svg" style={{width: '100%', height: '150'}} />
-              <h1>{props.user.name}</h1>
-              <p className="title">({props.user.type})</p>
-              <p>{props.user.email}</p>
-              <p>Join Date: {props.user.joinDate}</p>
-              <p><button type="submit" className="btn btn-warning btn-block">Change Password</button></p>
-              <p><button type="submit" className="btn btn-warning btn-block">Change Icon</button></p>
-            </div>
-          </div>
-        );
+      class Profile extends React.Component {
+        constructor(props) {
+          super(props);
+          window.history.pushState({page: 'Profile'}, null, `?page=profile`);
+        }
+
+        render() {
+          if (this.props.user != null) {
+            return (
+              <div>
+                <div className="card">
+                  <img src="https://image.flaticon.com/icons/svg/21/21104.svg" style={{width: '100%', height: '150'}} />
+                  <h1>{this.props.user.name}</h1>
+                  <p className="title">({this.props.user.type})</p>
+                  <p>{this.props.user.email}</p>
+                  <p>Join Date: {this.props.user.joinDate}</p>
+                  <p><button type="submit" className="btn btn-warning btn-block">Change Password</button></p>
+                  <p><button type="submit" className="btn btn-warning btn-block">Change Icon</button></p>
+                </div>
+              </div>
+            );
+          }
+          else {
+            return (
+              <img src="../images/loading.gif" style={{width: 100, height: 100}}/>
+            );
+          }
+        }
       }
 
       class Restaurant extends React.Component {
@@ -681,17 +696,35 @@
               method: 'GET'
           };
 
-          fetch(props.URL + '/view/restaurant/' + props.rest.restId, requestOptions)
+          this.state = {rest: null}
+
+          // Add 1 More View
+          fetch(props.URL + '/view/restaurant/' + props.restId, requestOptions)
             .then(response => response.json())
             .then(data => {
-              console.log(data)
+              //do nothing
             });
+          // Get Restaurant Object
+          fetch(props.URL + '/restaurant/' + props.restId, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+              this.setState({rest: data.restaurant})
+            });
+
+          window.history.pushState({page: 'Restaurant'}, null, `?page=restaurant&restId=${props.restId}`);
         }
 
         render() {
-          return (
-            <div>{JSON.stringify(this.props.rest)}</div>
-          );
+          if (this.state.rest == null) {
+            return (
+              <img src="../images/loading.gif" style={{width: 100, height: 100}}/>
+            );
+          }
+          else {
+            return (
+              <div>{JSON.stringify(this.state.rest)}</div>
+            );
+          }
         }
 
 
@@ -705,14 +738,14 @@
 
         getPage() {
 
-          if (this.props.page == 'Home') {
+          if (this.props.page.toLowerCase() == 'home') {
             return (<Home URL={this.props.URL} handleChangePage={this.props.handleChangePage}/>);
           }
-          else if (this.props.page == 'Profile') {
+          else if (this.props.page.toLowerCase() == 'profile') {
             return (<Profile user={this.props.user}/>);
           }
-          else if (this.props.page == 'Restaurant') {
-            return (<Restaurant rest={this.props.parameter} token={this.props.token} URL={this.props.URL}/>);
+          else if (this.props.page.toLowerCase() == 'restaurant') {
+            return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL}/>);
           }
           else {
             return (<div></div>);
@@ -784,25 +817,43 @@
             });
         };
 
+        getPageFromUrl() {
+          var url_string = window.location.href;
+          var url = new URL(url_string);
+          if (url.searchParams.get("page") != null)
+            return url.searchParams.get("page");
+          else
+            return "home";
+        }
+
+        getParameterFromUrl() {
+          var url_string = window.location.href;
+          var url = new URL(url_string);
+          if (url.searchParams.get("restId") != null)
+            return url.searchParams.get("restId");
+          else
+            return "";
+        }
+
         constructor(props) {
           super(props);
           this.state = {
-            page: 'Home',
+            page: this.getPageFromUrl(),
             status: 'Not connected to the backend server',
             token: '',
             username: '',
             userType: '',
 			      mask: false,
             popupMsg: '',
-            toParameter: ''
+            toParameter: this.getParameterFromUrl(),
+            user: null
           };
-		  this.handleToggleMask = this.handleToggleMask.bind(this);
+		      this.handleToggleMask = this.handleToggleMask.bind(this);
           this.handleChangePage = this.handleChangePage.bind(this);
           this.handleChangeToken = this.handleChangeToken.bind(this);
           this.handlePopupMsg = this.handlePopupMsg.bind(this);
           this.loadProfile = this.loadProfile.bind(this);
           this.callAPI();
-          window.history.replaceState({page: this.state.page}, null, "");
         }
 
         loadProfile(token) {
