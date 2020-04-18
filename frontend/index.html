@@ -467,13 +467,27 @@
         constructor(props) {
           super(props);
           this.toRestaurant = this.toRestaurant.bind(this);
+          this.select = this.select.bind(this);
         }
         toRestaurant() {
           this.props.handleChangePage('Restaurant', this.props.rest);
         }
+        select() {
+          if (this.props.selected) { // deselect
+            this.props.handleChangeMapPos(0, 0, 0)
+            this.props.handleChangeSelectedRest(undefined);
+          }
+          else {
+            this.props.handleChangeMapPos(this.props.rest.longitude, this.props.rest.latitude, 20)
+            this.props.handleChangeSelectedRest(this.props.rest);
+          }
+
+        }
         render() {
+          const style = this.props.selected ? {width: '100%', backgroundColor: 'yellow'} : {width: '100%'}
+          const moreInfo = <button className="btn btn-secondary" onClick={this.toRestaurant}>View More</button>
           return (
-            <div className="btn" onClick={this.toRestaurant} style={{width: '100%'}}>
+            <div className="btn" onClick={this.select} style={style}>
               <p>{this.props.rest.name}</p>
               <p>{this.props.rest.distance}M</p>
               <p>
@@ -484,6 +498,9 @@
                 <img src="../images/dislike.png" style={{width: 25, height: 25}}/> &nbsp;
                 {this.props.rest.dislikes.length} &nbsp;
               </p>
+              <p>
+                {this.props.selected && moreInfo}
+              </p>
             </div>
           );
         }
@@ -492,11 +509,12 @@
       class ClosestRestaurant extends React.Component {
         constructor(props) {
           super(props);
+          this.handleChangeSelectedRest = this.handleChangeSelectedRest.bind(this);
           this.getRestaurants = this.getRestaurants.bind(this);
           this.fetchKClosestRest = this.fetchKClosestRest.bind(this);
           this.setPos = this.setPos.bind(this);
           this.loadMore = this.loadMore.bind(this);
-          this.state = {isLoading: true, k: props.k, isBackgroundLoading: false};
+          this.state = {isLoading: true, k: props.k, isBackgroundLoading: false, selectedRest: undefined};
 
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(this.setPos);
@@ -527,6 +545,10 @@
               });
         }
 
+        handleChangeSelectedRest(rest) {
+          this.setState({selectedRest: rest})
+        }
+
         getRestaurants() {
           var restaurants = []
 
@@ -535,7 +557,11 @@
               <tr>
                 <td>
                   <RestShortInfo  rest={this.state.restaurants[i]}
-                                  handleChangePage={this.props.handleChangePage}/>
+                                  handleChangePage={this.props.handleChangePage}
+                                  handleChangeMapPos={this.props.handleChangeMapPos}
+                                  handleChangeSelectedRest={this.handleChangeSelectedRest}
+                                  selected={this.state.selectedRest && this.state.selectedRest.restId == this.state.restaurants[i].restId}
+                  />
                 </td>
               </tr>
             ));
@@ -578,27 +604,49 @@
         }
       }
 
-      function MapItem() {
-        return (
-          <section id="map" className="col-sm col-md-7 col-lg-8 card p-3 mt-3">
-            <iframe src="map.html" height={350}>
+      class MapItem extends React.Component {
+        constructor(props) {
+          super(props);
+        }
 
-            </iframe>
-            <a href="map.html"> Detailed Map (beta version)</a>
-          </section>
-        );
+        render() {
+          return (
+            <section id="map" className="col-sm col-md-7 col-lg-8 card p-3 mt-3">
+              <iframe src={`map.html?lat=${this.props.lat}&lon=${this.props.lon}&zoom=${this.props.zoom}`} height={350}>
+
+              </iframe>
+              <a href="map.html"> Detailed Map (beta version)</a>
+            </section>
+          );
+        }
       }
 
-      function Home(props) {
-        return (
-            <div className="row">
-              <MapItem />
-              <ClosestRestaurant URL={props.URL}
-                                  k={10}
-                                  handleChangePage={props.handleChangePage}
-              />
-            </div>
-          );
+      class Home extends React.Component {
+        constructor(props) {
+          super(props)
+          this.state = {lon: 0, lat: 0, zoom: 0}
+          this.handleChangeMapPos = this.handleChangeMapPos.bind(this);
+        }
+
+        handleChangeMapPos(longitude, latitude, zoom) {
+          this.setState({lon: longitude, lat: latitude, zoom: zoom})
+        }
+
+        render() {
+          return (
+              <div className="row">
+                <MapItem  lat={this.state.lat}
+                          lon={this.state.lon}
+                          zoom={this.state.zoom}
+                />
+                <ClosestRestaurant URL={this.props.URL}
+                                    k={10}
+                                    handleChangePage={this.props.handleChangePage}
+                                    handleChangeMapPos={this.handleChangeMapPos}
+                />
+              </div>
+            );
+        }
       }
 
       function Footer() {
@@ -642,7 +690,7 @@
 
         render() {
           return (
-            <div>{this.props.rest.name}</div>
+            <div>{JSON.stringify(this.props.rest)}</div>
           );
         }
 
