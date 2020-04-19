@@ -235,6 +235,7 @@
 
         render() {
           let inputError = {
+            fontSize: 'small',
             color: 'red',
             paddingLeft: '20px'
           };
@@ -302,7 +303,6 @@
                           value={this.state.againPassword}
                         />
                       </div>
-                      <p style={inputError}>{this.state.againPasswordError}</p>
                     </div>
                   </form>
                   <button className="btn btn-warning btn-block" onClick={this.handleRegister}>Register</button>
@@ -409,6 +409,7 @@
 
         render() {
           let inputError = {
+            fontSize: 'small',
             color: 'red',
             paddingLeft: '20px'
           };
