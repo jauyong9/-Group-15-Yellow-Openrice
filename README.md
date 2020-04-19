@@ -11,8 +11,6 @@ How to Test the Project:
 
 4. Visit http://localhost:3000/ to the main page of the web app
 
-p.s. To keep logged in after refresh, you need to open index.html via Chrome Web Sever
-
 
 How to Update the Project:
 1. Execute `git clone https://github.com/jauyong9/-Group-15-Yellow-Openrice` in terminal
