@@ -9,7 +9,7 @@ How to Test the Project:
 
 3. Visit http://localhost:3000/load_datasource to load the restaurant data(for the first time you clone the project)
 
-4. Open /frontend/index.html (Hello World from backend server should be shown in the top left or console)
+4. Visit http://localhost:3000/ to the main page of the web app
 
 p.s. To keep logged in after refresh, you need to open index.html via Chrome Web Sever
 

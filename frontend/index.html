@@ -27,14 +27,6 @@
   </head>
 
   <body style="font-family: 'Acme', 'ABeeZee';" onload="init();">
-    <button type="button" onclick="testLogin('testName')" name="button">testLogin</button>
-
-    <script>
-      function testLogin(username){
-        window.helloComponent.SetUserName(username);
-      }
-    </script>
-
     <script type="text/babel">
       function Header() {
         const headerStyle = {
@@ -912,7 +904,6 @@
 
           return (
             <div>
-              <h3>{this.state.status}</h3>
               <Header />
               <Nav  username={this.state.username}
                     userType={this.state.userType}

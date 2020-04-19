@@ -496,12 +496,11 @@ app.delete('/all_users', function(req, res) {
 });
 
 app.all('/map.html', function (req, res) {
-    //res.json({response: "Hello World from HK Restaurant Guide Backend Server!"});
+
     res.sendFile(path.resolve(__dirname + '/../frontend/map.html'));
 });
 
 app.all('/*', function (req, res) {
-    //res.json({response: "Hello World from HK Restaurant Guide Backend Server!"});
     res.sendFile(path.resolve(__dirname + '/../frontend/index.html'));
 });
 
