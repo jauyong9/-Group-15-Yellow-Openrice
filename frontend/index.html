@@ -48,8 +48,8 @@
           this.LogoutUser = this.LogoutUser.bind(this);
           this.ToProfile = this.ToProfile.bind(this);
           this.ToHome = this.ToHome.bind(this);
-		  this.ClickLogin = this.ClickLogin.bind(this);
-		  this.ClickRegister = this.ClickRegister.bind(this);
+          this.ClickLogin = this.ClickLogin.bind(this);
+          this.ClickRegister = this.ClickRegister.bind(this);
         }
         LogoutUser(){
           this.props.handleChangeToken('');
@@ -105,10 +105,6 @@
 
               <h4>{this.ShowRegister()}</h4>
               <h4>{this.LoginUser()}</h4>
-              <form className="form-inline">
-                <input className="form-control" type="search" placeholder="Search" aria-label="Search"/>
-                <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><i className="fa fa-search"></i></button>
-              </form>
 
             </nav>
           )
@@ -508,7 +504,17 @@
           this.fetchKClosestRest = this.fetchKClosestRest.bind(this);
           this.setPos = this.setPos.bind(this);
           this.loadMore = this.loadMore.bind(this);
-          this.state = {isLoading: true, k: props.k, isBackgroundLoading: false, selectedRest: undefined};
+          this.handleSearchChange = this.handleSearchChange.bind(this);
+          this.filterRestaurant = this.filterRestaurant.bind(this);
+          this.state = {
+            isLoading: true,
+            k: props.k,
+            isBackgroundLoading: false,
+            selectedRest: undefined,
+            restaurants: '',
+            filteredRestaurant: '',
+            searchBarValue: ''
+          };
 
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(this.setPos);
@@ -533,12 +539,44 @@
               .then(data => {
 
                 if (data.response == 'success') {
-                    this.setState({restaurants: data.restaurants})
-                    this.setState({isLoading: false, isBackgroundLoading: false})
+                    this.setState({restaurants: data.restaurants}, () => {
+                      this.setState({
+                        filteredRestaurants: this.filterRestaurant(this.state.searchBarValue),
+                        isLoading: false,
+                        isBackgroundLoading: false
+                      })
+                    });
                 }
               });
         }
-
+        filterRestaurant(searchText){
+          return this.state.restaurants
+            .filter(restaurants => {
+              if(restaurants.name.toLowerCase().includes(
+                searchText.toLowerCase())
+              ){
+                return true;
+              }
+              return false;
+            });
+        }
+        handleSearchChange = event => {
+          this.setState({
+            searchBarValue: event.target.value
+          });
+          if(event.target.value != ''){
+            this.setState({k: Number.MAX_VALUE, isBackgroundLoading: true}, () => {
+              this.fetchKClosestRest();
+              this.setState({filteredRestaurants: this.filterRestaurant(event.target.value)});
+            });
+          }else{
+            this.setState({k: this.props.k, isBackgroundLoading: true}, () => {
+              this.fetchKClosestRest();
+              this.setState({filteredRestaurants: this.filterRestaurant(event.target.value)});
+            });
+          }
+          document.getElementsByClassName("table-responsive")[0].scrollTo(0, 0);
+        }
         handleChangeSelectedRest(rest) {
           this.setState({selectedRest: rest})
         }
@@ -546,15 +584,15 @@
         getRestaurants() {
           var restaurants = []
 
-          for (let i = 0; i < this.state.restaurants.length; i++) {
+          for (let i = 0; i < this.state.filteredRestaurants.length; i++) {
             restaurants.push((
               <tr>
                 <td>
-                  <RestShortInfo  rest={this.state.restaurants[i]}
+                  <RestShortInfo  rest={this.state.filteredRestaurants[i]}
                                   handleChangePage={this.props.handleChangePage}
                                   handleChangeMapPos={this.props.handleChangeMapPos}
                                   handleChangeSelectedRest={this.handleChangeSelectedRest}
-                                  selected={this.state.selectedRest && this.state.selectedRest.restId == this.state.restaurants[i].restId}
+                                  selected={this.state.selectedRest && this.state.selectedRest.restId == this.state.filteredRestaurants[i].restId}
                   />
                 </td>
               </tr>
@@ -568,8 +606,9 @@
           var obj = e.target
 
           if (obj.scrollTop + obj.clientHeight >= obj.scrollHeight-10 && !this.state.isBackgroundLoading) {
-            this.setState({k: this.state.k+3, isBackgroundLoading: true})
-            this.fetchKClosestRest();
+            this.setState({k: this.state.k+3, isBackgroundLoading: true}, () => {
+              this.fetchKClosestRest();
+            });
           }
         }
 
@@ -578,6 +617,7 @@
             return (
               <section className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
                 <h4 className="text-left px-4 ">Closest Restaurant</h4>
+                <input className="form-control" value={this.state.searchBarValue} onChange={this.handleSearchChange} type="search" placeholder="Search" aria-label="Search"/>
                 <img src="../images/loading.gif" style={{width: 300, height: 300}}/>
               </section>
             );
@@ -586,8 +626,9 @@
             return (
               <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
                 <h4 className="text-left px-4 ">Closest Restaurant</h4>
+                <input className="form-control" value={this.state.searchBarValue} onChange={this.handleSearchChange} type="search" placeholder="Search" aria-label="Search"/>
                 <div className="table-responsive" style={{maxHeight: 400, overflow: 'scroll'}} onScroll={this.loadMore}>
-                  <table id="table-closet-restaurant" className="table table-striped table-bordered table-hover mt-4">
+                  <table id="table-closest-restaurant" className="table table-striped table-bordered table-hover mt-4">
                   {this.getRestaurants()}
                   </table>
                   {this.state.isBackgroundLoading && <img src="../images/loading2.gif" style={{width: 50, height: 50}}/>}
