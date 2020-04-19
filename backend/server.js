@@ -11,6 +11,7 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt-nodejs');
 var nodemailer = require('nodemailer');
 var config = require('./config.json');
+var path = require('path');
 
 const SECRET_KEY = config.SECRET_KEY;
 
@@ -161,6 +162,11 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.use(cors()); // allow index.html to connect
+
+// app.use(express.static(__dirname + '/public'));
+app.use('/images', express.static(path.resolve(__dirname + '/../images/')));
+app.use('/css', express.static(path.resolve(__dirname + '/../frontend/css/')));
+app.use('/js', express.static(path.resolve(__dirname + '/../frontend/js/')));
 
 // Login
 app.post('/login', (req, res) => {
@@ -430,7 +436,7 @@ app.get('/closest_restaurants/:k/:lat/:lon', function(req, res) {
         rests.sort(function(a, b) {
           return a.distance - b.distance;
         });
-		
+
 
         res.json({'response': 'success', 'restaurants': rests.slice(0, Math.min(k, rests.length))});
       }
@@ -489,8 +495,14 @@ app.delete('/all_users', function(req, res) {
     });
 });
 
+app.all('/map.html', function (req, res) {
+    //res.json({response: "Hello World from HK Restaurant Guide Backend Server!"});
+    res.sendFile(path.resolve(__dirname + '/../frontend/map.html'));
+});
+
 app.all('/*', function (req, res) {
-    res.json({response: "Hello World from HK Restaurant Guide Backend Server!"});
+    //res.json({response: "Hello World from HK Restaurant Guide Backend Server!"});
+    res.sendFile(path.resolve(__dirname + '/../frontend/index.html'));
 });
 
 
