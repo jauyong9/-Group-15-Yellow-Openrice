@@ -622,6 +622,15 @@
               </section>
             );
           }
+          else if (this.state.searchBarValue != '' && this.state.filteredRestaurants.length == 0) {
+            return (
+              <section className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
+                <h4 className="text-left px-4 ">Closest Restaurant</h4>
+                <input className="form-control" value={this.state.searchBarValue} onChange={this.handleSearchChange} type="search" placeholder="Search" aria-label="Search"/>
+                <p >No Result Found</p>
+              </section>
+            );
+          }
           else {
             return (
               <section id="closet-restaurant" className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
@@ -631,7 +640,7 @@
                   <table id="table-closest-restaurant" className="table table-striped table-bordered table-hover mt-4">
                   {this.getRestaurants()}
                   </table>
-                  {this.state.isBackgroundLoading && <img src="../images/loading2.gif" style={{width: 50, height: 50}}/>}
+                  {this.state.searchBarValue == '' && this.state.isBackgroundLoading && <img src="../images/loading2.gif" style={{width: 50, height: 50}}/>}
                 </div>
               </section>
             );
