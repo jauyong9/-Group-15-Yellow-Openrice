@@ -14,6 +14,7 @@
     <link href='https://fonts.googleapis.com/css?family=Acme' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/toast.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
@@ -22,8 +23,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
     <script src="js/jquery-ui.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
     <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+
     <link rel="shortcut icon" href="../images/icon.ico">
   </head>
 
@@ -627,7 +630,7 @@
               <section className="col-sm col-md-5 col-lg-4 card p-3 mt-3">
                 <h4 className="text-left px-4 ">Closest Restaurant</h4>
                 <input className="form-control" value={this.state.searchBarValue} onChange={this.handleSearchChange} type="search" placeholder="Search" aria-label="Search"/>
-                <p >No Result Found</p>
+                <p>No Result Found</p>
               </section>
             );
           }
@@ -746,16 +749,77 @@
           fetch(props.URL + '/view/restaurant/' + props.restId, requestOptions)
             .then(response => response.json())
             .then(data => {
-              //do nothing
-            });
-          // Get Restaurant Object
-          fetch(props.URL + '/restaurant/' + props.restId, requestOptions)
-            .then(response => response.json())
-            .then(data => {
-              this.setState({rest: data.restaurant})
+              // Get Restaurant Object
+              fetch(props.URL + '/restaurant/' + props.restId, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                  this.setState({rest: data.restaurant[0]})
+                });
             });
 
+
           window.history.pushState({page: 'Restaurant'}, null, `?page=restaurant&restId=${props.restId}`);
+
+          this.handleLike = this.handleLike.bind(this)
+
+          this.handleDislike = this.handleDislike.bind(this)
+
+          this.reloadRest = this.reloadRest.bind(this)
+        }
+
+        reloadRest() {
+          // Reload Restaurant Object
+          const requestOptions = {
+              method: 'GET'
+          };
+          fetch(this.props.URL + '/restaurant/' + this.state.rest.restId, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+              this.setState({rest: data.restaurant[0]})
+            });
+        }
+
+        handleDislike() {
+          // Dislike the restaurant
+          const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'authorization': this.props.token }
+          };
+
+          fetch(this.props.URL + '/dislike/' + this.state.rest.restId, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+              if (data.message == 'you have already rated this restaurant'){
+                  toastada.warning(data.message);
+              }
+              else if (data.response == 'fail') {
+                  toastada.error('Failed. Make sure you have logged in and connected to the server.');
+              }
+              else {
+                  this.reloadRest();
+              }
+            });
+        }
+
+        handleLike() {
+          // Like the restaurant
+          const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'authorization': this.props.token }
+          };
+          fetch(this.props.URL + '/like/' + this.state.rest.restId, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+              if (data.message == 'you have already rated this restaurant'){
+                  toastada.warning(data.message);
+              }
+              else if (data.response == 'fail') {
+                  toastada.error('Failed. Make sure you have logged in and connected to the server.');
+              }
+              else {
+                  this.reloadRest();
+              }
+            });
         }
 
         render() {
@@ -765,8 +829,28 @@
             );
           }
           else {
+            const liked = this.props.user && this.state.rest.likes.indexOf(this.props.user._id) != -1;
+            const disliked = this.props.user && this.state.rest.dislikes.indexOf(this.props.user._id) != -1;
+            const likeImg = liked ? "../images/liked.png" : "../images/like.png"
+            const dislikeImg = disliked ? "../images/disliked.png" : "../images/dislike.png"
+            const mapUrl = `https://maps.google.com/maps?q=${this.state.rest.latitude},${this.state.rest.longitude}&z=14&output=embed`;
             return (
-              <div>{JSON.stringify(this.state.rest)}</div>
+              <div>
+              <h2>{this.state.rest.name}</h2>
+              <p style={{float: 'right'}}>
+                <img src="../images/view.png" style={{width: 30, height: 40, paddingBottom: 10}}/> &nbsp;
+                {this.state.rest.views} &nbsp;
+                <input type="image" src={likeImg} style={{width: 20, height: 20}} onClick={this.handleLike}/> &nbsp;
+                {this.state.rest.likes.length} &nbsp;
+                <input type="image" src={dislikeImg} style={{width: 20, height: 20}} onClick={this.handleDislike}/> &nbsp;
+                {this.state.rest.dislikes.length} &nbsp;
+              </p>
+              <iframe scrolling="no" marginHeight={0} marginWidth={0} src={mapUrl} width={'100%'} height={300} frameBorder={0}>
+              </iframe>
+                <hr />
+                <div className="text-secondary" dangerouslySetInnerHTML={{ __html: this.state.rest.description }} />
+                <hr />
+              </div>
             );
           }
         }
@@ -789,7 +873,7 @@
             return (<Profile user={this.props.user}/>);
           }
           else if (this.props.page.toLowerCase() == 'restaurant') {
-            return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL}/>);
+            return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL} user={this.props.user}/>);
           }
           else {
             return (<div></div>);
@@ -992,7 +1076,7 @@
     </script>
 
     <div id="root"></div>
-
+    <script src="js/toast.js"></script>
   </body>
 
 </html>

@@ -183,7 +183,7 @@ app.post('/login', (req, res) => {
             name: user.name
         }
         let token = jwt.sign(payload, SECRET_KEY, {
-          expiresIn: 1440
+          expiresIn: 2880
         })
         res.json({response: 'success', message: 'login successful', token: token})
       } else {
@@ -270,6 +270,107 @@ app.post('/register', function(req, res) {
       }
     });
   });
+});
+// Dislike a restaurant
+app.get('/dislike/:restId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', err: err})
+    else {
+      User.findOne({
+        _id: decoded._id
+      })
+      .then(user => {
+        if (user) {
+          Restaurant.findOne({
+            restId: req.params['restId']
+          })
+          .then(rest => {
+            if (rest) {
+              if (rest.likes.indexOf(user._id) != -1 || rest.dislikes.indexOf(user._id) != -1) {
+                res.json({response: 'fail', message: 'you have already rated this restaurant'})
+              }
+              else {
+                const filter = {restId: req.params['restId']}
+
+                rest.dislikes.push(user._id);
+
+                const update = {dislikes: rest.dislikes}
+
+                Restaurant.findOneAndUpdate(filter, update, function(err, doc) {
+                 if (err) {
+                    res.json({response: 'fail', err: err});
+                  }
+                 else if (doc == null)
+                    res.json({response: 'fail', message:'the link is not valid'});
+                 else
+                    res.json({response: 'OK'});
+                })
+              }
+           }
+          })
+          .catch(err => {
+            res.json({response: 'fail', err: err})
+          })
+        } else {
+          res.json({response: 'fail', message: "User does not exist"})
+        }
+      })
+      .catch(err => {
+        res.json({response: 'fail', err: err})
+      })
+    }
+  })
+});
+
+
+// Like a restaurant
+app.get('/like/:restId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', err: err})
+    User.findOne({
+      _id: decoded._id
+    })
+    .then(user => {
+      if (user) {
+        Restaurant.findOne({
+          restId: req.params['restId']
+        })
+        .then(rest => {
+          if (rest) {
+            const filter = {restId: req.params['restId']}
+
+            if (rest.likes.indexOf(user._id) != -1 || rest.dislikes.indexOf(user._id) != -1) {
+              res.json({response: 'fail', message: 'you have already rated this restaurant'})
+            }
+            else {
+              rest.likes.push(user._id);
+              const update = {likes: rest.likes}
+
+              Restaurant.findOneAndUpdate(filter, update, function(err, doc) {
+               if (err) {
+                  res.json({response: 'fail', err: err});
+                }
+               else if (doc == null)
+                  res.json({response: 'fail', message:'the link is not valid'});
+               else
+                  res.json({response: 'OK'});
+              })
+            }
+         }
+        })
+        .catch(err => {
+          res.json({response: 'fail', err: err})
+        })
+      } else {
+        res.json({response: 'fail', message: "User does not exist"})
+      }
+    })
+    .catch(err => {
+      res.json({response: 'fail', err: err})
+    })
+  })
 });
 
 // Profile
