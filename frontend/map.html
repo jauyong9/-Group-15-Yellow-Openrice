@@ -14,10 +14,22 @@
         margin: 0;
         padding: 0;
       }
+      #slidebar {
+	    position: fixed;
+        height: 100%;
+        width: 360px;
+	    left: -360px;
+        background-color: #FFF;
+        z-index: 1;
+      }
+	  #slidebar.active {
+	    left: 0;
+	  }
     </style>
 
   </head>
   <body>
+    <div id="slidebar"></div>
     <div id="map"></div>
     <script>
       var url_string = window.location.href;
@@ -96,6 +108,14 @@
           suppressInfoWindows: true,
           preserveViewport: true,
           map: map
+        });
+      }
+	  
+        kmlLayer.addListener('click', function(event) {
+          var content = event.featureData.infoWindowHtml;
+          var slidebar = document.getElementById('slidebar');
+          slidebar.innerHTML = content;
+		  slidebar.classList.toggle('active');
         });
       }
     </script>
