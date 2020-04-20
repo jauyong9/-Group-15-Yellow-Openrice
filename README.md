@@ -15,7 +15,7 @@ How to Test the Project:
 How to Update the Project:
 1. Execute `git clone https://github.com/jauyong9/-Group-15-Yellow-Openrice` in terminal
 
-2. Update the files in the project locally using your editors such as Atom
+2. Update the files in the project locally using your editors such as Atom (all frontend codes are in frontend/index.html and all backend codes are in backend/server.js)
 
 3. To upload, go to the root directory of the project in terminal
 
