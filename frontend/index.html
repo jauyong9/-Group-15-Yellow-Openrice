@@ -793,7 +793,7 @@
                   toastada.warning(data.message);
               }
               else if (data.response == 'fail') {
-                  toastada.error('Failed. Make sure you have logged in and connected to the server.');
+                  toastada.error('Failed. You must login before rating');
               }
               else {
                   this.reloadRest();
@@ -814,7 +814,7 @@
                   toastada.warning(data.message);
               }
               else if (data.response == 'fail') {
-                  toastada.error('Failed. Make sure you have logged in and connected to the server.');
+                  toastada.error('Failed. You must login before rating');
               }
               else {
                   this.reloadRest();
@@ -1000,6 +1000,9 @@
                 this.setState({username: user.name, userType: user.type});
 				        this.setState({user: user});
               });
+          }
+          else {
+            this.setState({user: null});
           }
         }
 
