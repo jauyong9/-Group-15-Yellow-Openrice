@@ -69,8 +69,6 @@
           this.setState({username: null });
           this.ToHome();
         }
-          this.props.handleChangePage('uploadCSV');
-        }
       
         SetUserName(name){
           this.setState({username: name});
@@ -96,8 +94,6 @@
               
                   <div>
                   <h4 className="d-inline navbar-brand"><span style={typeStyle}>({this.props.userType})</span></h4>
-                  <a className="btn navbar-brand mx-2" href="javascript:;"
-                  onClick={this.uploadCSV}>Manage User</a>
                   <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToManageRest}>Manage Restaurant</a>
                   <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToManageUser}>Manage User</a>
                   <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.LogoutUser}>Logout</a>
