@@ -57,9 +57,10 @@
         }
         LogoutUser(){
           this.props.handleChangeToken('');
-          this.setState({username: null});
+          this.setState({username: null });
           this.ToHome();
         }
+      
         SetUserName(name){
           this.setState({username: name});
         }
@@ -69,11 +70,28 @@
         ToHome() {
           this.props.handleChangePage('Home');
         }
+        ToRestaurantMain(){
+          this.props.handleChangePage('ToRestaurantMain');
+        }
+        ToUserMain(){
+          this.props.handleChangePage('ToUserMain');
+        }
         LoginUser(){
           const typeStyle = {
             color: '#9b870c'
           };
-          if(this.props.username){
+          if(this.props.username && this.props.username=='admin'){
+            return (
+              
+                  <div>
+                  <h4 className="d-inline navbar-brand"> {this.props.username} <span style={typeStyle}>({this.props.userType})</span></h4>
+                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToRestaurantMain}>Restaurant Maintenance</a>
+                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToUserMain}>User Maintenance</a>
+                  
+                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.LogoutUser}>Logout</a>
+               </div>
+              );
+          }else if(this.props.username){
             return (
               <div className="dropdown">
                 <button className="btn dropdown-toggle nav-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -97,7 +115,7 @@
 			this.props.handleToggleMask();
 		}
         ShowRegister(){
-          if(this.props.username){
+          if(this.props.username && this.props.username=='admin'){
             return ;
           }
           return <a className="btn navbar-brand mx-2" onClick={this.ClickRegister}><span className="nav-btn">Register</span></a>;
@@ -313,6 +331,7 @@
           );
         }
       }
+      
       class LoginForm extends React.Component{
 
         constructor(props) {
@@ -693,6 +712,23 @@
                                     handleChangePage={this.props.handleChangePage}
                                     handleChangeMapPos={this.handleChangeMapPos}
                 />
+              </div>
+            );
+        }
+      }
+
+      class Admin extends React.Component {
+        constructor(props) {
+          super(props)
+          
+          window.history.replaceState({page: 'Admin'}, null, `?page=admin`);
+        }
+
+        render() {
+          return (
+              <div className="row">
+                
+               
               </div>
             );
         }
