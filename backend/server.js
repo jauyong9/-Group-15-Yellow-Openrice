@@ -662,6 +662,48 @@ app.get('/view/restaurant/:restId', function(req, res) {
 
 });
 
+// Add New Restaurant
+app.post('/restaurant', function(req, res) {
+  var maxid = 0;
+  Restaurant.findOne({}, 'restId').sort({restId: -1}).limit(1)
+  .exec(function(err, result) {
+    maxid = result.restId +1;
+    var rest = new Restaurant({
+      restId: maxid,
+      name: req.body['name'],
+      logitude: req.body['longitude'],
+      latitude: req.body['latitude'],
+      tag: req.body['tag'],
+      likes: 0,
+      dislikes: 0,
+      views: 0,
+      description: req.body['description']
+    });
+    rest.save(function(err){
+      if(err){
+        res.send(err);
+        return;
+      }
+      res.status(201).send("New restaurant added.");
+    })
+  })
+});
+
+// Delete Single Restaurant
+app.delete('/restaurant/:restId', function(req, res) {
+  var id = req.params['restId'];
+
+  Restaurant.remove({restId: id}, function(err) {
+    if(err) {
+      res.send(err);
+      return;
+    } else {
+      res.send("Restaurant deleted.");
+    }
+  })
+});
+
+
 // Delete all restaurants
 app.delete('/all_restaurants', function(req, res) {
     Restaurant.deleteMany({}, function(err) {
