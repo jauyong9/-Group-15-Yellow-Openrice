@@ -48,7 +48,9 @@
       class Nav extends React.Component{
         constructor(props) {
           super(props);
-          this.state ={username: props.username};
+          this.state ={username: props.username, userType: props.userType};
+          // Test
+          console.log(this.state);
           this.LogoutUser = this.LogoutUser.bind(this);
           this.ToProfile = this.ToProfile.bind(this);
           this.ToHome = this.ToHome.bind(this);
@@ -80,14 +82,13 @@
           const typeStyle = {
             color: '#9b870c'
           };
-          if(this.props.username && this.props.username=='admin'){
+          if(this.props.username && this.props.userType=='admin'){
             return (
               
                   <div>
                   <h4 className="d-inline navbar-brand"> {this.props.username} <span style={typeStyle}>({this.props.userType})</span></h4>
-                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToRestaurantMain}>Restaurant Maintenance</a>
-                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToUserMain}>User Maintenance</a>
-                  
+                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToRestaurantMain}>Manage Restaurant</a>
+                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToUserMain}>Manage User</a>
                   <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.LogoutUser}>Logout</a>
                </div>
               );
@@ -115,7 +116,7 @@
 			this.props.handleToggleMask();
 		}
         ShowRegister(){
-          if(this.props.username && this.props.username=='admin'){
+          if(this.props.username){
             return ;
           }
           return <a className="btn navbar-brand mx-2" onClick={this.ClickRegister}><span className="nav-btn">Register</span></a>;
