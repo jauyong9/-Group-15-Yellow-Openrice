@@ -1,44 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>HK Restaurant Guide</title>
+    <meta name="author" content="Group15">
+    <meta name="description" content="Restaurant Guide">
+    <meta name="keywords" content="Yellow, Openrice">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- undone -->
+    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Acme' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.6.7/jquery.timeago.min.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/jquery-ui.js"></script>
 
-<head>
-  <meta charset="UTF-8">
-  <title>HK Restaurant Guide</title>
-  <meta name="author" content="Group15">
-  <meta name="description" content="Restaurant Guide">
-  <meta name="keywords" content="Yellow, Openrice">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- undone -->
-  <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
-  <link rel="stylesheet" href="css/style.css">
-  <link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
-  <link href='https://fonts.googleapis.com/css?family=Acme' rel='stylesheet'>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/toast.css">
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
-    integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous">
-  </script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-    integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous">
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.6.7/jquery.timeago.min.js"></script>
-  <script src="js/script.js"></script>
-  <script src="js/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
-  <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+    <link rel="shortcut icon" href="../images/icon.ico">
+  </head>
 
-  <link rel="shortcut icon" href="../images/icon.ico">
-</head>
-
-<body style="font-family: 'Acme', 'ABeeZee';" onload="init();">
-  <script type="text/babel">
-    function Header() {
+  <body style="font-family: 'Acme', 'ABeeZee';" onload="init();">
+    <script type="text/babel">
+      function Header() {
         const headerStyle = {
           background: 'url("../images/header_background.jpg") 0 0 / contain'
         };
@@ -59,8 +54,6 @@
           this.LogoutUser = this.LogoutUser.bind(this);
           this.ToProfile = this.ToProfile.bind(this);
           this.ToHome = this.ToHome.bind(this);
-          this.ToManageRest = this.ToManageRest.bind(this);
-          this.ToManageUser = this.ToManageUser.bind(this);
           this.ClickLogin = this.ClickLogin.bind(this);
           this.ClickRegister = this.ClickRegister.bind(this);
         }
@@ -79,10 +72,10 @@
         ToHome() {
           this.props.handleChangePage('Home');
         }
-        ToManageRest(){
+        ToRestaurantMain(){
           this.props.handleChangePage('ManageRest');
         }
-        ToManageUser(){
+        ToUserMain(){
           this.props.handleChangePage('ManageUser');
         }
         LoginUser(){
@@ -91,11 +84,10 @@
           };
           if(this.props.username && this.props.userType=='admin'){
             return (
-              
-                  <div>
-                  <h4 className="d-inline navbar-brand"><span style={typeStyle}>({this.props.userType})</span></h4>
-                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToManageRest}>Manage Restaurant</a>
-                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToManageUser}>Manage User</a>
+                <div>
+                  <h4 className="d-inline navbar-brand"> {this.props.username} <span style={typeStyle}>({this.props.userType})</span></h4>
+                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToRestaurantMain}>Manage Restaurant</a>
+                  <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToUserMain}>Manage User</a>
                   <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.LogoutUser}>Logout</a>
                </div>
               );
@@ -728,7 +720,8 @@
       class Admin extends React.Component {
         constructor(props) {
           super(props)
-          
+          //change
+          this.state = { username: 'admin', userType: 'admin'}
           window.history.replaceState({page: 'Admin'}, null, `?page=admin`);
         }
 
@@ -755,35 +748,7 @@
           super(props);
           window.history.pushState({page: 'Profile'}, null, `?page=profile`);
           this.handleChangeIcon = this.handleChangeIcon.bind(this);
-          this.handleChangePassword = this.handleChangePassword.bind(this);
         }
-
-        handleChangePassword() {
-          var password = prompt('Please enter the new password: ');
-
-          if (password != null && password != '') {
-            // Simple POST request with a JSON body using fetch
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
-                body: JSON.stringify({  password: password })
-            };
-
-            fetch(this.props.URL + '/password/', requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                  if (data.response == 'success') {
-                      toastada.success('You have successfully changed your password');
-                      this.props.reloadUser();
-
-                  }
-                  else {
-                      toastada.error('Failed: ' + data.message)
-                  }
-                });
-          }
-        }
-
 
         handleChangeIcon() {
           var iconUrl = prompt('Please enter the image url of your icon');
@@ -824,7 +789,7 @@
                   <p className="title">({this.props.user.type})</p>
                   <p>{this.props.user.email}</p>
                   <p>Join Date: {this.props.user.joinDate}</p>
-                  <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleChangePassword}>Change Password</button></p>
+                  <p><button type="submit" className="btn btn-warning btn-block">Change Password</button></p>
                   <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleChangeIcon}>Change Icon</button></p>
                 </div>
               </div>
@@ -1131,10 +1096,10 @@
             return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL} user={this.props.user}/>);
           }
           else if (this.props.page.toLowerCase() == 'manageuser') {
-            return (<ManageUser token={this.props.token} URL={this.props.URL}  handleChangePage={this.props.handleChangePage}/>);
+            return (<User token={this.props.token} URL={this.props.URL} />);
           }
           else if (this.props.page.toLowerCase() == 'managerest') {
-            return (<ManageRest token={this.props.token} URL={this.props.URL} />);
+            return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL} user={this.props.user}/>);
           }
           else {
             return (<div></div>);
@@ -1192,61 +1157,19 @@
         }
       }
 
-      class ManageUser extends React.Component {
-
+      class User extends React.Component {
         constructor(props) {
-          super(props);
-          this.state = { data: [] };
-          window.history.pushState({page: 'ManageUser'}, null, `?page=manageuser`);
-
-          const requestOptions = {
-              method: 'GET'
-          };
-          
-          fetch(props.URL + '/users', requestOptions)
-            .then(data => data.json())
-            .then((data) => {
-              this.setState({
-                  data: data
-              })
-            });
-
-            this.handleDelete = this.handleDelete.bind(this);
-        }
-
-        getUsers() {
-          
-        }
-
-        handleDelete() {
-          
+         super(props);
+         this.state = {};
+         window.history.pushState({page: 'MangeUser'}, null, `?page=manageuser`);
         }
 
         render() {
-          return(
+          return (
             <div>
-              Manage Users
-              {//this.state.data[0]
-                console.log(this.state.data[0])
-              }
+              123  
             </div>
-          );       
-        }
-      }
-
-      class ManageRest extends React.Component {
-
-        constructor(props) {
-          super(props)
-          window.history.pushState({page: 'ManageRest'}, null, `?page=managerest`)
-        }
-
-        render() {
-          return(
-            <div>
-              Manage Restaurants
-            </div>  
-          );       
+          );
         }
       }
 
@@ -1419,8 +1342,8 @@
 
     </script>
 
-  <div id="root"></div>
-  <script src="js/toast.js"></script>
-</body>
+    <div id="root"></div>
+    <script src="js/toast.js"></script>
+  </body>
 
 </html>
