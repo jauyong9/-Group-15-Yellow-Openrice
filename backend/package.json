@@ -16,6 +16,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.6",
     "nodemailer": "^6.4.6",
+    "react-table": "^7.0.4",
     "request": "^2.88.2"
   }
 }
