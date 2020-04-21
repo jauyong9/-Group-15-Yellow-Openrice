@@ -662,6 +662,14 @@ app.get('/view/restaurant/:restId', function(req, res) {
 
 });
 
+// Display All Users
+app.get('/users', function(req, res) {
+  User.collection.find({}).toArray(function(err, result) {
+    if (err) throw err;
+    res.send(result);
+  })
+});
+
 // Add New Restaurant
 app.post('/restaurant', function(req, res) {
   var maxid = 0;
@@ -703,6 +711,20 @@ app.delete('/restaurant/:restId', function(req, res) {
   })
 });
 
+// Delete Single User
+app.delete('/user/:userId', function(req, res) {
+  var id = req.param['userId'];
+
+  User.remove({userId: id}, function(err) {
+    if(err) {
+      res.send(err);
+      return;
+    } else {
+      res.send("User deleted.");
+    }
+  });
+});
+
 
 // Delete all restaurants
 app.delete('/all_restaurants', function(req, res) {
@@ -728,7 +750,9 @@ app.delete('/all_users', function(req, res) {
       }
     });
 });
+app.all('/admin', function (req, res) {
 
+});
 app.all('/map.html', function (req, res) {
 
     res.sendFile(path.resolve(__dirname + '/../frontend/map.html'));

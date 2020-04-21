@@ -1178,7 +1178,6 @@
           fetch(props.URL + '/users', requestOptions)
             .then(data => data.json())
             .then((data) => {
-              console.log("data: "+data);
               this.setState({
                   data: data
               })
@@ -1187,18 +1186,21 @@
             this.handleDelete = this.handleDelete.bind(this);
         }
 
-        handleDelete() {
+        getUsers() {
           
         }
 
-        getRowInfo = (state, rowInfo, column, instance) => {
-          return { }
+        handleDelete() {
+          
         }
 
         render() {
           return(
             <div>
               Manage Users
+              {//this.state.data[0]
+                console.log(this.state.data[0])
+              }
             </div>
           );       
         }
