@@ -28,3 +28,62 @@ body {
     width: 370px;
     visibility: hidden;
 }​
+
+/*Begin: CSS for comments part*/
+
+.chatbox {
+  height: 500px;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #EEE;
+}
+
+.message {
+  background-color: white;
+  padding: 10px;
+  margin: 10px 0;
+  width: 80%;
+}
+
+.self {
+  border-color: #ccc;
+  background-color: #ddd;
+  margin-left:auto;
+  margin-right:0;
+}
+
+.message::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.message img {
+  float: left;
+  width: 50px;
+  height: 50px;
+  margin-right: 20px;
+  border-radius: 50%;
+  object-fit: cover
+}
+
+.message img.right {
+  float: right;
+  margin-left: 20px;
+  margin-right:0;
+}
+
+.time-right {
+  float: right;
+  color: #aaa;
+}
+
+.time-left {
+  float: left;
+  color: #999;
+}
+
+.time {
+  color :#999;
+}
+/*End: CSS for comments part*/

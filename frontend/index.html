@@ -21,6 +21,7 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.6.7/jquery.timeago.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/jquery-ui.js"></script>
 
@@ -688,7 +689,7 @@
                           zoom={this.state.zoom}
                 />
                 <ClosestRestaurant URL={this.props.URL}
-                                    k={10}
+                                    k={5}
                                     handleChangePage={this.props.handleChangePage}
                                     handleChangeMapPos={this.handleChangeMapPos}
                 />
@@ -709,6 +710,34 @@
         constructor(props) {
           super(props);
           window.history.pushState({page: 'Profile'}, null, `?page=profile`);
+          this.handleChangeIcon = this.handleChangeIcon.bind(this);
+        }
+
+        handleChangeIcon() {
+          var iconUrl = prompt('Please enter the image url of your icon');
+
+          if (iconUrl != null && iconUrl != '') {
+            // Simple POST request with a JSON body using fetch
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
+                body: JSON.stringify({  iconUrl: iconUrl })
+            };
+
+            fetch(this.props.URL + '/icon/', requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                  console.log(data)
+                  if (data.response == 'success') {
+                      toastada.success('You have successfully updated your icon');
+                      this.setState({content: ''});
+                  }
+                  else {
+                      toastada.error('Failed: ' + data.message)
+                  }
+                });
+          }
+
         }
 
         render() {
@@ -716,13 +745,15 @@
             return (
               <div>
                 <div className="card">
-                  <img src="https://image.flaticon.com/icons/svg/21/21104.svg" style={{width: '100%', height: '150'}} />
+                  <center>
+                  <img src={this.props.user.iconUrl} style={{width: '150', height: '150', borderRadius: '50%', objectFit: 'cover'}} />
+                  </center>
                   <h1>{this.props.user.name}</h1>
                   <p className="title">({this.props.user.type})</p>
                   <p>{this.props.user.email}</p>
                   <p>Join Date: {this.props.user.joinDate}</p>
                   <p><button type="submit" className="btn btn-warning btn-block">Change Password</button></p>
-                  <p><button type="submit" className="btn btn-warning btn-block">Change Icon</button></p>
+                  <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleChangeIcon}>Change Icon</button></p>
                 </div>
               </div>
             );
@@ -733,6 +764,105 @@
             );
           }
         }
+      }
+
+      class CommentInput extends React.Component {
+
+        constructor(props) {
+          super(props)
+          this.state = {content: ''}
+          this.handleInputChange = this.handleInputChange.bind(this)
+          this.handlePostComment = this.handlePostComment.bind(this)
+        }
+
+        handlePostComment() {
+          // Simple POST request with a JSON body using fetch
+          const requestOptions = {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
+              body: JSON.stringify({  content: this.state.content })
+          };
+          fetch(this.props.URL + '/comment/' + this.props.restId, requestOptions)
+              .then(response => response.json())
+              .then(data => {
+                if (data.response == 'success') {
+                    toastada.success('You have successfully left a comment!');
+                    this.setState({content: ''});
+                    this.props.reloadComment();
+                }
+                else {
+                    toastada.error('Failed: ' + data.message)
+                }
+              });
+
+        }
+
+        handleInputChange(e){
+            const target = e.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+            this.setState({
+                [name]: value
+            });
+        }
+
+        render() {
+          return (
+            <div className={"message"}>
+              <div style={{display: 'flex'}}>
+              <img src={this.props.user.iconUrl} alt="Avatar"/>
+              <textarea
+                placeholder={`Commenting publicly as ${this.props.user.name}`}
+                name="content"
+                style={{flexGrow: 100, resize: 'none'}}
+                value={this.state.content}
+                onChange={this.handleInputChange}
+              />
+              </div>
+              <br />
+              <button className="btn btn-warning" style={{float: 'right'}} onClick={this.handlePostComment}>COMMENT</button>
+            </div>
+          );
+        }
+      }
+
+      function Comment(props) {
+        const timeSince = (date) =>  {
+            var seconds = Math.floor((new Date() - date) / 1000);
+
+            var interval = Math.floor(seconds / 31536000);
+
+            if (interval >= 1) {
+              return interval + " years ago";
+            }
+            interval = Math.floor(seconds / 2592000);
+            if (interval >= 1) {
+              return interval + " months ago";
+            }
+            interval = Math.floor(seconds / 86400);
+            if (interval >= 1) {
+              return interval + " days ago";
+            }
+            interval = Math.floor(seconds / 3600);
+            if (interval >= 1) {
+              return interval + " hours ago";
+            }
+            interval = Math.floor(seconds / 60);
+            if (interval >= 1) {
+              return interval + " minutes ago";
+            }
+            return Math.floor(seconds) + " seconds ago";
+        }
+
+        return (
+          <div className={"message"}>
+            <img src={props.avatar} alt="Avatar" />
+            <span className="name">{props.name}</span> &nbsp; <span className="time">{timeSince(Date.parse(props.time))}</span>
+            <p>
+              {props.content}
+            </p>
+          </div>
+        );
       }
 
       class Restaurant extends React.Component {
@@ -765,6 +895,27 @@
           this.handleDislike = this.handleDislike.bind(this)
 
           this.reloadRest = this.reloadRest.bind(this)
+
+          this.reloadComment = this.reloadComment.bind(this)
+        }
+
+        componentDidMount() {
+          setInterval(this.reloadComment, 1500);
+        }
+
+        reloadComment() {
+          // Reload Restaurant Object
+          const requestOptions = {
+              method: 'GET'
+          };
+          fetch(this.props.URL + '/restaurant/' + this.state.rest.restId, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+              console.log(data)
+              if (data.restaurant[0].comments.length != this.state.rest.comments.length) {
+                  this.setState({rest: data.restaurant[0]})
+              }
+            });
         }
 
         reloadRest() {
@@ -822,6 +973,25 @@
             });
         }
 
+        getComments() {
+          let comments = [];
+          let n = this.state.rest.comments.length;
+
+          const sorted = this.state.rest.comments.reverse();
+
+          for (let i = 0; i < n; i++) {
+              comments.push(
+                (<Comment avatar={sorted[i].postBy.iconUrl}
+                          name={sorted[i].postBy.name}
+                          content={sorted[i].content}
+                          time={sorted[i].time}
+                          reloadComment={this.reloadComment}/>)
+              );
+          }
+
+          return comments;
+        }
+
         render() {
           if (this.state.rest == null) {
             return (
@@ -834,6 +1004,13 @@
             const likeImg = liked ? "../images/liked.png" : "../images/like.png"
             const dislikeImg = disliked ? "../images/disliked.png" : "../images/dislike.png"
             const mapUrl = `https://maps.google.com/maps?q=${this.state.rest.latitude},${this.state.rest.longitude}&z=14&output=embed`;
+            const commentInput = (
+                <CommentInput user={this.props.user}
+                              restId={this.state.rest.restId}
+                              token={this.props.token}
+                              URL={this.props.URL}
+                />
+            )
             return (
               <div>
               <h2>{this.state.rest.name}</h2>
@@ -850,6 +1027,9 @@
                 <hr />
                 <div className="text-secondary" dangerouslySetInnerHTML={{ __html: this.state.rest.description }} />
                 <hr />
+                <h5>{this.state.rest.comments.length} Comments</h5>
+                {this.props.user && commentInput}
+                {this.getComments()}
               </div>
             );
           }
@@ -870,7 +1050,7 @@
             return (<Home URL={this.props.URL} handleChangePage={this.props.handleChangePage}/>);
           }
           else if (this.props.page.toLowerCase() == 'profile') {
-            return (<Profile user={this.props.user}/>);
+            return (<Profile user={this.props.user} URL={this.props.URL} token={this.props.token}/>);
           }
           else if (this.props.page.toLowerCase() == 'restaurant') {
             return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL} user={this.props.user}/>);

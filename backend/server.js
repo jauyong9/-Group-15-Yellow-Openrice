@@ -59,7 +59,8 @@ var UserSchema = mongoose.Schema({
   },
   iconUrl: {
     type: String,
-    required: false
+    required: false,
+    default: 'https://image.flaticon.com/icons/svg/21/21104.svg'
   },
   joinDate: {
     type: Date,
@@ -130,11 +131,6 @@ var CommentSchema = mongoose.Schema({
     ref: 'User',
     required: true
   },
-  postOn: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Restaurant',
-    required: true
-  },
   likes: {
     type: Number,
     required: true,
@@ -144,6 +140,10 @@ var CommentSchema = mongoose.Schema({
     type: Number,
     required: true,
     default: 0
+  },
+  time: {
+    type: Date,
+    default: Date.now
   },
   content: {
     type: String,
@@ -167,6 +167,96 @@ app.use(cors()); // allow index.html to connect
 app.use('/images', express.static(path.resolve(__dirname + '/../images/')));
 app.use('/css', express.static(path.resolve(__dirname + '/../frontend/css/')));
 app.use('/js', express.static(path.resolve(__dirname + '/../frontend/js/')));
+
+// Change icon
+app.post('/icon/', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+      const filter = {_id: decoded._id}
+
+      const update = {iconUrl: req.body['iconUrl']}
+
+      User.findOneAndUpdate(filter, update, function(err, doc) {
+       if (err) {
+          res.json({response: 'fail', message: err});
+        }
+       else if (doc == null)
+          res.json({response: 'fail', message:'the link is not valid'});
+       else
+          res.json({response: 'success'});
+      })
+    }
+  });
+});
+// Post Comment
+app.post('/comment/:restId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+      User.findOne({
+        _id: decoded._id
+      })
+      .then(user => {
+        if (user) {
+          Restaurant.findOne({
+            restId: req.params['restId']
+          })
+          .then(rest => {
+            Comment.findOne().sort('-commentId').exec(function(err, item) {
+              if (err)
+                res.json({response: 'fail', message: err});
+              let newId = (item == null ? 0 : item.commentId) + 1;
+
+              if (rest) {
+                var comment = new Comment({
+                  commentId: newId,
+                  content: req.body['content'],
+                  postBy: user
+                });
+
+                comment.save(function(err) {
+                  if (err)
+                    res.json({response: 'fail', message: err});
+
+                  const filter = {restId: req.params['restId']}
+
+                  rest.comments.push(comment._id);
+
+                  const update = {comments: rest.comments}
+
+                  Restaurant.findOneAndUpdate(filter, update, function(err, doc) {
+                   if (err) {
+                      res.json({response: 'fail', message: err});
+                    }
+                   else if (doc == null)
+                      res.json({response: 'fail', message:'the link is not valid'});
+                   else
+                      res.json({response: 'success'});
+                  })
+                });
+              }
+              else {
+                res.json({response: 'fail', message: 'restaurant not found'})
+              }
+            });
+          })
+          .catch(err => {
+            res.json({response: 'fail', message: err})
+          })
+        } else {
+          res.json({response: 'fail', message: "User does not exist"})
+        }
+      })
+      .catch(err => {
+        res.json({response: 'fail', message: err})
+      })
+    }
+  })
+});
+
 
 // Login
 app.post('/login', (req, res) => {
@@ -479,6 +569,7 @@ app.get('/load_datasource', function(req, res) {
 app.get('/restaurant/:id', function(req, res) {
   Restaurant
   .find({restId: req.params['id']})
+  .populate({path: 'comments', populate: {path: 'postBy'}})
   .exec(function(err, rest) {
     if (err)
       res.json({'response': 'fail', 'message': err})
