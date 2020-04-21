@@ -727,10 +727,10 @@
             fetch(this.props.URL + '/icon/', requestOptions)
                 .then(response => response.json())
                 .then(data => {
-                  console.log(data)
                   if (data.response == 'success') {
                       toastada.success('You have successfully updated your icon');
-                      this.setState({content: ''});
+                      this.props.reloadUser();
+
                   }
                   else {
                       toastada.error('Failed: ' + data.message)
@@ -873,7 +873,7 @@
               method: 'GET'
           };
 
-          this.state = {rest: null}
+          this.state = {rest: null, liveReload: true}
 
           // Add 1 More View
           fetch(props.URL + '/view/restaurant/' + props.restId, requestOptions)
@@ -905,17 +905,19 @@
 
         reloadComment() {
           // Reload Restaurant Object
-          const requestOptions = {
-              method: 'GET'
-          };
-          fetch(this.props.URL + '/restaurant/' + this.state.rest.restId, requestOptions)
-            .then(response => response.json())
-            .then(data => {
-              console.log(data)
-              if (data.restaurant[0].comments.length != this.state.rest.comments.length) {
-                  this.setState({rest: data.restaurant[0]})
-              }
-            });
+          var _this = this;
+          if (this.state.liveReload) {
+            const requestOptions = {
+                method: 'GET'
+            };
+            fetch(this.props.URL + '/restaurant/' + this.state.rest.restId, requestOptions)
+              .then(response => response.json())
+              .then(data => {
+                if (data.restaurant[0].comments.length != this.state.rest.comments.length) {
+                    this.setState({rest: data.restaurant[0]})
+                }
+              }).catch(function(err) {_this.setState({liveReload: false})});
+          }
         }
 
         reloadRest() {
@@ -1009,6 +1011,7 @@
                               restId={this.state.rest.restId}
                               token={this.props.token}
                               URL={this.props.URL}
+                              reloadComment={this.reloadComment}
                 />
             )
             return (
@@ -1050,7 +1053,7 @@
             return (<Home URL={this.props.URL} handleChangePage={this.props.handleChangePage}/>);
           }
           else if (this.props.page.toLowerCase() == 'profile') {
-            return (<Profile user={this.props.user} URL={this.props.URL} token={this.props.token}/>);
+            return (<Profile user={this.props.user} URL={this.props.URL} token={this.props.token} reloadUser={this.props.reloadUser}/>);
           }
           else if (this.props.page.toLowerCase() == 'restaurant') {
             return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL} user={this.props.user}/>);
@@ -1161,7 +1164,28 @@
           this.handleChangeToken = this.handleChangeToken.bind(this);
           this.handlePopupMsg = this.handlePopupMsg.bind(this);
           this.loadProfile = this.loadProfile.bind(this);
+          this.reloadUser = this.reloadUser.bind(this);
           this.callAPI();
+        }
+
+        reloadUser() {
+          const token = this.state.token;
+          if (token != '') {
+            const requestOptions = {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json', 'authorization': token }
+            };
+
+            fetch(this.props.URL + '/profile', requestOptions)
+              .then(response => response.json())
+              .then(user => {
+                this.setState({username: user.name, userType: user.type});
+				        this.setState({user: user});
+              });
+          }
+          else {
+            this.setState({user: null});
+          }
         }
 
         loadProfile(token) {
@@ -1237,6 +1261,7 @@
             parameter={this.state.toParameter}
             URL={this.props.URL}
             token={this.state.token}
+            reloadUser={this.reloadUser}
 			  />
               <LoginForm  URL={this.props.URL}
                           handleChangeToken={this.handleChangeToken}
