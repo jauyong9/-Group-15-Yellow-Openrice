@@ -327,7 +327,7 @@ app.post('/register', function(req, res) {
         });
 
         let activateToken = jwt.sign(payload, SECRET_KEY, {
-          expiresIn: 2880
+          expiresIn: 50000
         })
 
         const link = apiUrl + '/activate/' + activateToken;
