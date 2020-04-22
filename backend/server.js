@@ -168,6 +168,27 @@ app.use('/images', express.static(path.resolve(__dirname + '/../images/')));
 app.use('/css', express.static(path.resolve(__dirname + '/../frontend/css/')));
 app.use('/js', express.static(path.resolve(__dirname + '/../frontend/js/')));
 
+// Change Password
+app.post('/password/', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+      const filter = {_id: decoded._id}
+
+      const update = {password: bcrypt.hashSync(req.body['password'])}
+
+      User.findOneAndUpdate(filter, update, function(err, doc) {
+       if (err) {
+          res.json({response: 'fail', message: err});
+       }
+       else
+          res.json({response: 'success'});
+      })
+    }
+  });
+});
+
 // Change icon
 app.post('/icon/', (req, res) => {
   jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
@@ -750,7 +771,32 @@ app.delete('/all_users', function(req, res) {
       }
     });
 });
-app.all('/admin', function (req, res) {
+app.get('/add_admin', function (req, res) {
+  var maxid = 0;
+  User.findOne({}, 'userId').sort({userId: -1}).limit(1)
+  .exec(function(err, result) {
+    if(err) return console.error(err);
+    maxid = result.userId +1;
+  });
+
+  console.log("maxid: "+maxid);
+  var admin = new User ({
+    userId: maxid,
+    email: 'admin@admin.com',
+    name: 'Admin',
+    password: bcrypt.hashSync('qwer'),
+    type: 'admin'
+  });
+  admin.save(function (err, result) {
+    if(err){
+      res.send(err);
+      return;
+    }
+    res.status(201).send("Use this account information to login as admin.:\n"
+              + "Email: " + result.email + "\n"
+              + "Password: qwer"
+            );
+  });
 
 });
 app.all('/map.html', function (req, res) {
