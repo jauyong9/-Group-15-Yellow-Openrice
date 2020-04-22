@@ -692,6 +692,14 @@ app.get('/users', function(req, res) {
   })
 });
 
+// Display All Restaurant
+app.get('/rests', function(req, res) {
+  Restaurant.collection.find({}).sort({restId: 1}).limit(31).toArray(function(err, result) {
+    if (err) throw err;
+    res.send(result);
+  })
+});
+
 // Add New Restaurant
 app.post('/restaurant', function(req, res) {
   var maxid = 0;
@@ -720,24 +728,23 @@ app.post('/restaurant', function(req, res) {
 });
 
 // Delete Single Restaurant
-app.delete('/restaurant/:restId', function(req, res) {
+app.delete('/rest/:restId', function(req, res) {
   var id = req.params['restId'];
-
+  console.log("delete: "+id);
+  
   Restaurant.remove({restId: id}, function(err) {
     if(err) {
-      res.send(err);
-      return;
+      res.json({response: 'fail', message: err});
     } else {
-      res.send("Restaurant deleted.");
+      res.json({response: 'success'});
     }
-  })
+  });
 });
 
 // Delete Single User
 app.delete('/user/:userId', function(req, res) {
-  console.log("delete method...\n");
   var id = req.params['userId'];
-  console.log("delete: "+ id);
+  
   User.remove({userId: id}, function(err) {
     if(err) {
       res.json({response: 'fail', message: err});

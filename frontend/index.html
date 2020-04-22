@@ -1240,9 +1240,6 @@
           window.history.pushState({page: 'ManageUser'}, null, `?page=manageuser`);
           this.handleDelete = this.handleDelete.bind(this);
           this.getUsers = this.getUsers.bind(this);
-        }
-
-        getUsers() {
           const requestOptions = {method: 'GET'};
           fetch(this.props.URL + '/users', requestOptions)
             .then(data => data.json())
@@ -1251,7 +1248,11 @@
                   data: data
               })
             });
-          return this.state.data.map((user) =>
+        }
+
+        getUsers() {
+          let user_list = this.state.data;
+          return user_list.map((user) =>
             <tr>
               <td>{user.userId}</td>
               <td>{user.type}</td>
@@ -1260,9 +1261,10 @@
               <td>{user.joinDate}</td>
               <td>
                   <button 
-                    className="btn btn-danger" 
+                    className="btn btn-block" 
                     value={user.userId} 
-                    onClick={() => { if(window.confirm('Are you sure to delete?')) this.handleDelete(user.userId) }}>Delete
+                    onClick={() => { if(window.confirm('Are you sure to delete?')) this.handleDelete(user.userId) }}>
+                    <i className="fa fa-trash-o" style={{color: "red"}} > </i>
                   </button>
               </td>
             </tr>
@@ -1282,23 +1284,21 @@
                 if (data.response == 'success') {
                     toastada.success('You have successfully deleted a user!');
                     this.setSate({data: data});
-                    //this.getUsers();
                 }
                 else {
                     toastada.error('Failed: ' + data.message)
                 }
               });
-              //window.location.reload();
+          window.location.reload();
         }
       
         render() {
-          //console.log(this.state.data);
           return(
             <div>
               <h3>Manage Users</h3>
               <div id="userlist">
                 <table className="table table-striped table-bordered table-hover">
-                  <tr><th>User ID</th><th>User Type</th><th>Email</th><th>Name</th><th>Join Date</th><th>Delete</th></tr>
+                  <tr><th>User ID</th><th>User Type</th><th>Email</th><th>Name</th><th>Join Date</th><th></th></tr>
                 {this.getUsers()}
                 </table>
                 </div>
@@ -1307,28 +1307,79 @@
         }
       }
 
-      class UserItem extends React.Component {
-        constructor(props) {
-          super(props);
-
-        }
-
-        render(){
-
-        }
-      }
-
       class ManageRest extends React.Component {
 
         constructor(props) {
-          super(props)
-          window.history.pushState({page: 'ManageRest'}, null, `?page=managerest`)
+          super(props);
+          this.state = { data: [] };
+          window.history.pushState({page: 'ManageRest'}, null, `?page=managerest`);
+          this.handleDelete = this.handleDelete.bind(this);
+          this.getRests = this.getRests.bind(this);
+          const url = this.props.URL + '/rests';
+          const requestOptions = {method: 'GET'};
+          fetch(url, requestOptions)
+            .then(data => data.json())
+            .then((data) => {
+              this.setState({
+                  data: data
+              })
+            });
         }
 
+        getRests() {
+          return this.state.data.map((rest) =>
+            <tr>
+              <td>{rest.restId}</td>
+              <td>{rest.name}</td>
+              <td>{rest.tag}</td>
+              <td>{rest.likes.length}</td>
+              <td>{rest.dislikes.length}</td>
+              <td>{rest.views}</td>
+              <td>{rest.comments.length}</td>
+              <td>
+                  <button 
+                    className="btn btn-block"
+                    value={rest.restId} 
+                    onClick={() => { if(window.confirm('Are you sure to delete?')) this.handleDelete(rest.restId) }}>
+                    <i className="fa fa-trash-o" style={{color: "red"}} > </i>
+                  </button>
+              </td>
+            </tr>
+          );
+        }
+
+        handleDelete(id) {
+          var restId = id;
+          const url = this.props.URL + '/rest/' + restId;
+          const requestOptions = {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+          };
+          
+          fetch(url, requestOptions)
+              .then(response => response.json())
+              .then(data => {
+                if (data.response == 'success') {
+                    toastada.success('You have successfully deleted a restaurant!');
+                    this.setSate({data: data});
+                }
+                else {
+                    toastada.error('Failed: ' + data.message)
+                }
+              });
+          window.location.reload();
+        }
+      
         render() {
           return(
             <div>
-              <h3>Manage Restaurants</h3>
+              <h3>Manage Restaurant</h3>
+              <div id="userlist">
+                <table className="table table-striped table-bordered table-hover">
+                  <tr><th>ID</th><th>Name</th><th>Tag</th><th>Likes</th><th>Dislikes</th><th>Views</th><th>Comments</th><th></th></tr>
+                {this.getRests()}
+                </table>
+                </div>
             </div>
           );
         }
