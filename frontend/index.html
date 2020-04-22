@@ -1240,7 +1240,9 @@
           window.history.pushState({page: 'ManageUser'}, null, `?page=manageuser`);
           this.handleDelete = this.handleDelete.bind(this);
           this.getUsers = this.getUsers.bind(this);
+        }
 
+        getUsers() {
           const requestOptions = {method: 'GET'};
           fetch(this.props.URL + '/users', requestOptions)
             .then(data => data.json())
@@ -1249,56 +1251,48 @@
                   data: data
               })
             });
-        }
-
-        getUsers() {
-          
-          let data = this.state.data;
-          let lists = data.map((list) =>
+          return this.state.data.map((user) =>
             <tr>
-              <td>{list.userId}</td>
-              <td>{list.type}</td>
-              <td>{list.email}</td>
-              <td>{list.name}</td>
-              <td>{list.joinDate}</td>
+              <td>{user.userId}</td>
+              <td>{user.type}</td>
+              <td>{user.email}</td>
+              <td>{user.name}</td>
+              <td>{user.joinDate}</td>
               <td>
                   <button 
                     className="btn btn-danger" 
-                    value={list.userId} 
-                    onClick={() => { if(window.confirm('Are you sure to delete?')) this.handleDelete(list.userId) }}>Delete
+                    value={user.userId} 
+                    onClick={() => { if(window.confirm('Are you sure to delete?')) this.handleDelete(user.userId) }}>Delete
                   </button>
               </td>
             </tr>
           );
-          return lists;
         }
 
-
         handleDelete(id) {
-          console.log(id);
           var userId = id;
           const requestOptions = {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' }
           };
           
-          console.log(this.props.URL);
           fetch(this.props.URL + '/user/' + userId, requestOptions)
               .then(response => response.json())
               .then(data => {
                 if (data.response == 'success') {
                     toastada.success('You have successfully deleted a user!');
-                    this.state.data = null;
-                    this.props.getUsers();
+                    this.setSate({data: data});
+                    //this.getUsers();
                 }
-                // else {
-                //     toastada.error('Failed: ' + data.message)
-                // }
+                else {
+                    toastada.error('Failed: ' + data.message)
+                }
               });
+              //window.location.reload();
         }
       
         render() {
-          console.log(this.state.data);
+          //console.log(this.state.data);
           return(
             <div>
               <h3>Manage Users</h3>
@@ -1313,7 +1307,7 @@
         }
       }
 
-      class UserList extends React.Component {
+      class UserItem extends React.Component {
         constructor(props) {
           super(props);
 

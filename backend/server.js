@@ -740,8 +740,7 @@ app.delete('/user/:userId', function(req, res) {
   console.log("delete: "+ id);
   User.remove({userId: id}, function(err) {
     if(err) {
-      res.send(err);
-      return;
+      res.json({response: 'fail', message: err});
     } else {
       res.json({response: 'success'});
     }
