@@ -32,7 +32,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
   <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
-
   <link rel="shortcut icon" href="../images/icon.ico">
 </head>
 
@@ -1257,18 +1256,38 @@
         getUsers() {
           
         }
-
         handleDelete() {
+          console.log();
           
         }
-
+      
         render() {
+          console.log(this.state.data);
+          let data = this.state.data;
+          let lists = data.map((list) => 
+            <tr>
+              <td>{list.type}</td>
+              <td>{list.userId}</td>
+              <td>{list.email}</td>
+              <td>{list.name}</td>
+              <td>{list.joinDate}</td>
+              <td>
+                <form>
+                  <input type="text" value={list.userId} type="hidden" />
+                  <button className="btn btn-danger"  onClick={this.handleDelete}>Delete</button>
+                </form>
+              </td>
+            </tr>
+        );
           return(
             <div>
-              Manage Users
-              {//this.state.data[0]
-                console.log(this.state.data[0])
-              }
+              <h3>Manage Users</h3>
+              <div id="userlist">
+                <table className="table table-striped table-bordered table-hover">
+                  <tr><th>User Type</th><th>User ID</th><th>Email</th><th>Name</th><th>Join Date</th><th>Delete</th></tr>
+                {lists}
+                </table>
+                </div>
             </div>
           );       
         }
@@ -1284,7 +1303,7 @@
         render() {
           return(
             <div>
-              Manage Restaurants
+              <h3>Manage Restaurants</h3>
             </div>  
           );       
         }

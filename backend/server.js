@@ -12,7 +12,6 @@ var bcrypt = require('bcrypt-nodejs');
 var nodemailer = require('nodemailer');
 var config = require('./config.json');
 var path = require('path');
-
 const SECRET_KEY = config.SECRET_KEY;
 
 var transporter = nodemailer.createTransport({
@@ -687,7 +686,7 @@ app.get('/view/restaurant/:restId', function(req, res) {
 
 // Display All Users
 app.get('/users', function(req, res) {
-  User.collection.find({}).toArray(function(err, result) {
+  User.collection.find({$or:[{ type: 'User' }, { type: 'Unverifed User'}]}).toArray(function(err, result) {
     if (err) throw err;
     res.send(result);
   })
