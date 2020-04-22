@@ -533,11 +533,13 @@
           this.handleChangeSelectedRest = this.handleChangeSelectedRest.bind(this);
           this.getRestaurants = this.getRestaurants.bind(this);
           this.fetchKClosestRest = this.fetchKClosestRest.bind(this);
+          this.fetchRest = this.fetchRest.bind(this);
           this.setPos = this.setPos.bind(this);
           this.loadMore = this.loadMore.bind(this);
           this.handleSearchChange = this.handleSearchChange.bind(this);
           this.filterRestaurant = this.filterRestaurant.bind(this);
           this.state = {
+            pos: '',
             isLoading: true,
             k: props.k,
             isBackgroundLoading: false,
@@ -550,11 +552,38 @@
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(this.setPos);
           }
+          else {
+            this.fetchRest();
+          }
         }
 
         setPos(pos) {
           this.setState({pos: pos})
           this.fetchKClosestRest();
+        }
+
+        fetchRest() {
+          const requestOptions = {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' }
+          };
+
+          const url = `${this.props.URL}/restaurant`
+
+          fetch(url, requestOptions)
+              .then(response => response.json())
+              .then(data => {
+
+                if (data.response == 'success') {
+                    this.setState({restaurants: data.restaurants}, () => {
+                      this.setState({
+                        filteredRestaurants: this.filterRestaurant(this.state.searchBarValue),
+                        isLoading: false,
+                        isBackgroundLoading: false
+                      })
+                    });
+                }
+              });
         }
 
         fetchKClosestRest() {
@@ -597,17 +626,28 @@
           });
           if(event.target.value != ''){
             this.setState({k: Number.MAX_VALUE, isBackgroundLoading: true}, () => {
-              this.fetchKClosestRest();
-              this.setState({filteredRestaurants: this.filterRestaurant(event.target.value)});
+              if(this.state.pos != '')
+                this.fetchKClosestRest();
+              this.setState({
+                filteredRestaurants: this.filterRestaurant(this.state.searchBarValue),
+                isLoading: false,
+                isBackgroundLoading: false
+              })
             });
           }else{
             this.setState({k: this.props.k, isBackgroundLoading: true}, () => {
-              this.fetchKClosestRest();
-              this.setState({filteredRestaurants: this.filterRestaurant(event.target.value)});
+              if(this.state.pos != '')
+                this.fetchKClosestRest();
+              this.setState({
+                filteredRestaurants: this.filterRestaurant(this.state.searchBarValue),
+                isLoading: false,
+                isBackgroundLoading: false
+              })
             });
           }
           document.getElementsByClassName("table-responsive")[0].scrollTo(0, 0);
         }
+
         handleChangeSelectedRest(rest) {
           this.setState({selectedRest: rest})
         }
@@ -636,7 +676,7 @@
         loadMore(e) {
           var obj = e.target
 
-          if (obj.scrollTop + obj.clientHeight >= obj.scrollHeight-10 && !this.state.isBackgroundLoading) {
+          if (obj.scrollTop + obj.clientHeight >= obj.scrollHeight-10 && !this.state.isBackgroundLoading && this.state.pos != '') {
             this.setState({k: this.state.k+3, isBackgroundLoading: true}, () => {
               this.fetchKClosestRest();
             });

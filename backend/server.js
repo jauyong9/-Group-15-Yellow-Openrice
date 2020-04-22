@@ -537,14 +537,16 @@ app.get('/restaurant', function(req, res) {
        res.send(err);
     if (restaurants == null || restaurants.length == 0)
        res.send('No result is found');
-
-    var result = [];
-    restaurants.forEach(function(restaurant) {
+    else{
+      var result = [];
+      res.json({'response': 'success', 'restaurants': restaurants});
+    }
+    /*restaurants.forEach(function(restaurant) {
                   result.push(restaurant);
                   if (result.length == restaurants.length)
                     res.send(result.join(''));
 
-    });
+    });*/
   });
 });
 
@@ -562,7 +564,7 @@ app.get('/load_datasource', function(req, res) {
 
           for (var i = 0; i < restaurants.length; i++) {
                 const rest = new Restaurant({
-                  restId: i,
+                  restId: i+1,
                   name: restaurants[i].properties.Name,
                   longitude: restaurants[i].geometry.coordinates[0],
                   latitude: restaurants[i].geometry.coordinates[1],
