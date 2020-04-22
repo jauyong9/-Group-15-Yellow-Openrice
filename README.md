@@ -9,8 +9,9 @@ How to Test the Project:
 
 3. Visit http://localhost:3000/load_datasource to load the restaurant data(for the first time you clone the project)
 
-4. Visit http://localhost:3000/ to the main page of the web app
+4. Visit http://localhost:3000/add_admin to add an admin account
 
+5. Visit http://localhost:3000/ to the main page of the web app
 
 How to Update the Project:
 1. Execute `git clone https://github.com/jauyong9/-Group-15-Yellow-Openrice` in terminal
