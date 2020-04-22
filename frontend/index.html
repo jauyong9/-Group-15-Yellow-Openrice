@@ -1296,7 +1296,7 @@
           return(
             <div>
               <h3>Manage Users</h3>
-              <div id="userlist">
+              <div id="userlist" className="table-responsive">
                 <table className="table table-striped table-bordered table-hover">
                   <tr><th>User ID</th><th>User Type</th><th>Email</th><th>Name</th><th>Join Date</th><th></th></tr>
                 {this.getUsers()}
@@ -1374,7 +1374,7 @@
           return(
             <div>
               <h3>Manage Restaurant</h3>
-              <div id="userlist">
+              <div id="restlist" className="table-responsive">
                 <table className="table table-striped table-bordered table-hover">
                   <tr><th>ID</th><th>Name</th><th>Tag</th><th>Likes</th><th>Dislikes</th><th>Views</th><th>Comments</th><th></th></tr>
                 {this.getRests()}
