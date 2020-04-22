@@ -68,7 +68,7 @@
           this.setState({username: null });
           this.ToHome();
         }
-      
+
         SetUserName(name){
           this.setState({username: name});
         }
@@ -90,7 +90,7 @@
           };
           if(this.props.username && this.props.userType=='admin'){
             return (
-              
+
                   <div>
                   <h4 className="d-inline navbar-brand"><span style={typeStyle}>({this.props.userType})</span></h4>
                   <a className="btn navbar-brand mx-2" href="javascript:;" onClick={this.ToManageRest}>Manage Restaurant</a>
@@ -338,7 +338,7 @@
           );
         }
       }
-      
+
       class LoginForm extends React.Component{
 
         constructor(props) {
@@ -767,15 +767,15 @@
       class Admin extends React.Component {
         constructor(props) {
           super(props)
-          
+
           window.history.replaceState({page: 'Admin'}, null, `?page=admin`);
         }
 
         render() {
           return (
               <div className="row">
-                
-               
+
+
               </div>
             );
         }
@@ -967,8 +967,10 @@
 
         return (
           <div className={"message"}>
-            <img src={props.avatar} alt="Avatar" />
-            <span className="name">{props.name}</span> &nbsp; <span className="time">{timeSince(Date.parse(props.time))}</span>
+            <img src={props.user.iconUrl} alt="Avatar" />
+            <span className="name">{props.user.name}</span> &nbsp;
+            <span style={{color: '#9b870c'}}>({props.user.type})</span> &nbsp;
+            <span className="time">{timeSince(Date.parse(props.time))}</span>
             <p>
               {props.content}
             </p>
@@ -1094,8 +1096,7 @@
 
           for (let i = 0; i < n; i++) {
               comments.push(
-                (<Comment avatar={sorted[i].postBy.iconUrl}
-                          name={sorted[i].postBy.name}
+                (<Comment user={sorted[i].postBy}
                           content={sorted[i].content}
                           time={sorted[i].time}
                           reloadComment={this.reloadComment}/>)
@@ -1241,7 +1242,7 @@
           const requestOptions = {
               method: 'GET'
           };
-          
+
           fetch(props.URL + '/users', requestOptions)
             .then(data => data.json())
             .then((data) => {
@@ -1254,17 +1255,17 @@
         }
 
         getUsers() {
-          
+
         }
         handleDelete() {
           console.log();
-          
+
         }
-      
+
         render() {
           console.log(this.state.data);
           let data = this.state.data;
-          let lists = data.map((list) => 
+          let lists = data.map((list) =>
             <tr>
               <td>{list.type}</td>
               <td>{list.userId}</td>
@@ -1289,7 +1290,7 @@
                 </table>
                 </div>
             </div>
-          );       
+          );
         }
       }
 
@@ -1304,8 +1305,8 @@
           return(
             <div>
               <h3>Manage Restaurants</h3>
-            </div>  
-          );       
+            </div>
+          );
         }
       }
 
