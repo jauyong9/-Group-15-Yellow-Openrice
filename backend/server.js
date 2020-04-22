@@ -59,7 +59,8 @@ var UserSchema = mongoose.Schema({
   },
   iconUrl: {
     type: String,
-    required: false
+    required: false,
+    default: 'https://image.flaticon.com/icons/svg/21/21104.svg'
   },
   joinDate: {
     type: Date,
@@ -130,11 +131,6 @@ var CommentSchema = mongoose.Schema({
     ref: 'User',
     required: true
   },
-  postOn: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Restaurant',
-    required: true
-  },
   likes: {
     type: Number,
     required: true,
@@ -144,6 +140,10 @@ var CommentSchema = mongoose.Schema({
     type: Number,
     required: true,
     default: 0
+  },
+  time: {
+    type: Date,
+    default: Date.now
   },
   content: {
     type: String,
@@ -168,6 +168,96 @@ app.use('/images', express.static(path.resolve(__dirname + '/../images/')));
 app.use('/css', express.static(path.resolve(__dirname + '/../frontend/css/')));
 app.use('/js', express.static(path.resolve(__dirname + '/../frontend/js/')));
 
+// Change icon
+app.post('/icon/', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+      const filter = {_id: decoded._id}
+
+      const update = {iconUrl: req.body['iconUrl']}
+
+      User.findOneAndUpdate(filter, update, function(err, doc) {
+       if (err) {
+          res.json({response: 'fail', message: err});
+        }
+       else if (doc == null)
+          res.json({response: 'fail', message:'the link is not valid'});
+       else
+          res.json({response: 'success'});
+      })
+    }
+  });
+});
+// Post Comment
+app.post('/comment/:restId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+      User.findOne({
+        _id: decoded._id
+      })
+      .then(user => {
+        if (user) {
+          Restaurant.findOne({
+            restId: req.params['restId']
+          })
+          .then(rest => {
+            Comment.findOne().sort('-commentId').exec(function(err, item) {
+              if (err)
+                res.json({response: 'fail', message: err});
+              let newId = (item == null ? 0 : item.commentId) + 1;
+
+              if (rest) {
+                var comment = new Comment({
+                  commentId: newId,
+                  content: req.body['content'],
+                  postBy: user
+                });
+
+                comment.save(function(err) {
+                  if (err)
+                    res.json({response: 'fail', message: err});
+
+                  const filter = {restId: req.params['restId']}
+
+                  rest.comments.push(comment._id);
+
+                  const update = {comments: rest.comments}
+
+                  Restaurant.findOneAndUpdate(filter, update, function(err, doc) {
+                   if (err) {
+                      res.json({response: 'fail', message: err});
+                    }
+                   else if (doc == null)
+                      res.json({response: 'fail', message:'the link is not valid'});
+                   else
+                      res.json({response: 'success'});
+                  })
+                });
+              }
+              else {
+                res.json({response: 'fail', message: 'restaurant not found'})
+              }
+            });
+          })
+          .catch(err => {
+            res.json({response: 'fail', message: err})
+          })
+        } else {
+          res.json({response: 'fail', message: "User does not exist"})
+        }
+      })
+      .catch(err => {
+        res.json({response: 'fail', message: err})
+      })
+    }
+  })
+});
+
+
 // Login
 app.post('/login', (req, res) => {
   User.findOne({
@@ -183,7 +273,7 @@ app.post('/login', (req, res) => {
             name: user.name
         }
         let token = jwt.sign(payload, SECRET_KEY, {
-          expiresIn: 1440
+          expiresIn: 2880
         })
         res.json({response: 'success', message: 'login successful', token: token})
       } else {
@@ -237,7 +327,7 @@ app.post('/register', function(req, res) {
         });
 
         let activateToken = jwt.sign(payload, SECRET_KEY, {
-          expiresIn: 2880
+          expiresIn: 50000
         })
 
         const link = apiUrl + '/activate/' + activateToken;
@@ -270,6 +360,107 @@ app.post('/register', function(req, res) {
       }
     });
   });
+});
+// Dislike a restaurant
+app.get('/dislike/:restId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', err: err})
+    else {
+      User.findOne({
+        _id: decoded._id
+      })
+      .then(user => {
+        if (user) {
+          Restaurant.findOne({
+            restId: req.params['restId']
+          })
+          .then(rest => {
+            if (rest) {
+              if (rest.likes.indexOf(user._id) != -1 || rest.dislikes.indexOf(user._id) != -1) {
+                res.json({response: 'fail', message: 'you have already rated this restaurant'})
+              }
+              else {
+                const filter = {restId: req.params['restId']}
+
+                rest.dislikes.push(user._id);
+
+                const update = {dislikes: rest.dislikes}
+
+                Restaurant.findOneAndUpdate(filter, update, function(err, doc) {
+                 if (err) {
+                    res.json({response: 'fail', err: err});
+                  }
+                 else if (doc == null)
+                    res.json({response: 'fail', message:'the link is not valid'});
+                 else
+                    res.json({response: 'OK'});
+                })
+              }
+           }
+          })
+          .catch(err => {
+            res.json({response: 'fail', err: err})
+          })
+        } else {
+          res.json({response: 'fail', message: "User does not exist"})
+        }
+      })
+      .catch(err => {
+        res.json({response: 'fail', err: err})
+      })
+    }
+  })
+});
+
+
+// Like a restaurant
+app.get('/like/:restId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', err: err})
+    User.findOne({
+      _id: decoded._id
+    })
+    .then(user => {
+      if (user) {
+        Restaurant.findOne({
+          restId: req.params['restId']
+        })
+        .then(rest => {
+          if (rest) {
+            const filter = {restId: req.params['restId']}
+
+            if (rest.likes.indexOf(user._id) != -1 || rest.dislikes.indexOf(user._id) != -1) {
+              res.json({response: 'fail', message: 'you have already rated this restaurant'})
+            }
+            else {
+              rest.likes.push(user._id);
+              const update = {likes: rest.likes}
+
+              Restaurant.findOneAndUpdate(filter, update, function(err, doc) {
+               if (err) {
+                  res.json({response: 'fail', err: err});
+                }
+               else if (doc == null)
+                  res.json({response: 'fail', message:'the link is not valid'});
+               else
+                  res.json({response: 'OK'});
+              })
+            }
+         }
+        })
+        .catch(err => {
+          res.json({response: 'fail', err: err})
+        })
+      } else {
+        res.json({response: 'fail', message: "User does not exist"})
+      }
+    })
+    .catch(err => {
+      res.json({response: 'fail', err: err})
+    })
+  })
 });
 
 // Profile
@@ -325,14 +516,16 @@ app.get('/restaurant', function(req, res) {
        res.send(err);
     if (restaurants == null || restaurants.length == 0)
        res.send('No result is found');
-
-    var result = [];
-    restaurants.forEach(function(restaurant) {
+    else{
+      var result = [];
+      res.json({'response': 'success', 'restaurants': restaurants});
+    }
+    /*restaurants.forEach(function(restaurant) {
                   result.push(restaurant);
                   if (result.length == restaurants.length)
                     res.send(result.join(''));
 
-    });
+    });*/
   });
 });
 
@@ -350,7 +543,7 @@ app.get('/load_datasource', function(req, res) {
 
           for (var i = 0; i < restaurants.length; i++) {
                 const rest = new Restaurant({
-                  restId: i,
+                  restId: i + 1,
                   name: restaurants[i].properties.Name,
                   longitude: restaurants[i].geometry.coordinates[0],
                   latitude: restaurants[i].geometry.coordinates[1],
@@ -378,6 +571,7 @@ app.get('/load_datasource', function(req, res) {
 app.get('/restaurant/:id', function(req, res) {
   Restaurant
   .find({restId: req.params['id']})
+  .populate({path: 'comments', populate: {path: 'postBy'}})
   .exec(function(err, rest) {
     if (err)
       res.json({'response': 'fail', 'message': err})
@@ -469,6 +663,48 @@ app.get('/view/restaurant/:restId', function(req, res) {
   })
 
 });
+
+// Add New Restaurant
+app.post('/restaurant', function(req, res) {
+  var maxid = 0;
+  Restaurant.findOne({}, 'restId').sort({restId: -1}).limit(1)
+  .exec(function(err, result) {
+    maxid = result.restId +1;
+    var rest = new Restaurant({
+      restId: maxid,
+      name: req.body['name'],
+      logitude: req.body['longitude'],
+      latitude: req.body['latitude'],
+      tag: req.body['tag'],
+      likes: 0,
+      dislikes: 0,
+      views: 0,
+      description: req.body['description']
+    });
+    rest.save(function(err){
+      if(err){
+        res.send(err);
+        return;
+      }
+      res.status(201).send("New restaurant added.");
+    })
+  })
+});
+
+// Delete Single Restaurant
+app.delete('/restaurant/:restId', function(req, res) {
+  var id = req.params['restId'];
+
+  Restaurant.remove({restId: id}, function(err) {
+    if(err) {
+      res.send(err);
+      return;
+    } else {
+      res.send("Restaurant deleted.");
+    }
+  })
+});
+
 
 // Delete all restaurants
 app.delete('/all_restaurants', function(req, res) {
