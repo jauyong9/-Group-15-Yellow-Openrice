@@ -1238,59 +1238,89 @@
           super(props);
           this.state = { data: [] };
           window.history.pushState({page: 'ManageUser'}, null, `?page=manageuser`);
+          this.handleDelete = this.handleDelete.bind(this);
+          this.getUsers = this.getUsers.bind(this);
 
-          const requestOptions = {
-              method: 'GET'
-          };
-
-          fetch(props.URL + '/users', requestOptions)
+          const requestOptions = {method: 'GET'};
+          fetch(this.props.URL + '/users', requestOptions)
             .then(data => data.json())
             .then((data) => {
               this.setState({
                   data: data
               })
             });
-
-            this.handleDelete = this.handleDelete.bind(this);
         }
 
         getUsers() {
-
-        }
-        handleDelete() {
-          console.log();
-
-        }
-
-        render() {
-          console.log(this.state.data);
+          
           let data = this.state.data;
           let lists = data.map((list) =>
             <tr>
-              <td>{list.type}</td>
               <td>{list.userId}</td>
+              <td>{list.type}</td>
               <td>{list.email}</td>
               <td>{list.name}</td>
               <td>{list.joinDate}</td>
               <td>
-                <form>
-                  <input type="text" value={list.userId} type="hidden" />
-                  <button className="btn btn-danger"  onClick={this.handleDelete}>Delete</button>
-                </form>
+                  <button 
+                    className="btn btn-danger" 
+                    value={list.userId} 
+                    onClick={() => { if(window.confirm('Are you sure to delete?')) this.handleDelete(list.userId) }}>Delete
+                  </button>
               </td>
             </tr>
-        );
+          );
+          return lists;
+        }
+
+
+        handleDelete(id) {
+          console.log(id);
+          var userId = id;
+          const requestOptions = {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+          };
+          
+          console.log(this.props.URL);
+          fetch(this.props.URL + '/user/' + userId, requestOptions)
+              .then(response => response.json())
+              .then(data => {
+                if (data.response == 'success') {
+                    toastada.success('You have successfully deleted a user!');
+                    this.state.data = null;
+                    this.props.getUsers();
+                }
+                // else {
+                //     toastada.error('Failed: ' + data.message)
+                // }
+              });
+        }
+      
+        render() {
+          console.log(this.state.data);
           return(
             <div>
               <h3>Manage Users</h3>
               <div id="userlist">
                 <table className="table table-striped table-bordered table-hover">
-                  <tr><th>User Type</th><th>User ID</th><th>Email</th><th>Name</th><th>Join Date</th><th>Delete</th></tr>
-                {lists}
+                  <tr><th>User ID</th><th>User Type</th><th>Email</th><th>Name</th><th>Join Date</th><th>Delete</th></tr>
+                {this.getUsers()}
                 </table>
                 </div>
             </div>
           );
+        }
+      }
+
+      class UserList extends React.Component {
+        constructor(props) {
+          super(props);
+
+        }
+
+        render(){
+
         }
       }
 

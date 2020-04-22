@@ -735,14 +735,15 @@ app.delete('/restaurant/:restId', function(req, res) {
 
 // Delete Single User
 app.delete('/user/:userId', function(req, res) {
-  var id = req.param['userId'];
-
+  console.log("delete method...\n");
+  var id = req.params['userId'];
+  console.log("delete: "+ id);
   User.remove({userId: id}, function(err) {
     if(err) {
       res.send(err);
       return;
     } else {
-      res.send("User deleted.");
+      res.json({response: 'success'});
     }
   });
 });
