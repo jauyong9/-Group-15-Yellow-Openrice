@@ -1700,4 +1700,4 @@ function Header() {
       }
     }
 
-    ReactDOM.render(<App URL='http://localhost:3000'/>, document.getElementById('root'));
+    ReactDOM.render(<App URL='{location.protocol + '\/\/' + location.host}/>, document.getElementById('root'));
