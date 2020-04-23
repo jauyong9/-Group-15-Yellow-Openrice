@@ -238,6 +238,17 @@
 					            this.props.handleToggleMask();
                       const msg = `Thank you for your registration. An email has been sent to ${this.state.email}. Please click the link in the email to activate your account`;
                       this.props.handlePopupMsg(msg);
+                      this.setState({
+                        nameError: '',
+                        emailError: '',
+                        passwordError: '',
+                        againPasswordError: '',
+                        name: '',
+                        email: '',
+                        password: '',
+                        againPassword: '',
+                        registerResult: ''
+                      });
                   }
                   else {
                       $("#registerForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
@@ -412,7 +423,11 @@
                   if (data.response == 'success') {
                       $("#loginForm").fadeOut();
                       this.props.handleChangeToken(data.token);
-					  this.props.handleToggleMask();
+					            this.props.handleToggleMask();
+                      this.setState({
+                        password: '',
+                        emailError: '',
+                        passwordError: ''})
                   }
                   else {
                       $("#loginForm").effect( "shake", { direction: "right", times: 4, distance: 10}, 500 );
