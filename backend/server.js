@@ -873,7 +873,7 @@ const add_default_admin = () => {
     email: 'admin@admin.com',
     name: 'Admin',
     password: bcrypt.hashSync('qwer'),
-    type: 'Admin'
+    type: 'admin'
   });
   admin.save(function (err, result) {
     if(err){
