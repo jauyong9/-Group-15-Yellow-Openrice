@@ -2,7 +2,7 @@ const apiUrl = 'http://localhost:3000';
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
-const datasource = 'https://raw.githack.com/LiWaiYip/mynewrepository/master/map.json';
+const datasource = 'https://raw.githubusercontent.com/LiWaiYip/mynewrepository/master/map.json';
 
 var request = require("request")
 var cors = require('cors');
@@ -228,7 +228,7 @@ app.post('/comment/:restId', (req, res) => {
             Comment.findOne().sort('-commentId').exec(function(err, item) {
               if (err)
                 res.json({response: 'fail', message: err});
-              let newId = (item == null ? 0 : item.commentId) + 1;
+              let newId = (item == null ? 1 : item.commentId) + 1;
 
               if (rest) {
                 var comment = new Comment({
@@ -314,7 +314,7 @@ app.post('/register', function(req, res) {
   User.findOne().sort('-userId').exec(function(err, item) {
     if (err)
       res.json({response: err});
-    let newId = (item == null ? 0 : item.userId) + 1;
+    let newId = (item == null ? 1 : item.userId) + 1;
     const today = new Date();
     var user = new User({
       userId: newId,
@@ -549,6 +549,7 @@ app.get('/restaurant', function(req, res) {
   });
 });
 
+/*
 // Add all Restaurants from datasource
 app.get('/load_datasource', function(req, res) {
   // TODO: verify admin account before adding
@@ -587,6 +588,7 @@ app.get('/load_datasource', function(req, res) {
        }
      });
 });
+*/
 
 app.get('/restaurant/:id', function(req, res) {
   Restaurant
@@ -731,7 +733,7 @@ app.post('/restaurant', function(req, res) {
 app.delete('/rest/:restId', function(req, res) {
   var id = req.params['restId'];
   console.log("delete: "+id);
-  
+
   Restaurant.remove({restId: id}, function(err) {
     if(err) {
       res.json({response: 'fail', message: err});
@@ -744,7 +746,7 @@ app.delete('/rest/:restId', function(req, res) {
 // Delete Single User
 app.delete('/user/:userId', function(req, res) {
   var id = req.params['userId'];
-  
+
   User.remove({userId: id}, function(err) {
     if(err) {
       res.json({response: 'fail', message: err});
@@ -757,28 +759,40 @@ app.delete('/user/:userId', function(req, res) {
 
 // Delete all restaurants
 app.delete('/all_restaurants', function(req, res) {
-    Restaurant.deleteMany({}, function(err) {
-      if (err) {
-        res.send(err);
-      }
-      else {
-        res.send('Deleted all restaurants');
-      }
-    });
+    if (req.headers['key'] == SECRET_KEY) {
+      Restaurant.deleteMany({}, function(err) {
+        if (err) {
+          res.send(err);
+        }
+        else {
+          res.send('Deleted all restaurants');
+        }
+      });
+    }
+    else {
+      res.send('key is wrong')
+    }
 });
 
 
 // Delete all users
 app.delete('/all_users', function(req, res) {
-    User.deleteMany({}, function(err) {
-      if (err) {
-        res.send(err);
-      }
-      else {
-        res.send('Deleted all users');
-      }
-    });
+    if (req.headers['key'] == SECRET_KEY) {
+      User.deleteMany({}, function(err) {
+        if (err) {
+          res.send(err);
+        }
+        else {
+          res.send('Deleted all users');
+        }
+      });
+    }
+    else {
+      res.send('key is wrong')
+    }
 });
+
+/*
 app.get('/add_admin', function (req, res) {
   var maxid = 0;
   User.findOne({}, 'userId').sort({userId: -1}).limit(1)
@@ -805,14 +819,97 @@ app.get('/add_admin', function (req, res) {
               + "Password: qwer"
             );
   });
-
 });
-app.all('/map.html', function (req, res) {
+*/
 
+const load_datasource = () => {
+  request({
+    url: datasource,
+    json: true
+  }, function (error, response, body) {
+      console.log(response.statusCode)
+      if (!error && response.statusCode === 200) {
+          var restaurants = body.features
+
+          var responses = []
+
+          for (var i = 0; i < restaurants.length; i++) {
+                const rest = new Restaurant({
+                  restId: i+1,
+                  name: restaurants[i].properties.Name,
+                  longitude: restaurants[i].geometry.coordinates[0],
+                  latitude: restaurants[i].geometry.coordinates[1],
+                  description: restaurants[i].properties.description
+                });
+
+                rest.save(function(err) {
+
+                  if (err)
+                    console.log(`Fail for adding ${rest.name} because ${err}`);
+                  else
+                    console.log(`Successful for adding ${rest.name}`);
+
+                });
+
+           }
+
+       }
+     });
+}
+
+const add_default_admin = () => {
+  var maxid = 0;
+  User.findOne({}, 'userId').sort({userId: -1}).limit(1)
+  .exec(function(err, result) {
+    if(err) return console.error(err);
+    if(result)
+      maxid = result.userId + 1;
+    else
+      maxid = 1;
+  });
+
+  var admin = new User ({
+    userId: maxid,
+    email: 'admin@admin.com',
+    name: 'Admin',
+    password: bcrypt.hashSync('qwer'),
+    type: 'Admin'
+  });
+  admin.save(function (err, result) {
+    if(err){
+      console.log(err);
+      return;
+    }
+    console.log("Use this account information to login as admin.:\n"
+              + "Email: " + result.email + "\n"
+              + "Password: qwer"
+            );
+  });
+}
+
+app.all('/map.html', function (req, res) {
     res.sendFile(path.resolve(__dirname + '/../frontend/map.html'));
 });
 
 app.all('/*', function (req, res) {
+    Restaurant.count({}, function(err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result == 0)
+          load_datasource();
+      }
+    })
+
+    User.count({email: 'admin@admin.com'}, function(err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result == 0)
+          add_default_admin();
+      }
+    })
+
     res.sendFile(path.resolve(__dirname + '/../frontend/index.html'));
 });
 
