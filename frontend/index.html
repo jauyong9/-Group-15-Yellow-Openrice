@@ -234,7 +234,7 @@
                   };
                   if (data.response == 'success') {
                       this.props.handleChangeToken(data.token);
-                      $("#registerForm").fadeOut();
+                      $("#registerForm").slideUp();
 					            this.props.handleToggleMask();
                       const msg = `Thank you for your registration. An email has been sent to ${this.state.email}. Please click the link in the email to activate your account`;
                       this.props.handlePopupMsg(msg);
@@ -821,10 +821,11 @@
           this.handleInputChange = this.handleInputChange.bind(this);
           this.ClickChangePassword = this.ClickChangePassword.bind(this);
           this.handleChangeIcon = this.handleChangeIcon.bind(this);
+        }
+
+        componentDidMount() {
           // Hide change password form
-          $(document).ready(function () {
-            $(".form2").hide();
-          });
+          $(".form2").hide();
         }
 
         ClickChangePassword() {
@@ -832,7 +833,7 @@
         }
 
         cancel() {
-          $("#changePasswordForm").fadeOut();
+          $("#changePasswordForm").slideUp();
           $("#newPassword").val('');
           $("#newRePassword").val('');
         }
