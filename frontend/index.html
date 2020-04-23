@@ -1081,7 +1081,7 @@
         if (props.user) {
           return (
             <div className={"message"}>
-
+              <img src={props.user.iconUrl} alt="Avatar" />
               <span className="name">{props.user.name}</span> &nbsp;
               <span style={{color: '#9b870c'}}>({props.user.type})</span> &nbsp;
               <span className="time">{timeSince(Date.parse(props.time))}</span>
