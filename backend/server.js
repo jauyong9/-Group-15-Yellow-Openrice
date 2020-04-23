@@ -169,14 +169,12 @@ app.use('/js', express.static(path.resolve(__dirname + '/../frontend/js/')));
 
 // Change Password
 app.post('/password/', (req, res) => {
-  console.log("\nNow in password: "+req.body.password);
   jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
     if (err)
       res.json({response: 'fail', message: err})
     else {
       const filter = {_id: decoded._id}
 
-      console.log("\npassword: "+req.body.password);
       const update = {password: bcrypt.hashSync(req.body.password)}
 
       User.findOneAndUpdate(filter, update, function(err, doc) {

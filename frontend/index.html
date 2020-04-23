@@ -818,10 +818,11 @@
         
         cancel() {
           $("#changePasswordForm").fadeOut();
+          $("#newPassword").val('');
+          $("#newRePassword").val('');
         }
 
         handleChangePassword() {
-          
           console.log(this.props.token)
           var hasError = this.generateError();
           var password = this.state.password;
@@ -845,12 +846,8 @@
                         toastada.error('Failed: ' + data.message)
                     }
                   });
+              this.cancel();
             }
-            $("#changePasswordForm").fadeOut();
-            this.setSate({
-              newPassword: '',
-              newRePassword: ''
-            })
           }
         }
 
