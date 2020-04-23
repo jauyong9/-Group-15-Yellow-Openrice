@@ -698,7 +698,7 @@ app.get('/users', function(req, res) {
 
 // Display All Restaurant
 app.get('/rests', function(req, res) {
-  Restaurant.collection.find({}).sort({restId: 1}).limit(31).toArray(function(err, result) {
+  Restaurant.collection.find({}).sort({restId: 1}).toArray(function(err, result) {
     if (err) throw err;
     res.send(result);
   })
