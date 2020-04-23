@@ -792,37 +792,103 @@
       class Profile extends React.Component {
         constructor(props) {
           super(props);
+          this.state = {
+            password: '',
+            againPassword: '',
+            passwordError: '',
+            againPasswordError: '',
+            changeResult: ''
+          };
           window.history.pushState({page: 'Profile'}, null, `?page=profile`);
-          this.handleChangeIcon = this.handleChangeIcon.bind(this);
+          this.cancel = this.cancel.bind(this);
           this.handleChangePassword = this.handleChangePassword.bind(this);
+          this.generateError = this.generateError.bind(this);
+          this.handleInputChange = this.handleInputChange.bind(this);
+          this.ClickChangePassword = this.ClickChangePassword.bind(this);
+          this.handleChangeIcon = this.handleChangeIcon.bind(this);
+          // Hide change password form
+          $(document).ready(function () {
+            $(".form2").hide();
+          });
+        }
+
+        ClickChangePassword() {
+          $("#changePasswordForm").fadeIn();
+        }
+        
+        cancel() {
+          $("#changePasswordForm").fadeOut();
         }
 
         handleChangePassword() {
-          var password = prompt('Please enter the new password: ');
+          
+          console.log(this.props.token)
+          var hasError = this.generateError();
+          var password = this.state.password;
+          if (hasError == false){
+            if (password != null && password != '') {
+              const requestOptions = {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
+                  body: JSON.stringify({ password: password })
+              };
 
-          if (password != null && password != '') {
-            // Simple POST request with a JSON body using fetch
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
-                body: JSON.stringify({  password: password })
-            };
+              fetch(this.props.URL + '/password/', requestOptions)
+                  .then(response => response.json())
+                  .then(data => {
+                    if (data.response == 'success') {
+                        toastada.success('You have successfully changed your password');
+                        this.props.reloadUser();
 
-            fetch(this.props.URL + '/password/', requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                  if (data.response == 'success') {
-                      toastada.success('You have successfully changed your password');
-                      this.props.reloadUser();
-
-                  }
-                  else {
-                      toastada.error('Failed: ' + data.message)
-                  }
-                });
+                    }
+                    else {
+                        toastada.error('Failed: ' + data.message)
+                    }
+                  });
+            }
+            $("#changePasswordForm").fadeOut();
+            this.setSate({
+              newPassword: '',
+              newRePassword: ''
+            })
           }
         }
 
+        generateError() {
+          let hasError = false;
+
+          if (this.state.password != this.state.againPassword) {
+            this.setState({
+              passwordError: 'Two passwords must be equal.',
+              againPasswordError: 'Two passwords must be equal.'
+            });
+            hasError = true;
+          }
+          else if (this.state.password == '') {
+            this.setState({
+              passwordError: 'Password cannot be empty.',
+              againPasswordError: 'Password cannot be empty.'
+            });
+            hasError = true;
+          }
+          else {
+            this.setState({
+              passwordError: '',
+              againPasswordError: ''
+            });
+          }
+
+          return hasError;
+        }
+
+        handleInputChange(e){
+            const target = e.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+            this.setState({
+                [name]: value
+            });
+        }
 
         handleChangeIcon() {
           var iconUrl = prompt('Please enter the image url of your icon');
@@ -853,6 +919,11 @@
 
         render() {
           if (this.props.user != null) {
+            let inputError = {
+              fontSize: 'small',
+              color: 'red',
+              paddingLeft: '20px'
+            };
             return (
               <div className="mt-3">
                 <div className="card px-4 pt-3">
@@ -864,10 +935,54 @@
                   <p>Join Date: {this.props.user.joinDate}</p>
                   </center>
                   
-                  <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleChangePassword}>Change Password</button></p>
-                  <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleChangeIcon}>Change Icon</button></p>
+                  <p><button type="submit" className="btn btn-warning btn-block" onClick={this.ClickChangePassword}>Change Password</button></p>
+                  
+                      <center>
+                    <div className="form2 col-8" id="changePasswordForm">
+                      <section id="inner-wrapper" className="mb-2 mt-2">
+                        <article>
+                          <form id="passwordChangeForm">
+                            <div className="form-group">
+                              <div className="input-group">
+                                <input
+                                  id="newPassword"
+                                  type="password"
+                                  className="form-control"
+                                  placeholder="New Password"
+                                  name="password"
+                                  onChange={this.handleInputChange}
+                                  value={this.state.password}
+                                />
+                              </div>
+                              <p style={inputError}>{this.state.againPasswordError}</p>
+                            </div>
+                            <div className="form-group">
+                              <div className="input-group">
+                                <input
+                                  id="newRePassword"
+                                  type="password"
+                                  name="againPassword"
+                                  className="form-control"
+                                  placeholder="Enter New Password Again"
+                                  onChange={this.handleInputChange}
+                                  value={this.state.againPassword}
+                                />
+                              </div>
+                              <p style={inputError}>{this.state.passwordError}</p>
+                            </div>
+                          </form>
+                          <div>
+                              <button className="btn btn-sm btn-outline-dark float-left mb-3" onClick={this.cancel}>Cencel</button>
+                              <button className="btn btn-outline-success btn-sm float-right mb-3" onClick={this.handleChangePassword}>Submit</button>
+                          </div>
+                          <p style={this.state.changeResultStyle}>{this.state.changeResult}</p>
+                        </article>
+                      </section>
+                    </div>
+                    </center>
+                <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleChangeIcon}>Change Icon</button></p>
                 </div>
-              </div>
+                </div>
             );
           }
           else {
@@ -1172,7 +1287,8 @@
             return (<Home URL={this.props.URL} handleChangePage={this.props.handleChangePage}/>);
           }
           else if (this.props.page.toLowerCase() == 'profile') {
-            return (<Profile user={this.props.user} URL={this.props.URL} token={this.props.token} reloadUser={this.props.reloadUser}/>);
+            return (<Profile user={this.props.user} URL={this.props.URL} token={this.props.token} reloadUser={this.props.reloadUser} 
+                          handlePopupMsg={this.handlePopupMsg}/>);
           }
           else if (this.props.page.toLowerCase() == 'restaurant') {
             return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL} user={this.props.user}/>);
@@ -1576,6 +1692,7 @@
               <Content 	page={this.state.page}
 						user={this.state.user}
             handleChangePage={this.handleChangePage}
+                    handleChangeToken={this.handleChangeToken}
             parameter={this.state.toParameter}
             URL={this.props.URL}
             token={this.state.token}
@@ -1583,6 +1700,7 @@
 			  />
               <LoginForm  URL={this.props.URL}
                           handleChangeToken={this.handleChangeToken}
+                          handlePopupMsg={this.handlePopupMsg}
 						  handleToggleMask={this.handleToggleMask}
               />
               <RegisterForm URL={this.props.URL}

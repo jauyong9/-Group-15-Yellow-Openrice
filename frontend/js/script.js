@@ -1,7 +1,9 @@
 // When the page load
 function init() {
   $(".form").hide();
-  $(".form").css("visibility", "visible");  
+  $(".form").css("visibility", "visible");
+  $(".form2").hide();
+  $(".form2").css("visibility", "visible"); 
 }
 
 // When user clicks the login button in the page
@@ -20,12 +22,15 @@ function closeRegisterForm() {
   $("#registerForm").fadeOut();
 }
 
+function closeChangePasswordForm() {
+  $("#changePasswordForm").fadeOut();
+}
+
 // When user clicks the login button in the login form.
 function loginSubmit(e) {
   e.submit();
   closeLoginForm();
 }
-
 
 
 
@@ -66,6 +71,13 @@ $(document).bind( "mouseup touchend", function(e)
     if (!container.is(e.target) && container.has(e.target).length === 0)
     {
         closeRegisterForm();
+    }
+    var container = $("#changePasswordForm");
+
+    // if the target of the click isn't the container nor a descendant of the container
+    if (!container.is(e.target) && container.has(e.target).length === 0)
+    {
+        closeChangePasswordForm();
     }
 });
 
