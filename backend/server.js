@@ -757,7 +757,7 @@ app.delete('/user/:userId', function(req, res) {
 });
 
 
-// Delete all restaurants
+// Delete all restaurants (Not open to public, for debugging only)
 app.delete('/all_restaurants', function(req, res) {
     if (req.headers['key'] == SECRET_KEY) {
       Restaurant.deleteMany({}, function(err) {
@@ -775,7 +775,7 @@ app.delete('/all_restaurants', function(req, res) {
 });
 
 
-// Delete all users
+// Delete all users (Not open to public, for debugging only)
 app.delete('/all_users', function(req, res) {
     if (req.headers['key'] == SECRET_KEY) {
       User.deleteMany({}, function(err) {
