@@ -166,6 +166,7 @@ app.use(cors()); // allow index.html to connect
 app.use('/images', express.static(path.resolve(__dirname + '/../images/')));
 app.use('/css', express.static(path.resolve(__dirname + '/../frontend/css/')));
 app.use('/js', express.static(path.resolve(__dirname + '/../frontend/js/')));
+app.use('/jsx', express.static(path.resolve(__dirname + '/../frontend/jsx/')));
 
 // Change Password
 app.post('/password/', (req, res) => {
@@ -350,7 +351,8 @@ app.post('/register', function(req, res) {
           expiresIn: 50000
         })
 
-        const link = apiUrl + '/activate/' + activateToken;
+        //const link = apiUrl + '/activate/' + activateToken;
+        const link = req.protocol + '://' + req.get('host') + '/activate/' + activateToken;
 
         // Send verification email
         var mailOptions = {
