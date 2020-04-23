@@ -175,7 +175,7 @@ app.post('/password/', (req, res) => {
     else {
       const filter = {_id: decoded._id}
 
-      const update = {password: bcrypt.hashSync(req.body['password'])}
+      const update = {password: bcrypt.hashSync(req.body.password)}
 
       User.findOneAndUpdate(filter, update, function(err, doc) {
        if (err) {
