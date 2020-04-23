@@ -525,7 +525,7 @@ function Header() {
         };
 
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(this.setPos);
+          navigator.geolocation.getCurrentPosition(this.setPos,this.fetchRest());
         }
         else {
           this.fetchRest();
