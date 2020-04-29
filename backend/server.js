@@ -539,7 +539,7 @@ app.get('/favourite', function (req, res) {
     })
     .populate('favouriteRest').exec(function(err, user) {
       if (err) throw err;
-      console.log('Rest: ', user.favouriteRest[0].name);
+      //console.log('Rest: ', user.favouriteRest[0].name);
       res.send(user.favouriteRest);
     });
 });
@@ -757,7 +757,7 @@ app.get('/users', function(req, res) {
 
 // Display All Restaurant
 app.get('/rests', function(req, res) {
-  Restaurant.collection.find({}).sort({restId: 1}).toArray(function(err, result) {
+  Restaurant.collection.find({}).sort({restId: -1}).toArray(function(err, result) {
     if (err) throw err;
     res.send(result);
   })
@@ -768,24 +768,23 @@ app.post('/restaurant', function(req, res) {
   var maxid = 0;
   Restaurant.findOne({}, 'restId').sort({restId: -1}).limit(1)
   .exec(function(err, result) {
+    if (err) {
+      res.json({response: 'fail', message: err});
+    }
     maxid = result.restId +1;
     var rest = new Restaurant({
       restId: maxid,
       name: req.body['name'],
-      logitude: req.body['longitude'],
+      longitude: req.body['longitude'],
       latitude: req.body['latitude'],
-      tag: req.body['tag'],
-      likes: 0,
-      dislikes: 0,
-      views: 0,
       description: req.body['description']
     });
     rest.save(function(err){
-      if(err){
-        res.send(err);
-        return;
-      }
-      res.status(201).send("New restaurant added.");
+      if (err) {
+        res.json({response: 'fail', message: err});
+     }
+     else
+        res.json({response: 'success'});
     })
   })
 });
