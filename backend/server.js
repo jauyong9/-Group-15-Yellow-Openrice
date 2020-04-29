@@ -68,6 +68,10 @@ var UserSchema = mongoose.Schema({
   type: {
     type: String,
     default: 'Unverifed User'
+  },
+  favouriteRest: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'Restaurant'}],
+    default: []
   }
 });
 var User = mongoose.model('User', UserSchema);
@@ -483,6 +487,61 @@ app.get('/like/:restId', (req, res) => {
       res.json({response: 'fail', err: err})
     })
   })
+});
+
+//  Add a restaurant to favourites
+app.get('/favourite/:restId', (req, res) => {
+  var rest_id;
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+
+      Restaurant.findOne(
+        { restId: req.params['restId'] },
+        function(err, result) {
+
+          rest_id = result._id;
+
+          User.findOne({ _id: decoded._id })
+          .then(user => {
+            if(user.favouriteRest.indexOf(rest_id) != -1) {
+              res.json({response: 'warn', message: 'You have already added the restaurant to favourites.'})
+            }
+            else
+            {
+              const filter = {_id: decoded._id}
+              user.favouriteRest.push(rest_id);
+              const update = {favouriteRest: user.favouriteRest}
+
+              User.findOneAndUpdate(filter, update, function(err, doc) {
+              if (err) {
+                  res.json({response: 'fail', message: err});
+              }
+              else
+                  res.json({response: 'OK'});
+              })
+            }
+          })
+        }
+      )
+    }
+  });
+});
+
+// Get favourite restaurants
+app.get('/favourite', function (req, res) {
+    var decoded = jwt.verify(req.headers['authorization'], SECRET_KEY);
+    // if (err)
+    //   res.json({response: 'fail', err: err})
+    User.findOne({
+      _id: decoded._id
+    })
+    .populate('favouriteRest').exec(function(err, user) {
+      if (err) throw err;
+      console.log('Rest: ', user.favouriteRest[0].name);
+      res.send(user.favouriteRest);
+    });
 });
 
 // Profile

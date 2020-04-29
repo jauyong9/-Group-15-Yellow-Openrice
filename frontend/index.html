@@ -57,6 +57,7 @@
           console.log(this.state);
           this.LogoutUser = this.LogoutUser.bind(this);
           this.ToProfile = this.ToProfile.bind(this);
+          this.ToFavourite = this.ToFavourite.bind(this);
           this.ToHome = this.ToHome.bind(this);
           this.ToManageRest = this.ToManageRest.bind(this);
           this.ToManageUser = this.ToManageUser.bind(this);
@@ -74,6 +75,9 @@
         }
         ToProfile() {
           this.props.handleChangePage('Profile');
+        }
+        ToFavourite() {
+          this.props.handleChangePage('Favourite');
         }
         ToHome() {
           this.props.handleChangePage('Home');
@@ -106,6 +110,7 @@
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <a className="dropdown-item" href="javascript:;" onClick={this.ToProfile}>Profile</a>
+                  <a className="dropdown-item" href="javascript:;" onClick={this.ToFavourite}>Favourtites</a>
                   <a className="dropdown-item" href="javascript:;" onClick={this.LogoutUser}>Logout</a>
                 </div>
               </div>);
@@ -1006,6 +1011,53 @@
         }
       }
 
+      class Favourite extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { data: [] };
+          window.history.pushState({page: 'Favourite'}, null, `?page=favourite`);
+
+          const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'authorization': this.props.token }
+          };
+          fetch(this.props.URL + '/favourite', requestOptions)
+            .then(data => data.json())
+            .then((data) => {
+              this.setState({
+                  data: data
+              })
+            });
+        }
+        getRests() {
+          let fav_list = this.state.data;
+          if(fav_list.length == 0){
+            return <center>No favourite restaurant added.</center>
+          } else {
+            return fav_list.map((rest) =>
+            <tr>
+              <td>{rest.name}</td>
+            </tr>
+          );
+          }
+          
+        }
+
+        render() {
+          return (
+            <div>
+              <h3>Favourite Restaurants</h3>
+              <div id="restlist" className="table-responsive">
+                <table className="table table-striped table-bordered table-hover">
+                  
+                {this.getRests()}
+                </table>
+                </div>
+            </div>
+          );
+        }
+      }
+
       class CommentInput extends React.Component {
 
         constructor(props) {
@@ -1147,6 +1199,8 @@
 
           this.handleDislike = this.handleDislike.bind(this)
 
+          this.handleAddFavourtieRest = this.handleAddFavourtieRest.bind(this)
+
           this.reloadRest = this.reloadRest.bind(this)
 
           this.reloadComment = this.reloadComment.bind(this)
@@ -1228,6 +1282,31 @@
             });
         }
 
+        handleAddFavourtieRest() {
+          // Add restaurant to favourites
+          const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'authorization': this.props.token }
+          };
+          fetch(this.props.URL + '/favourite/' + this.state.rest.restId, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+              if (data.response == 'warn') {
+                  toastada.warning(data.message);
+              }
+              else if (data.response == 'fail') {
+                  toastada.error('Failed. You must login before add to favourites!');
+              }
+              else if (data.response == 'success') {
+                  toastada.success('You have added the restaurant to your favourites.');
+              }
+              else {
+                  this.reloadRest();
+              }
+            });
+
+        }
+
         getComments() {
           let comments = [];
           let n = this.state.rest.comments.length;
@@ -1255,8 +1334,10 @@
           else {
             const liked = this.props.user && this.state.rest.likes.indexOf(this.props.user._id) != -1;
             const disliked = this.props.user && this.state.rest.dislikes.indexOf(this.props.user._id) != -1;
+            const faved = this.props.user && this.props.user.favouriteRest.indexOf(this.state.rest._id) != -1; 
             const likeImg = liked ? "../images/liked.png" : "../images/like.png"
             const dislikeImg = disliked ? "../images/disliked.png" : "../images/dislike.png"
+            const favouriteImg = faved ? "../images/faved.png" : "../images/fav.png"
             const mapUrl = `https://maps.google.com/maps?q=${this.state.rest.latitude},${this.state.rest.longitude}&z=14&output=embed`;
             const commentInput = (
                 <CommentInput user={this.props.user}
@@ -1269,7 +1350,10 @@
             return (
               <div>
                 <div className="row mt-3">
-                  <div className="col-12 col-sm-6 col-md-8"><h2>{this.state.rest.name}</h2></div>
+                  <div className="col-12 col-sm-6 col-md-8">
+                    <h2 className="d-inline mr-3">{this.state.rest.name}</h2>
+                    <input className="d-inline" type="image" src={favouriteImg} style={{width: 25, height: 25}} onClick={this.handleAddFavourtieRest} />
+                  </div>
                   <div className="col-6 col-md-4">
                     <div className="float-right">
                       <img src="../images/view.png" style={{width: 30, height: 40, paddingBottom: 10}}/> &nbsp;
@@ -1312,6 +1396,11 @@
           }
           else if (this.props.page.toLowerCase() == 'profile') {
             return (<Profile user={this.props.user} URL={this.props.URL} token={this.props.token} reloadUser={this.props.reloadUser}
+                          handlePopupMsg={this.handlePopupMsg}/>);
+          }
+          else if (this.props.page.toLowerCase() == 'favourite') {
+            return (<Favourite user={this.props.user} URL={this.props.URL} token={this.props.token} handleChangePage={this.props.handleChangePage}
+                          handleChangePage={this.props.handleChangePage}
                           handlePopupMsg={this.handlePopupMsg}/>);
           }
           else if (this.props.page.toLowerCase() == 'restaurant') {
@@ -1622,6 +1711,7 @@
           this.handleChangeToken = this.handleChangeToken.bind(this);
           this.handlePopupMsg = this.handlePopupMsg.bind(this);
           this.loadProfile = this.loadProfile.bind(this);
+          this.loadFavRest = this.loadFavRest.bind(this);
           this.reloadUser = this.reloadUser.bind(this);
           this.callAPI();
         }
@@ -1661,6 +1751,28 @@
               .then(user => {
                 this.setState({username: user.name, userType: user.type});
   			        this.setState({user: user});
+              });
+          }
+          else {
+            this.setState({user: null});
+          }
+        }
+
+        loadFavRest(token) {
+          this.setState({username: ''}); // logout first
+
+          if (token != '') {
+
+            const requestOptions = {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json', 'authorization': token }
+            };
+
+            fetch(this.props.URL + '/favourite', requestOptions)
+              .then(response => response.json())
+              .then(user => {
+                //this.setState({username: user.name, userType: user.type});
+                this.setState({user: user});
               });
           }
           else {
