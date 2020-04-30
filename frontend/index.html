@@ -1726,6 +1726,7 @@
         constructor(props) {
           super(props);
           this.state = {
+            requiredItem: 0,
             data: [],
             nameError: '',
             longError: '',
@@ -1733,7 +1734,12 @@
             name: '',
             longitude: '',
             latitude: '',
-            description: ''
+            description: '',
+            edit_restId: '',
+            edit_name: '',
+            edit_longitude: '',
+            edit_latitude: '',
+            edit_description: ''
           };
           window.history.pushState({page: 'ManageRest'}, null, `?page=managerest`);
           this.handleDelete = this.handleDelete.bind(this);
@@ -1746,6 +1752,8 @@
           this.cancel = this.cancel.bind(this);
           this.getForm = this.getForm.bind(this);
           this.handleInputChange = this.handleInputChange.bind(this);
+          this.replaceModalItem = this.replaceModalItem.bind(this);
+          this.saveModalDetails = this.saveModalDetails.bind(this);
 
           const url = this.props.URL + '/rests';
           const requestOptions = {method: 'GET'};
@@ -1792,7 +1800,7 @@
             this.setState({nameError: ''});
           }
 
-          // Longtitude Error
+          // longitude Error
           if (this.state.longitude == '') {
             this.setState({longError: 'Longitude cannot be empty.'});
             hasError = true;
@@ -1889,8 +1897,49 @@
                 </div>
         }
 
+        replaceModalItem(index, rest) {
+          this.setState({
+            requiredItem: index,
+            edit_restId: rest.restId,
+            edit_name: rest.name,
+            edit_longitude: rest.longitude,
+            edit_latitude: rest.latitude,
+            edit_description: rest.description
+          });
+        }
+
+        saveModalDetails(restId, item) {
+          // this works
+          const restname = item.name;
+          console.log(restname);
+          
+          const requestOptions = {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
+              body: JSON.stringify({
+                name: item.name,
+                longitude: item.longitude,
+                latitude: item.latitude,
+                description: item.description
+              })
+          };
+
+          fetch(this.props.URL + '/restaurant/' + restId, requestOptions)
+              .then(response => response.json())
+              .then(data => {
+                if (data.response == 'success') {
+                  toastada.success('You have successfully updated the restaurant details.');
+                    
+                  window.location.reload();
+                }
+                else {
+                    toastada.error('Failed: ' + data.message)
+                }
+              });
+        }
+
         getRests() {
-          return this.state.data.map((rest) =>
+          return this.state.data.map((rest, index) =>
             <tr>
               <td>{rest.restId}</td>
               <td>{rest.name}</td>
@@ -1899,19 +1948,21 @@
               <td>{rest.dislikes.length}</td>
               <td>{rest.views}</td>
               <td>{rest.comments.length}</td>
-              <td>{rest.longitude}</td>
-              <td>{rest.latitude}</td>
               <td>
-                  <button
-                    className="btn btn-block"
-                    value={rest.restId}
-                    onClick={() => { if(window.confirm('Are you sure to delete?')) this.handleDelete(rest.restId) }}>
-                    <i className="fa fa-trash-o" style={{color: "red"}} > </i>
-                  </button>
+                <button className="btn pull-left" data-toggle="modal" data-target="#exampleModal"
+                  onClick={() => this.replaceModalItem(index, rest)}>
+                  <i className="fa fa-edit" style={{color: "#007bff"}} > </i>
+                </button>
+                <button
+                  className="btn pull-right"
+                  value={rest.restId}
+                  onClick={() => { if(window.confirm('Are you sure to delete?')) this.handleDelete(rest.restId) }}>
+                  <i className="fa fa-trash-o" style={{color: "#dc3545"}} > </i>
+                </button>
               </td>
             </tr>
           );
-        }
+      }
 
         handleDelete(id) {
           var restId = id;
@@ -1941,7 +1992,8 @@
             color: 'red',
             paddingLeft: '20px'
           };
-          return(
+          
+          return (
             <div>
               <h3>Manage Restaurant</h3>
               <button className="float-leftx btn btn-outline-success mb-3" onClick={this.ClickAddRest}>Add Restaurant</button>
@@ -2015,15 +2067,107 @@
                <div id="restlist" className="table-responsive">
 
                 <table className="table table-striped table-bordered table-hover">
-                  <tr><th>ID</th><th>Name</th><th>Tag</th><th>Likes</th><th>Dislikes</th><th>Views</th><th>Comments</th>
-                    <th>Long</th><th>Lat</th><th></th></tr>
+                  <tr><th>ID</th><th>Name</th><th>Tag</th><th>Likes</th><th>Dislikes</th><th>Views</th><th>Comments</th><th></th></tr>
                 {this.getRests()}
                 </table>
+                <Modal
+                  restId={this.state.edit_restId}
+                  name={this.state.edit_name}
+                  longitude={this.state.edit_longitude}
+                  latitude={this.state.edit_latitude}
+                  description={this.state.edit_description}
+                  saveModalDetails={this.saveModalDetails}
+                />
                 </div>
             </div>
           );
         }
       }
+
+      class Modal extends React.Component {
+
+        constructor(props) {
+            super(props);
+            this.handleSave = this.handleSave.bind(this);
+            this.state = {
+                restId: '',
+                name: '',
+                longitude: '',
+                latitude: '',
+                description: ''
+            }
+        }
+
+            componentWillReceiveProps(nextProps) {
+              this.setState({
+                  restId: nextProps.restId,
+                  name: nextProps.name,
+                  longitude: nextProps.longitude,
+                  latitude: nextProps.latitude,
+                  description: nextProps.description
+              });
+          }
+
+          nameHandler(e) {
+              this.setState({ name: e.target.value });
+          }
+
+          longitudeHandler(e) {
+              this.setState({ longitude: e.target.value });
+          }
+
+          latitudeHandler(e) {
+              this.setState({ latitude: e.target.value });
+          }
+
+          descriptionHandler(e) {
+              this.setState({ description: e.target.value });
+          }
+
+          handleSave(restId) {
+              const item = this.state;
+              this.props.saveModalDetails(restId, item)
+          }
+
+        render() {
+            return (
+                <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">Edit Restaurant</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <p>
+                                  <span className="modal-lable">Name:</span>
+                                  <input className="form-control" value={this.state.name} onChange={(e) => this.nameHandler(e)} /></p>
+                                <p>
+                                  <span className="modal-lable">longitude:</span>
+                                  <input className="form-control" value={this.state.longitude} onChange={(e) => this.longitudeHandler(e)} /></p>
+                                <p>
+                                  <span className="modal-lable">Latitude:</span>
+                                  <input className="form-control" value={this.state.latitude} onChange={(e) => this.latitudeHandler(e)} /></p>
+                                <p>
+                                  <span className="modal-lable">Description:</span>
+                                  <textarea className="form-control" value={this.state.description} onChange={(e) => this.descriptionHandler(e)} />
+                                </p>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" data-dismiss="modal" 
+                                        onClick={() => { this.handleSave(this.state.restId) }}>Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+      }
+
+
 
       class App extends React.Component {
         componentDidMount() {

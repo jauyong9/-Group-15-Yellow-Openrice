@@ -193,6 +193,30 @@ app.post('/password/', (req, res) => {
   });
 });
 
+app.put('/restaurant/:restId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+      const filter = { restId: req.params['restId'] }
+      const update = {
+        name: req.body.name,
+        longitude: req.body.longitude,
+        latitude: req.body.latitude,
+        description: req.body.description
+      }
+
+      Restaurant.findOneAndUpdate(filter, update, function(err, rest) {
+       if (err) {
+          res.json({response: 'fail', message: err});
+       }
+       else
+          res.json({response: 'success'});
+      })
+    }
+  });
+});
+
 // Change icon
 app.post('/icon/', (req, res) => {
   jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
@@ -757,7 +781,7 @@ app.get('/users', function(req, res) {
 
 // Display All Restaurant
 app.get('/rests', function(req, res) {
-  Restaurant.collection.find({}).sort({restId: -1}).toArray(function(err, result) {
+  Restaurant.collection.find({}).sort({restId: 1}).toArray(function(err, result) {
     if (err) throw err;
     res.send(result);
   })
