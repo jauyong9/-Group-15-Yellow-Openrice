@@ -193,30 +193,6 @@ app.post('/password/', (req, res) => {
   });
 });
 
-app.put('/restaurant/:restId', (req, res) => {
-  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
-    if (err)
-      res.json({response: 'fail', message: err})
-    else {
-      const filter = { restId: req.params['restId'] }
-      const update = {
-        name: req.body.name,
-        longitude: req.body.longitude,
-        latitude: req.body.latitude,
-        description: req.body.description
-      }
-
-      Restaurant.findOneAndUpdate(filter, update, function(err, rest) {
-       if (err) {
-          res.json({response: 'fail', message: err});
-       }
-       else
-          res.json({response: 'success'});
-      })
-    }
-  });
-});
-
 // Change icon
 app.post('/icon/', (req, res) => {
   jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
@@ -786,6 +762,56 @@ app.get('/rests', function(req, res) {
     res.send(result);
   })
 });
+
+
+// Update Restaurant Details
+app.put('/restaurant/:restId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+      const filter = { restId: req.params['restId'] }
+      const update = {
+        name: req.body.name,
+        longitude: req.body.longitude,
+        latitude: req.body.latitude,
+        description: req.body.description
+      }
+
+      Restaurant.findOneAndUpdate(filter, update, function(err, rest) {
+       if (err) {
+          res.json({response: 'fail', message: err});
+       }
+       else
+          res.json({response: 'success'});
+      })
+    }
+  });
+});
+
+// Update User name/password
+app.put('/user/:userId', (req, res) => {
+  jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+    if (err)
+      res.json({response: 'fail', message: err})
+    else {
+      const filter = { userId: req.params['userId'] }
+      const update = {
+        name: req.body.name,
+        password: bcrypt.hashSync(req.body.password)
+      }
+
+      User.findOneAndUpdate(filter, update, function(err, rest) {
+       if (err) {
+          res.json({response: 'fail', message: err});
+       }
+       else
+          res.json({response: 'success'});
+      })
+    }
+  });
+});
+
 
 // Add New Restaurant
 app.post('/restaurant', function(req, res) {
