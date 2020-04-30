@@ -1488,7 +1488,6 @@
           this.handleDelete = this.handleDelete.bind(this);
           this.getUsers = this.getUsers.bind(this);
           this.addUser = this.addUser.bind(this);
-          this.updateUser = this.updateUser.bind(this);
           this.generateError = this.generateError.bind(this);
           this.handleInputChange = this.handleInputChange.bind(this);
           const requestOptions = {method: 'GET'};
@@ -1560,8 +1559,6 @@
             window.location.reload();
           }
         }
-
-        updateUser(id) {}
 
         handleDelete(id) {
           var userId = id;
@@ -1745,7 +1742,6 @@
           this.handleDelete = this.handleDelete.bind(this);
           this.getRests = this.getRests.bind(this);
           this.addRest = this.addRest.bind(this);
-          this.updateRest = this.updateRest.bind(this);
           this.generateError = this.generateError.bind(this);
           this.handleInputChange = this.handleInputChange.bind(this);
           this.ClickAddRest = this.ClickAddRest.bind(this);
@@ -1864,8 +1860,6 @@
             window.location.reload();
           }
         }
-
-        updateRest() {}
 
         handleInputChange(e){
             const target = e.target;
@@ -2066,11 +2060,15 @@
                     </div>
                <div id="restlist" className="table-responsive">
 
-                <table className="table table-striped table-bordered table-hover">
-                  <tr><th>ID</th><th>Name</th><th>Tag</th><th>Likes</th><th>Dislikes</th><th>Views</th><th>Comments</th><th></th></tr>
-                {this.getRests()}
+                <table className="table table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th><th>Name</th><th>Tag</th><th>Likes</th><th>Dislikes</th><th>Views</th><th>Comments</th><th></th>
+                    </tr>
+                  </thead>
+                  <tbody>{this.getRests()}</tbody>
                 </table>
-                <Modal
+                <EditRestModal
                   restId={this.state.edit_restId}
                   name={this.state.edit_name}
                   longitude={this.state.edit_longitude}
@@ -2084,7 +2082,7 @@
         }
       }
 
-      class Modal extends React.Component {
+      class EditRestModal extends React.Component {
 
         constructor(props) {
             super(props);
@@ -2098,36 +2096,36 @@
             }
         }
 
-            componentWillReceiveProps(nextProps) {
-              this.setState({
-                  restId: nextProps.restId,
-                  name: nextProps.name,
-                  longitude: nextProps.longitude,
-                  latitude: nextProps.latitude,
-                  description: nextProps.description
-              });
-          }
+        componentWillReceiveProps(nextProps) {
+          this.setState({
+              restId: nextProps.restId,
+              name: nextProps.name,
+              longitude: nextProps.longitude,
+              latitude: nextProps.latitude,
+              description: nextProps.description
+          });
+        }
 
-          nameHandler(e) {
-              this.setState({ name: e.target.value });
-          }
+        nameHandler(e) {
+            this.setState({ name: e.target.value });
+        }
 
-          longitudeHandler(e) {
-              this.setState({ longitude: e.target.value });
-          }
+        longitudeHandler(e) {
+            this.setState({ longitude: e.target.value });
+        }
 
-          latitudeHandler(e) {
-              this.setState({ latitude: e.target.value });
-          }
+        latitudeHandler(e) {
+            this.setState({ latitude: e.target.value });
+        }
 
-          descriptionHandler(e) {
-              this.setState({ description: e.target.value });
-          }
+        descriptionHandler(e) {
+            this.setState({ description: e.target.value });
+        }
 
-          handleSave(restId) {
-              const item = this.state;
-              this.props.saveModalDetails(restId, item)
-          }
+        handleSave(restId) {
+            const item = this.state;
+            this.props.saveModalDetails(restId, item)
+        }
 
         render() {
             return (
