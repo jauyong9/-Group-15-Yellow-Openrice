@@ -800,7 +800,6 @@ app.put('/user/:userId', (req, res) => {
         name: req.body.name
       }
       if(req.body.password != ''){
-        console.log(req.body.password )
         update = {
           name: req.body.name,
           password: bcrypt.hashSync(req.body.password)
