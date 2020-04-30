@@ -1517,15 +1517,14 @@
         }
 
         saveModalDetails(userId, item) {
-
           const requestOptions = {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
-              body: JSON.stringify({
-                name: item.name,
-                password: item.password
-              })
-          };
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
+                body: JSON.stringify({
+                  name: item.name,
+                  password: item.password
+                })
+            };
 
           fetch(this.props.URL + '/user/' + userId, requestOptions)
               .then(response => response.json())
@@ -1539,6 +1538,7 @@
                     toastada.error('Failed: ' + data.message)
                 }
               });
+            
         }
 
 
@@ -2230,7 +2230,7 @@
           this.setState({
             userId: nextProps.userId,
             name: nextProps.name,
-            password: nextProps.password
+            //password: nextProps.password
           });
       }
 
