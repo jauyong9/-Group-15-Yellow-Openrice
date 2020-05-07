@@ -27,6 +27,7 @@
 	  }
     </style>
 
+
   </head>
   <body>
     <div id="slidebar"></div>
@@ -36,6 +37,8 @@
       var url = new URL(url_string);
       var lat = Number(url.searchParams.get("lat"));
       var lon = Number(url.searchParams.get("lon"));
+      var userLat = Number(url.searchParams.get("userLat"));
+      var userLon = Number(url.searchParams.get("userLon"));
       var zoom = Number(url.searchParams.get("zoom"));
 
       if (lat == 0 && lon == 0 && zoom == 0) {
@@ -43,7 +46,6 @@
         lon = 114.0691068;
         zoom = 11;
       }
-
 
       var map;
       var src = 'https://www.google.com/maps/d/kml?mid=1XVU_sGw1TH9sQZd2WhOBwGQLgiBUeWWF';
@@ -109,6 +111,16 @@
           preserveViewport: true,
           map: map
         });
+
+
+
+        if (userLat != 0 && userLon != 0) {
+          var marker = new google.maps.Marker({
+            position: { lat: userLat, lng: userLon },
+            label: 'You',
+            map: map
+          });
+        }
 
         kmlLayer.addListener('click', function(event) {
           var content = event.featureData.infoWindowHtml;

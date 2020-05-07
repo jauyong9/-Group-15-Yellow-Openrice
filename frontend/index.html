@@ -39,12 +39,16 @@
   <script type="text/babel" >
   function Header() {
         const headerStyle = {
-          background: 'url("../images/header_background.jpg") 0 0 / contain'
+          /*background: 'url("../images/header_background.jpg") 0 0 / contain'*/
+          backgroundColor: 'rgb(248,249,250)'
+        };
+        const imgSyle = {
+          width: '50px',
+          height: '50px'
         };
         return (
           <header className="container text-center" style={headerStyle}>
-            <h1 className="text-warning p-4">          </h1>
-            <h1 className="text-warning p-4">HK Restaurant Guide</h1>
+            <img src="images/icon.ico" style={imgSyle}/>
           </header>
         );
       }
@@ -578,6 +582,7 @@
 
         setPos(pos) {
           this.setState({pos: pos})
+          this.props.handleChangeUserPos(pos.coords.longitude, pos.coords.latitude)
           this.fetchKClosestRest();
         }
 
@@ -741,12 +746,25 @@
       class MapItem extends React.Component {
         constructor(props) {
           super(props);
+          this.handleClickWhereAmI = this.handleClickWhereAmI.bind(this);
+        }
+
+        handleClickWhereAmI() {
+          console.log(this.props.userLon)
+          console.log(this.props.userLat)
+          this.props.handleChangeMapPos(this.props.userLon, this.props.userLat)
         }
 
         render() {
           return (
             <section id="map" className="col-sm col-md-7 col-lg-8 card p-3 mt-3">
-              <iframe src={`map.html?lat=${this.props.lat}&lon=${this.props.lon}&zoom=${this.props.zoom}`} height={350}>
+              {(this.props.userLat != 0 && this.props.userLon != 0) ? (
+                <div>
+                <h5>You are currently at (longitude: {Math.floor(this.props.userLon)}  latitude: {Math.floor(this.props.userLat)})</h5>
+                <button className="btn btn-warning" onClick={this.handleClickWhereAmI} style={{float: 'right'}}>Where Am I?</button>
+                </div>
+              ) : <h5><i>Cannot detect your location</i></h5>}
+              <iframe src={`map.html?lat=${this.props.lat}&lon=${this.props.lon}&zoom=${this.props.zoom}&userLat=${this.props.userLat}&userLon=${this.props.userLon}`} height={350}>
 
               </iframe>
               <a href="map.html"> Detailed Map (beta version)</a>
@@ -758,13 +776,18 @@
       class Home extends React.Component {
         constructor(props) {
           super(props)
-          this.state = {lon: 0, lat: 0, zoom: 0}
+          this.state = {lon: 0, lat: 0, zoom: 0, userLat: 0, userLon: 0}
           this.handleChangeMapPos = this.handleChangeMapPos.bind(this);
+          this.handleChangeUserPos = this.handleChangeUserPos.bind(this);
           window.history.replaceState({page: 'Home'}, null, `?page=home`);
         }
 
-        handleChangeMapPos(longitude, latitude, zoom) {
+        handleChangeMapPos(longitude, latitude, zoom=15) {
           this.setState({lon: longitude, lat: latitude, zoom: zoom})
+        }
+
+        handleChangeUserPos(longitude, latitude) {
+          this.setState({userLon: longitude, userLat: latitude})
         }
 
         render() {
@@ -773,11 +796,15 @@
                 <MapItem  lat={this.state.lat}
                           lon={this.state.lon}
                           zoom={this.state.zoom}
+                          userLat={this.state.userLat}
+                          userLon={this.state.userLon}
+                          handleChangeMapPos={this.handleChangeMapPos}
                 />
                 <ClosestRestaurant URL={this.props.URL}
                                     k={5}
                                     handleChangePage={this.props.handleChangePage}
                                     handleChangeMapPos={this.handleChangeMapPos}
+                                    handleChangeUserPos={this.handleChangeUserPos}
                 />
               </div>
             );
@@ -1031,7 +1058,7 @@
 
             this.getRests = this.getRests.bind(this);
         }
-        
+
         getRests() {
           let fav_list = this.state.data;
           if(fav_list.length == 0){
@@ -1043,7 +1070,7 @@
             </tr>
           );
           }
-          
+
         }
 
         render() {
@@ -1052,7 +1079,7 @@
               <h3>Favourite Restaurants</h3>
               <div id="restlist" className="table-responsive">
                 <table className="table table-striped table-bordered table-hover">
-                  
+
                 {this.getRests()}
                 </table>
                 </div>
@@ -1337,7 +1364,7 @@
           else {
             const liked = this.props.user && this.state.rest.likes.indexOf(this.props.user._id) != -1;
             const disliked = this.props.user && this.state.rest.dislikes.indexOf(this.props.user._id) != -1;
-            const faved = this.props.user && this.props.user.favouriteRest.indexOf(this.state.rest._id) != -1; 
+            const faved = this.props.user && this.props.user.favouriteRest.indexOf(this.state.rest._id) != -1;
             const likeImg = liked ? "../images/liked.png" : "../images/like.png"
             const dislikeImg = disliked ? "../images/disliked.png" : "../images/dislike.png"
             const favouriteImg = faved ? "../images/faved.png" : "../images/fav.png"
@@ -1476,7 +1503,7 @@
         constructor(props) {
           super(props);
           this.state = {
-            requiredItem: 0, 
+            requiredItem: 0,
             data: [],
             nameError: '',
             emailError: '',
@@ -1531,14 +1558,14 @@
               .then(data => {
                 if (data.response == 'success') {
                   toastada.success('You have successfully updated the user information.');
-                    
+
                   window.location.reload();
                 }
                 else {
                     toastada.error('Failed: ' + data.message)
                 }
               });
-            
+
         }
 
 
@@ -1568,10 +1595,10 @@
         }
 
         addUser() {
-          
+
           var hasError = this.generateError();
           var password = this.state.password;
-          
+
           if (hasError == false) {
             // Simple POST request with a JSON body using fetch
             const requestOptions = {
@@ -1752,7 +1779,7 @@
                         </article>
                       </section>
                     </div>
-                    
+
               <div id="userlist" className="table-responsive">
                 <table className="table table-striped table-bordered table-hover">
                   <tr><th>User ID</th><th>User Type</th><th>Email</th><th>Name</th><th>Join Date</th><th></th></tr>
@@ -1872,9 +1899,9 @@
         }
 
         addRest() {
-          
+
           var hasError = this.generateError();
-          
+
           if (hasError == false) {
             const requestOptions = {
                 method: 'POST',
@@ -1906,9 +1933,9 @@
                         toastada.error('Failed: ' + data.message)
                     }
                   });
-                
+
             this.cancel();
-            
+
             window.location.reload();
           }
         }
@@ -1955,7 +1982,7 @@
         }
 
         saveModalDetails(restId, item) {
-          
+
           const requestOptions = {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json', 'authorization': this.props.token },
@@ -1972,7 +1999,7 @@
               .then(data => {
                 if (data.response == 'success') {
                   toastada.success('You have successfully updated the restaurant details.');
-                    
+
                   window.location.reload();
                 }
                 else {
@@ -2035,7 +2062,7 @@
             color: 'red',
             paddingLeft: '20px'
           };
-          
+
           return (
             <div>
               <h3>Manage Restaurant</h3>
@@ -2204,7 +2231,7 @@
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-dismiss="modal" 
+                                <button type="button" className="btn btn-primary" data-dismiss="modal"
                                         onClick={() => { this.handleSave(this.state.restId) }}>Save Changes</button>
                             </div>
                         </div>
@@ -2268,7 +2295,7 @@
                           </div>
                           <div className="modal-footer">
                               <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="button" className="btn btn-primary" data-dismiss="modal" 
+                              <button type="button" className="btn btn-primary" data-dismiss="modal"
                                       onClick={() => { this.handleSave(this.state.userId) }}>Save Changes</button>
                           </div>
                       </div>
