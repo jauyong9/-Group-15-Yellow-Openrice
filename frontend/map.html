@@ -40,6 +40,11 @@
       var userLat = Number(url.searchParams.get("userLat"));
       var userLon = Number(url.searchParams.get("userLon"));
       var zoom = Number(url.searchParams.get("zoom"));
+      var showDir = Number(url.searchParams.get("showDir"));
+
+      var hasUserPos = userLat != 0 && userLon != 0;
+      var hasRestPos = lat != 0 && lon != 0;
+
 
       if (lat == 0 && lon == 0 && zoom == 0) {
         lat = 22.3552691;
@@ -122,6 +127,36 @@
           });
         }
 
+        if (showDir == 1 && hasUserPos && hasRestPos) {
+
+          var start = new google.maps.LatLng(userLat, userLon);
+          //var end = new google.maps.LatLng(38.334818, -181.884886);
+          var end = new google.maps.LatLng(lat, lon);
+          var bounds = new google.maps.LatLngBounds();
+          bounds.extend(start);
+          bounds.extend(end);
+          map.fitBounds(bounds);
+          var request = {
+             origin: start,
+             destination: end,
+             travelMode: google.maps.TravelMode.WALKING
+          };
+          var rendererOptions = {
+              suppressMarkers: true,
+              map: map
+          }
+          var directionsService = new google.maps.DirectionsService();
+          var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+          directionsService.route(request, function (response, status) {
+             if (status == google.maps.DirectionsStatus.OK) {
+                 directionsDisplay.setDirections(response);
+                 directionsDisplay.setMap(map);
+             } else {
+                 alert("Directions Request from " + start.toUrlValue(6) + " to " + end.toUrlValue(6) + " failed: " + status);
+             }
+          });
+        }
+
         kmlLayer.addListener('click', function(event) {
           var content = event.featureData.infoWindowHtml;
           var slidebar = document.getElementById('slidebar');
@@ -130,8 +165,10 @@
         });
       }
     </script>
+
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVeetoouOilr4Sb_urexF_aHVzvhjjMqM&callback=initMap">
-    </script>
+  </script>
+
   </body>
 </html>

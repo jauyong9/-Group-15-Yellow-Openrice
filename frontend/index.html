@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>HK Restaurant Guide</title>
+  <title>3100 Group 15 Project</title>
   <meta name="author" content="Group15">
   <meta name="description" content="Restaurant Guide">
   <meta name="keywords" content="Yellow, Openrice">
@@ -529,7 +529,8 @@
         }
         render() {
           const style = this.props.selected ? {width: '100%', backgroundColor: 'yellow'} : {width: '100%'}
-          const moreInfo = <button className="btn btn-secondary" onClick={this.toRestaurant}>View More</button>
+          const showDir = <button className="btn btn-warning" onClick={this.props.handleShowDir}>Show Direction</button>
+          const moreInfo = <button className="btn btn-warning" onClick={this.toRestaurant}>View More</button>
           return (
             <div className="btn" onClick={this.select} style={style}>
               <p>{this.props.rest.name}</p>
@@ -543,6 +544,8 @@
                 {this.props.rest.dislikes.length} &nbsp;
               </p>
               <p>
+                {this.props.selected && showDir}
+                {this.props.selected && ' '}
                 {this.props.selected && moreInfo}
               </p>
             </div>
@@ -687,6 +690,7 @@
                                   handleChangePage={this.props.handleChangePage}
                                   handleChangeMapPos={this.props.handleChangeMapPos}
                                   handleChangeSelectedRest={this.handleChangeSelectedRest}
+                                  handleShowDir={this.props.handleShowDir}
                                   selected={this.state.selectedRest && this.state.selectedRest.restId == this.state.filteredRestaurants[i].restId}
                   />
                 </td>
@@ -763,8 +767,8 @@
                 <h5>You are currently at (longitude: {Math.floor(this.props.userLon)}  latitude: {Math.floor(this.props.userLat)})</h5>
                 <button className="btn btn-warning" onClick={this.handleClickWhereAmI} style={{float: 'right'}}>Where Am I?</button>
                 </div>
-              ) : <h5><i>Cannot detect your location</i></h5>}
-              <iframe src={`map.html?lat=${this.props.lat}&lon=${this.props.lon}&zoom=${this.props.zoom}&userLat=${this.props.userLat}&userLon=${this.props.userLon}`} height={350}>
+              ) : <h5><i>Detecting your location...</i></h5>}
+              <iframe src={`map.html?lat=${this.props.lat}&lon=${this.props.lon}&zoom=${this.props.zoom}&userLat=${this.props.userLat}&userLon=${this.props.userLon}&showDir=${this.props.showDir}`} height={350}>
 
               </iframe>
               <a href="map.html"> Detailed Map (beta version)</a>
@@ -776,18 +780,26 @@
       class Home extends React.Component {
         constructor(props) {
           super(props)
-          this.state = {lon: 0, lat: 0, zoom: 0, userLat: 0, userLon: 0}
+          this.state = {lon: 0, lat: 0, zoom: 0, userLat: 0, userLon: 0, showDir: 0}
           this.handleChangeMapPos = this.handleChangeMapPos.bind(this);
           this.handleChangeUserPos = this.handleChangeUserPos.bind(this);
+          this.handleShowDir = this.handleShowDir.bind(this);
           window.history.replaceState({page: 'Home'}, null, `?page=home`);
         }
 
         handleChangeMapPos(longitude, latitude, zoom=15) {
-          this.setState({lon: longitude, lat: latitude, zoom: zoom})
+          this.setState({lon: longitude, lat: latitude, zoom: zoom, showDir: 0})
         }
 
         handleChangeUserPos(longitude, latitude) {
           this.setState({userLon: longitude, userLat: latitude})
+        }
+
+        handleShowDir(e) {
+          e.stopPropagation();
+          console.log(this.state)
+          this.setState({showDir: 1}, () => console.log(this.state))
+
         }
 
         render() {
@@ -798,6 +810,7 @@
                           zoom={this.state.zoom}
                           userLat={this.state.userLat}
                           userLon={this.state.userLon}
+                          showDir={this.state.showDir}
                           handleChangeMapPos={this.handleChangeMapPos}
                 />
                 <ClosestRestaurant URL={this.props.URL}
@@ -805,6 +818,7 @@
                                     handleChangePage={this.props.handleChangePage}
                                     handleChangeMapPos={this.handleChangeMapPos}
                                     handleChangeUserPos={this.handleChangeUserPos}
+                                    handleShowDir={this.handleShowDir}
                 />
               </div>
             );
