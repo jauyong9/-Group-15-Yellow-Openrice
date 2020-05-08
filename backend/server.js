@@ -2,6 +2,8 @@ const apiUrl = 'http://localhost:3000';
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
+const fileupload = require('express-fileupload')
+const fs = require('fs');
 const datasource = 'https://raw.githubusercontent.com/LiWaiYip/mynewrepository/master/map.json';
 
 var request = require("request")
@@ -12,6 +14,9 @@ var bcrypt = require('bcrypt-nodejs');
 var nodemailer = require('nodemailer');
 var config = require('./config.json');
 var path = require('path');
+
+
+
 const SECRET_KEY = config.SECRET_KEY;
 
 var transporter = nodemailer.createTransport({
@@ -36,7 +41,6 @@ db.once('open', function() {
 /* Connect to the database: ends */
 
 /* Setup database tables: begins */
-
 var UserSchema = mongoose.Schema({
   userId: {
     type: Number,
@@ -164,6 +168,8 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
+app.use(fileupload());
+
 app.use(cors()); // allow index.html to connect
 
 // app.use(express.static(__dirname + '/public'));
@@ -171,6 +177,7 @@ app.use('/images', express.static(path.resolve(__dirname + '/../images/')));
 app.use('/css', express.static(path.resolve(__dirname + '/../frontend/css/')));
 app.use('/js', express.static(path.resolve(__dirname + '/../frontend/js/')));
 app.use('/jsx', express.static(path.resolve(__dirname + '/../frontend/jsx/')));
+app.use('/upload', express.static(path.resolve(__dirname + '/upload/')));
 
 // Change Password
 app.post('/password/', (req, res) => {
@@ -191,6 +198,59 @@ app.post('/password/', (req, res) => {
       })
     }
   });
+});
+
+// upload icon
+app.post('/upload-icon', async (req, res) => {
+    var dir = './upload';
+
+    jwt.verify(req.headers['authorization'], SECRET_KEY, function(err, decoded) {
+      if (err)
+        res.json({response: 'fail', message: err})
+      else {
+        try {
+            if(!req.files) {
+                res.send({
+                    status: false,
+                    message: 'No file uploaded'
+                });
+            } else {
+                if (!fs.existsSync(dir)){
+                    fs.mkdirSync(dir);
+                }
+
+                dir += '/user_' + decoded.userId;
+
+                if (!fs.existsSync(dir)){
+                    fs.mkdirSync(dir);
+                }
+
+                let iconImg = req.files.iconImg;
+
+                iconImg.mv(dir + '/' + iconImg.name);
+
+                const filter = {_id: decoded._id}
+
+                const update = {iconUrl: apiUrl + '/upload/user_' + decoded.userId + '/' + iconImg.name}
+
+                console.log(apiUrl + '/upload/user_' + decoded.userId + '/' + iconImg.name)
+
+                User.findOneAndUpdate(filter, update, function(err, doc) {
+                 if (err) {
+                    res.json({response: 'fail', message: err});
+                  }
+                 else if (doc == null)
+                    res.json({response: 'fail', message:'the link is not valid'});
+                 else
+                    res.json({response: 'success'});
+                })
+            }
+        } catch (err) {
+            res.status(500).send(err);
+        }
+      }
+    });
+
 });
 
 // Change icon
@@ -610,6 +670,7 @@ app.get('/restaurant', function(req, res) {
   });
 });
 
+
 /*
 // Add all Restaurants from datasource
 app.get('/load_datasource', function(req, res) {
@@ -805,7 +866,7 @@ app.put('/user/:userId', (req, res) => {
           password: bcrypt.hashSync(req.body.password)
         }
       } else {
-        
+
       }
 
       User.findOneAndUpdate(filter, update, function(err, rest) {

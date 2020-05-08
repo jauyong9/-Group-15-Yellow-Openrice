@@ -110,6 +110,7 @@
             return (
               <div className="dropdown">
                 <button className="btn dropdown-toggle nav-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img src={this.props.iconUrl} className="avatar" />
                   <h4 className="d-inline navbar-brand">{this.props.username} <span style={typeStyle}>({this.props.userType})</span></h4>
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -576,7 +577,7 @@
           };
 
           if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.setPos,this.fetchRest);
+            navigator.geolocation.getCurrentPosition(this.setPos);
           }
           else {
             this.fetchRest();
@@ -585,6 +586,7 @@
 
         setPos(pos) {
           this.setState({pos: pos})
+          console.log(pos)
           this.props.handleChangeUserPos(pos.coords.longitude, pos.coords.latitude)
           this.fetchKClosestRest();
         }
@@ -867,6 +869,7 @@
           this.handleInputChange = this.handleInputChange.bind(this);
           this.ClickChangePassword = this.ClickChangePassword.bind(this);
           this.handleChangeIcon = this.handleChangeIcon.bind(this);
+          this.handleUploadIcon = this.handleUploadIcon.bind(this);
         }
 
         componentDidMount() {
@@ -949,6 +952,10 @@
             });
         }
 
+        handleUploadIcon() {
+
+        }
+
         handleChangeIcon() {
           var iconUrl = prompt('Please enter the image url of your icon');
 
@@ -973,6 +980,31 @@
                   }
                 });
           }
+        }
+
+        handleClickUploadIcon() {
+          document.getElementById('iconImg').click();
+        }
+
+        handleUploadIcon(event) {
+          let photo = event.target.files[0];
+
+          let formData = new FormData();
+
+          formData.append("iconImg", photo);
+
+          event.target.value = '';
+
+          fetch(this.props.URL + '/upload-icon', {method: "POST", headers: { 'authorization': this.props.token }, body: formData})
+          .then(response => response.json())
+          .then(data => {
+            console.log(data)
+            toastada.success('You have successfully uploaded your icon');
+            this.props.reloadUser();
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
 
         }
 
@@ -1039,7 +1071,13 @@
                       </section>
                     </div>
                     </center>
-                <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleChangeIcon}>Change Icon</button></p>
+                <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleChangeIcon}>Change Icon by URL</button></p>
+                <p><button type="submit" className="btn btn-warning btn-block" onClick={this.handleClickUploadIcon}>Upload Icon</button></p>
+                <input type="file"
+                 id="iconImg" name="iconImg"
+                 accept="image/png, image/jpeg"
+                 onChange={this.handleUploadIcon}
+                 hidden/>
                 </div>
                 </div>
             );
@@ -2481,6 +2519,7 @@
               <Header />
               <Nav  username={this.state.username}
                     userType={this.state.userType}
+                    iconUrl={this.state.user ? this.state.user.iconUrl : ''}
                     ref={(element) => {window.helloComponent = element}}
                     handleChangePage={this.handleChangePage}
                     handleChangeToken={this.handleChangeToken}
