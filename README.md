@@ -1,6 +1,15 @@
 # -Group-15-Yellow-Openrice
 [CSCI3100 Project] Group15 Yellow Openrice
 
+New Features For Final Code:
+1. Allow User to upload a image file to server as their icon
+![Image description](https://i.ibb.co/b1tP4nw/upload-icon.png)
+
+2. Show user's current location & center user location in the map when clicked "where am i" button
+![Image description](https://i.ibb.co/vJNhP9N/show-user-location.png)
+
+3. Calculate the distance and route between selected restaurant and user's location
+![Image description](https://i.ibb.co/njChyWK/show-direction-between-userloc-restloc.png)
 
 How to Test the Project:
 1. Execute `git clone https://github.com/jauyong9/-Group-15-Yellow-Openrice` in terminal
@@ -21,7 +30,3 @@ How to Update the Project:
 5. Execute `git commit -m "your message"`
 
 6. Execute `git push`
-
-
-Preview (Not working until the project be public again):
-https://raw.githack.com/jauyong9/-Group-15-Yellow-Openrice/master/frontend/index.html
