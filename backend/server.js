@@ -712,6 +712,7 @@ app.get('/load_datasource', function(req, res) {
 });
 */
 
+// Get single restaurant
 app.get('/restaurant/:id', function(req, res) {
   Restaurant
   .find({restId: req.params['id']})
