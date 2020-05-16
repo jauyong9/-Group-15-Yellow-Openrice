@@ -1,4 +1,5 @@
 /*
+  class Favourite
   This class is the favourite page
 */
 

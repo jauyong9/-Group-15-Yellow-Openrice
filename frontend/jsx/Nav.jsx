@@ -1,4 +1,5 @@
 /*
+  class Nav:
   This class is the navigation bar. It handles change page request
 */
 

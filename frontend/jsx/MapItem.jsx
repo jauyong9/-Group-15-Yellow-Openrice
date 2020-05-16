@@ -1,4 +1,5 @@
 /*
+  class Nav:
   This class is the map item page. It is only for all users and it displays restaurants in map from datasource
 */
 

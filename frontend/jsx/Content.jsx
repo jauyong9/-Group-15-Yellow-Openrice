@@ -1,4 +1,5 @@
 /*
+  class Content:
   This class is the content page. It decides which page should display.
 */
     class Content extends React.Component {

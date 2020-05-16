@@ -1,4 +1,5 @@
 /*
+  class RegisterForm
   This class is the register form page. It handles login request.
 */
 

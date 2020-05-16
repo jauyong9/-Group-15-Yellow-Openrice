@@ -1,4 +1,5 @@
 /*
+  class App:
   This class is the main entry of the whole web app.
 */
     class App extends React.Component {

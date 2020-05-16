@@ -1,4 +1,5 @@
 /*
+  class ClosestRestaurant:
   This class is the closest restaurants page.
 */
 

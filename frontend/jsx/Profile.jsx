@@ -1,4 +1,5 @@
 /*
+  class Profile
   This class is the profile page. It shows profile pic, name, etc. for the logged user
 */
     class Profile extends React.Component {

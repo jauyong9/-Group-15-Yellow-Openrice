@@ -1,4 +1,5 @@
 /*
+  class ManageRest
   This class is the manage restaurant page. It is only for admin and it handles CRUD on restaurant
 */
     class ManageRest extends React.Component {

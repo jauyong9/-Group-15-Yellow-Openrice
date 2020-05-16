@@ -1,4 +1,5 @@
 /*
+  class Popup:
   This class is the pop up. It shows email successful message to registered users
 */
 

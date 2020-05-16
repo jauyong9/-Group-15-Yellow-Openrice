@@ -1,4 +1,5 @@
 /*
+  Class LoginForm
   This class is the login form page. It handles login request.
 */
 

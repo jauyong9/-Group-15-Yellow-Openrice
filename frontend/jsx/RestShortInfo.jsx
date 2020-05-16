@@ -1,4 +1,5 @@
 /*
+  class RestShortInfo
   This class is the restaurant short information shown in the home page about the restaurant
 */
 

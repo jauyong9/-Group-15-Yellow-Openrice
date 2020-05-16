@@ -1,4 +1,5 @@
 /*
+  class Comment:
   This class is the comment component.
 */
 

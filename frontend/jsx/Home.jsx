@@ -1,4 +1,5 @@
 /*
+  Class Home:
   This class is the home page.
 */
     class Home extends React.Component {

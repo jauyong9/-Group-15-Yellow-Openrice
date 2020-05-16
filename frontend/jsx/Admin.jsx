@@ -1,4 +1,5 @@
 /*
+  class Admin:
   This class is the admin page.
 */
 

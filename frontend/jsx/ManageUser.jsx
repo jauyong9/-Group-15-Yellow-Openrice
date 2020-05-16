@@ -1,4 +1,5 @@
 /*
+  class ManageUser
   This class is the manage user page. It is only for admin and it handles CRUD on users
 */
     class ManageUser extends React.Component {

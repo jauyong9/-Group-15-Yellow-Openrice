@@ -1,3 +1,8 @@
+/*
+Toastada
+source : https://www.cssscript.com/best-toast-notification-libraries/
+*/
+
 (function() {
 
     'use strict';

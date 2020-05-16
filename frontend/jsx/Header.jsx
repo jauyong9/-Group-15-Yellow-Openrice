@@ -1,5 +1,6 @@
 /*
-  This class is the header of the web app.
+  Class Header:
+  This class is the header of the web app, including the title and header image.
 */
 
 class Header extends React.Component {

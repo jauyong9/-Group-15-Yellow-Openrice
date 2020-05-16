@@ -1,4 +1,5 @@
 /*
+  class Footer
   This class is the footer of the web app.
 */
     function Footer() {

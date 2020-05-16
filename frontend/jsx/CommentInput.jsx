@@ -1,4 +1,5 @@
 /*
+  class CommentInput:
   This class is the comment input component i.e. the input box of the comment area.
 */
     class CommentInput extends React.Component {

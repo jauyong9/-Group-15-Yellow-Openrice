@@ -1,4 +1,5 @@
 /*
+  class Restaurant
   This class is the restaurant page. It shows details info about the restaurant such as latitude, longitude and comments
 */
     class Restaurant extends React.Component {
