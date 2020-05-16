@@ -579,7 +579,7 @@ app.get('/favourite/:restId', (req, res) => {
                   res.json({response: 'fail', message: err});
               }
               else
-                  res.json({response: 'OK'});
+                  res.json({response: 'success'});
               })
             }
           })

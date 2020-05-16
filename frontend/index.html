@@ -1381,6 +1381,7 @@
               }
               else if (data.response == 'success') {
                   toastada.success('You have added the restaurant to your favourites.');
+                  this.props.reloadUser();
               }
               else {
                   this.reloadRest();
@@ -1486,7 +1487,7 @@
                           handlePopupMsg={this.handlePopupMsg}/>);
           }
           else if (this.props.page.toLowerCase() == 'restaurant') {
-            return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL} user={this.props.user}/>);
+            return (<Restaurant restId={this.props.parameter} token={this.props.token} URL={this.props.URL} user={this.props.user} reloadUser={this.props.reloadUser}/>);
           }
           else if (this.props.page.toLowerCase() == 'manageuser') {
             return (<ManageUser token={this.props.token} URL={this.props.URL}  handleChangePage={this.props.handleChangePage}/>);
