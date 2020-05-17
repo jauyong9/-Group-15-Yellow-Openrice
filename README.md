@@ -18,6 +18,8 @@ How to Test the Project:
 
 3. Visit http://localhost:3000/ to the main page of the web app
 
+4. For the admin, use "admin@admin.com" as email address and "qwer" as password to login
+
 How to Update the Project:
 1. Execute `git clone https://github.com/jauyong9/-Group-15-Yellow-Openrice` in terminal
 
