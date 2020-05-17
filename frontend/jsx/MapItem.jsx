@@ -20,7 +20,7 @@ class MapItem extends React.Component {
       <section id="map" className="col-sm col-md-7 col-lg-8 card p-3 mt-3">
         {(this.props.userLat != 0 && this.props.userLon != 0) ? (
           <div>
-          <h5>You are currently at (longitude: {Math.floor(this.props.userLon)}  latitude: {Math.floor(this.props.userLat)})</h5>
+          <h7>You are currently at (longitude: {this.props.userLon.toFixed(3)}  latitude: {this.props.userLat.toFixed(3)})</h7>
           <button className="btn btn-warning" onClick={this.handleClickWhereAmI} style={{float: 'right'}}>Where Am I?</button>
           </div>
         ) : <h5><i>Detecting your location...</i></h5>}
