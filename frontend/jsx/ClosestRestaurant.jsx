@@ -24,7 +24,7 @@ class ClosestRestaurant extends React.Component {
       filteredRestaurant: '',
       searchBarValue: ''
     };
-
+    // Set user's gps geolocation: lat and lng
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.setPos, this.fetchRest);
     }
@@ -32,14 +32,14 @@ class ClosestRestaurant extends React.Component {
       this.fetchRest();
     }
   }
-
+  // Set user's location and fetch k closest restaurant from user's position from server
   setPos(pos) {
     this.setState({pos: pos})
     console.log(pos)
     this.props.handleChangeUserPos(pos.coords.longitude, pos.coords.latitude)
     this.fetchKClosestRest();
   }
-
+  // Fetch all restaurants from server
   fetchRest() {
     const requestOptions = {
         method: 'GET',
@@ -63,7 +63,7 @@ class ClosestRestaurant extends React.Component {
           }
         });
   }
-
+  // Fetch k closest restaurants according to user's position from server
   fetchKClosestRest() {
     const requestOptions = {
         method: 'GET',
@@ -87,6 +87,7 @@ class ClosestRestaurant extends React.Component {
           }
         });
   }
+  // Filter restaurants by name by user' input in the search bar
   filterRestaurant(searchText){
     return this.state.restaurants
       .filter(restaurants => {
@@ -98,6 +99,7 @@ class ClosestRestaurant extends React.Component {
         return false;
       });
   }
+  // Filter or fetch restaurants according to search var input
   handleSearchChange = event => {
     this.setState({
       searchBarValue: event.target.value
@@ -129,7 +131,7 @@ class ClosestRestaurant extends React.Component {
   handleChangeSelectedRest(rest) {
     this.setState({selectedRest: rest})
   }
-
+  // Get list of restaurants to be shown to user
   getRestaurants() {
     var restaurants = []
 
@@ -151,7 +153,7 @@ class ClosestRestaurant extends React.Component {
 
     return restaurants
   }
-
+  // Fetch more restaurants to user when user scroll down the list of restaurants
   loadMore(e) {
     var obj = e.target
 
@@ -161,7 +163,7 @@ class ClosestRestaurant extends React.Component {
       });
     }
   }
-
+  // Show list of restaurants or loading gif if it is Loading
   render() {
     if (this.state.isLoading) {
       return (

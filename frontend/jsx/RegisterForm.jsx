@@ -21,11 +21,12 @@ class RegisterForm extends React.Component{
     this.generateError = this.generateError.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
   }
+  // Check email format valid
   isEmail(mail) {
     var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return mail.match(mailformat) != null;
   }
-
+  // Check for error of register form input and set error message
   generateError() {
     let hasError = false;
 
@@ -68,7 +69,7 @@ class RegisterForm extends React.Component{
 
     return hasError;
   }
-
+  // Send register request to server with form input
   handleRegister() {
     const hasError = this.generateError();
     if (hasError) {
@@ -122,7 +123,7 @@ class RegisterForm extends React.Component{
 
     }
   }
-
+  // Set form value on user's input value
   handleInputChange(e){
       const target = e.target;
       const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -131,7 +132,7 @@ class RegisterForm extends React.Component{
           [name]: value
       });
   }
-
+  // div for Popup register form
   render() {
     let inputError = {
       fontSize: 'small',

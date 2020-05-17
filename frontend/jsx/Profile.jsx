@@ -26,17 +26,17 @@
         // Hide change password form
         $(".form2").hide();
       }
-
+      // Show change password form
       ClickChangePassword() {
         $("#changePasswordForm").fadeIn();
       }
-
+      // Hide change password form
       cancel() {
         $("#changePasswordForm").slideUp();
         $("#newPassword").val('');
         $("#newRePassword").val('');
       }
-
+      // Send update password request for the user to the server
       handleChangePassword() {
         console.log(this.props.token)
         var hasError = this.generateError();
@@ -65,7 +65,7 @@
           }
         }
       }
-
+      // Check for error and set error message
       generateError() {
         let hasError = false;
 
@@ -92,7 +92,7 @@
 
         return hasError;
       }
-
+      // Set attributes according to user's input
       handleInputChange(e){
           const target = e.target;
           const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -105,7 +105,7 @@
       handleUploadIcon() {
 
       }
-
+      // Send set icon request for the user with the input url to the server
       handleChangeIcon() {
         var iconUrl = prompt('Please enter the image url of your icon');
 
@@ -131,11 +131,10 @@
               });
         }
       }
-
       handleClickUploadIcon() {
         document.getElementById('iconImg').click();
       }
-
+      // Show upload browser and send request with user chosen image for icon update to server
       handleUploadIcon(event) {
         let photo = event.target.files[0];
 
@@ -157,7 +156,7 @@
         });
 
       }
-
+      // Show user's info and provide button for update password and icon
       render() {
         if (this.props.user != null) {
           let inputError = {

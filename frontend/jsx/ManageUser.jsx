@@ -27,7 +27,7 @@
         this.handleInputChange = this.handleInputChange.bind(this);
         this.replaceModalItem = this.replaceModalItem.bind(this);
         this.saveModalDetails = this.saveModalDetails.bind(this);
-
+        // Fetch attributes of all users
         const requestOptions = {method: 'GET'};
         fetch(this.props.URL + '/users', requestOptions)
           .then(data => data.json())
@@ -37,7 +37,7 @@
             })
           });
       }
-
+      // Set form value for editing user according to the selected user
       replaceModalItem(index, user) {
         this.setState({
           requiredItem: index,
@@ -46,7 +46,7 @@
           edit_password: user.password
         });
       }
-
+      // Send update user request to server
       saveModalDetails(userId, item) {
         const requestOptions = {
               method: 'PUT',
@@ -72,7 +72,7 @@
 
       }
 
-
+      // Get table of all users
       getUsers() {
         let user_list = this.state.data;
         return user_list.map((user, index) =>
@@ -97,7 +97,7 @@
           </tr>
         );
       }
-
+      // Send create user request to server
       addUser() {
 
         var hasError = this.generateError();
@@ -136,7 +136,7 @@
           window.location.reload();
         }
       }
-
+      // Send delete request of a usert to server
       handleDelete(id) {
         var userId = id;
         const requestOptions = {
@@ -162,11 +162,11 @@
         // Hide add user form
         $(".form2").hide();
       }
-
+      // Show form to add user
       ClickAddUser() {
         $("#addUserForm").fadeIn();
       }
-
+      // Hide add user from
       cancel() {
         $("#addUserForm").fadeOut();
       }
@@ -179,12 +179,12 @@
               [name]: value
           });
       }
-
+      // Check email input valid
       isEmail(mail) {
         var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         return mail.match(mailformat) != null;
       }
-
+      // Check for input error in the form and set error message
       generateError() {
         let hasError = false;
 
@@ -218,7 +218,7 @@
 
         return hasError;
       }
-
+      // List of all users with buttons for CRUD for each user
       render() {
         let inputError = {
           fontSize: 'small',

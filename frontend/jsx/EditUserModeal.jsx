@@ -14,7 +14,7 @@ class EditUserModeal extends React.Component {
       password: ''
     }
   }
-
+  // Set value for selected user for edit
   componentWillReceiveProps(nextProps) {
     this.setState({
       userId: nextProps.userId,
@@ -22,7 +22,9 @@ class EditUserModeal extends React.Component {
       //password: nextProps.password
     });
 }
-
+/*
+  Setters to set selected user's attributes on admin's input
+*/
   nameHandler(e) {
       this.setState({ name: e.target.value });
   }
@@ -35,7 +37,7 @@ class EditUserModeal extends React.Component {
       const item = this.state;
       this.props.saveModalDetails(userId, item)
   }
-
+// Popup form to edit selected user's info
 render() {
     return (
         <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

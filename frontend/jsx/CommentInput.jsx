@@ -10,7 +10,7 @@
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handlePostComment = this.handlePostComment.bind(this)
       }
-
+      // Send add comment request to server
       handlePostComment() {
         // Simple POST request with a JSON body using fetch
         const requestOptions = {
@@ -32,7 +32,7 @@
             });
 
       }
-
+      // Change comment text area value on user's input
       handleInputChange(e){
           const target = e.target;
           const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -41,7 +41,7 @@
               [name]: value
           });
       }
-
+      // Div for new comment prompt
       render() {
         return (
           <div className={"message"}>

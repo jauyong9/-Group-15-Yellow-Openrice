@@ -16,7 +16,7 @@ class EditRestModal extends React.Component {
           description: ''
       }
   }
-
+  // Set value for selected restaurant for edit
   componentWillReceiveProps(nextProps) {
     this.setState({
         restId: nextProps.restId,
@@ -26,7 +26,9 @@ class EditRestModal extends React.Component {
         description: nextProps.description
     });
   }
-
+  /*
+    Setters to set restaurant attributes on admin's input
+  */
   nameHandler(e) {
       this.setState({ name: e.target.value });
   }
@@ -47,7 +49,7 @@ class EditRestModal extends React.Component {
       const item = this.state;
       this.props.saveModalDetails(restId, item)
   }
-
+  // Popup form to edit restaurant info
   render() {
       return (
           <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

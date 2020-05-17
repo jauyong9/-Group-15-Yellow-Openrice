@@ -4,7 +4,7 @@
 */
 
 class Header extends React.Component {
-
+  // Div for Header image
       render() {
         const headerStyle = {
           /*background: 'url("../images/header_background.jpg") 0 0 / contain'*/

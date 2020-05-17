@@ -9,9 +9,11 @@ class RestShortInfo extends React.Component {
     this.toRestaurant = this.toRestaurant.bind(this);
     this.select = this.select.bind(this);
   }
+  // Handle page change to restaurant detail
   toRestaurant() {
     this.props.handleChangePage('Restaurant', this.props.rest.restId);
   }
+  // Zoom map to the selected restaurant, and show buttons for 'show direction' and 'show details'
   select() {
     if (this.props.selected) { // deselect
       this.props.handleChangeMapPos(0, 0, 0)
@@ -23,6 +25,7 @@ class RestShortInfo extends React.Component {
     }
 
   }
+  // Structure of a list item of a single restaurant. Show buttons for moreinfo and showDir on select
   render() {
     const style = this.props.selected ? {width: '100%', backgroundColor: 'yellow'} : {width: '100%'}
     const showDir = <button className="btn btn-warning" onClick={this.props.handleShowDir}>Show Direction</button>

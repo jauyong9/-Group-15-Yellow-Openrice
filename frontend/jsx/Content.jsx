@@ -7,7 +7,7 @@
         super(props);
     this.getPage = this.getPage.bind(this);
       }
-
+      // Shown diifferent page view according to the passed page parameter value
       getPage() {
 
         if (this.props.page.toLowerCase() == 'home') {
@@ -36,7 +36,7 @@
         }
 
       }
-
+      // get page content and footer
       render() {
         return (
           <div className="container">

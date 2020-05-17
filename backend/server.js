@@ -41,6 +41,7 @@ db.once('open', function() {
 /* Connect to the database: ends */
 
 /* Setup database tables: begins */
+// user schema
 var UserSchema = mongoose.Schema({
   userId: {
     type: Number,
@@ -80,6 +81,7 @@ var UserSchema = mongoose.Schema({
 });
 var User = mongoose.model('User', UserSchema);
 
+// restaurant schema
 var RestaurantSchema = mongoose.Schema({
   restId: {
     type: Number,
@@ -127,6 +129,7 @@ var RestaurantSchema = mongoose.Schema({
 });
 var Restaurant = mongoose.model('Restaurant', RestaurantSchema);
 
+// comment schema
 var CommentSchema = mongoose.Schema({
   commentId: {
     type: Number,
@@ -172,7 +175,7 @@ app.use(fileupload());
 
 app.use(cors()); // allow index.html to connect
 
-// app.use(express.static(__dirname + '/public'));
+// set public files
 app.use('/images', express.static(path.resolve(__dirname + '/../images/')));
 app.use('/css', express.static(path.resolve(__dirname + '/../frontend/css/')));
 app.use('/js', express.static(path.resolve(__dirname + '/../frontend/js/')));
@@ -621,7 +624,7 @@ app.get('/profile', (req, res) => {
     res.send("Error: " + err)
   })
 });
-
+// Activate email verification
 app.get('/activate/:token', function (req, res) {
     var decoded = jwt.verify(req.params['token'], SECRET_KEY)
     User.findOne({
@@ -1000,7 +1003,7 @@ app.get('/add_admin', function (req, res) {
   });
 });
 */
-
+// Load restaurants in json format from api
 const load_datasource = () => {
   request({
     url: datasource,
@@ -1035,7 +1038,7 @@ const load_datasource = () => {
        }
      });
 }
-
+// Add default admin account
 const add_default_admin = () => {
   var maxid = 0;
   User.findOne({}, 'userId').sort({userId: -1}).limit(1)
@@ -1065,11 +1068,11 @@ const add_default_admin = () => {
             );
   });
 }
-
+// Send map with restaurant markers
 app.all('/map.html', function (req, res) {
     res.sendFile(path.resolve(__dirname + '/../frontend/map.html'));
 });
-
+// Send index.html 
 app.all('/*', function (req, res) {
     Restaurant.count({}, function(err, result) {
       if (err) {

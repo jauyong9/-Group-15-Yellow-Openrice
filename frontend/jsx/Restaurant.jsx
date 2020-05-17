@@ -11,7 +11,7 @@
         };
 
         this.state = {rest: null, liveReload: true}
-
+        // send get request for the restaurant detail to the server
         // Add 1 More View
         fetch(props.URL + '/view/restaurant/' + props.restId, requestOptions)
           .then(response => response.json())
@@ -41,7 +41,7 @@
       componentDidMount() {
         setInterval(this.reloadComment, 1500);
       }
-
+      // Send request to get detail of the restaurant and reset the comments
       reloadComment() {
         // Reload Restaurant Object
         var _this = this;
@@ -58,7 +58,7 @@
             }).catch(function(err) {_this.setState({liveReload: false})});
         }
       }
-
+      // Send request to get detail of the restaurant
       reloadRest() {
         // Reload Restaurant Object
         const requestOptions = {
@@ -70,7 +70,7 @@
             this.setState({rest: data.restaurant[0]})
           });
       }
-
+      // Send dislike request of the restaurant from the user to the server
       handleDislike() {
         // Dislike the restaurant
         const requestOptions = {
@@ -92,7 +92,7 @@
             }
           });
       }
-
+      // Send like request of the restaurant from the user to the server
       handleLike() {
         // Like the restaurant
         const requestOptions = {
@@ -113,7 +113,7 @@
             }
           });
       }
-
+      // Send request of adding the restaurant to the user's favourite list to the server
       handleAddFavourtieRest() {
         // Add restaurant to favourites
         const requestOptions = {
@@ -139,7 +139,7 @@
           });
 
       }
-
+      // Return list of comments
       getComments() {
         let comments = [];
         let n = this.state.rest.comments.length;
@@ -157,7 +157,11 @@
 
         return comments;
       }
-
+      /*
+        1. iframe of map with a marker to mark the restaurant's position
+        2. Restaurant description
+        3. Comment area
+      */
       render() {
         if (this.state.rest == null) {
           return (

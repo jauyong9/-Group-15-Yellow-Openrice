@@ -2,7 +2,7 @@
   class Comment:
   This class is the comment component.
 */
-
+// Format current time-date for new comment
 function Comment(props) {
   const timeSince = (date) =>  {
       var seconds = Math.floor((new Date() - date) / 1000);
@@ -30,7 +30,7 @@ function Comment(props) {
       }
       return Math.floor(seconds) + " seconds ago";
   }
-
+  // Div for each comment
   if (props.user) {
     return (
       <div className={"message"}>

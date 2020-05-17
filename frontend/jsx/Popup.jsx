@@ -16,6 +16,7 @@ class Popup extends React.Component {
   componentDidMount() {
     $("#myModal").modal('show');
   }
+  // Popup dialog to show message
   render() {
     if (this.props.msg) {
       return (

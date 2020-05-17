@@ -11,22 +11,22 @@
         this.handleShowDir = this.handleShowDir.bind(this);
         window.history.replaceState({page: 'Home'}, null, `?page=home`);
       }
-
+      // Handle the center position of the map
       handleChangeMapPos(longitude, latitude, zoom=15) {
         this.setState({lon: longitude, lat: latitude, zoom: zoom, showDir: 0})
       }
-
+      // Set user's geolocation according to gps
       handleChangeUserPos(longitude, latitude) {
         this.setState({userLon: longitude, userLat: latitude})
       }
-
+      // Show route to selected restaurant
       handleShowDir(e) {
         e.stopPropagation();
         console.log(this.state)
         this.setState({showDir: 1}, () => console.log(this.state))
 
       }
-
+      // List of closest restaurants and a map div to mark all restaurants
       render() {
         return (
             <div className="row">

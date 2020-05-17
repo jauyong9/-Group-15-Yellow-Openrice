@@ -18,12 +18,12 @@ class LoginForm extends React.Component{
       passwordError: ''
     };
   }
-
+  // Check email format valid
   isEmail(mail) {
     var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return mail.match(mailformat) != null;
   }
-
+  // Check for error of login form input and set error message
   generateError() {
     let hasError = false;
 
@@ -47,7 +47,7 @@ class LoginForm extends React.Component{
 
     return hasError;
   }
-
+  // Send login request to server with login form input
   handleLogin() {
     const hasError = this.generateError();
     if (hasError) {
@@ -91,7 +91,7 @@ class LoginForm extends React.Component{
 
     }
   }
-
+  // Set login form value on user's input value
   handleInputChange(e){
       const target = e.target;
       const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -100,7 +100,7 @@ class LoginForm extends React.Component{
           [name]: value
       });
   }
-
+  // div for Popup login form
   render() {
     let inputError = {
       fontSize: 'small',

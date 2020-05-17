@@ -8,13 +8,14 @@ class MapItem extends React.Component {
     super(props);
     this.handleClickWhereAmI = this.handleClickWhereAmI.bind(this);
   }
-
+  // Set center of map to user's position
   handleClickWhereAmI() {
     console.log(this.props.userLon)
     console.log(this.props.userLat)
     this.props.handleChangeMapPos(this.props.userLon, this.props.userLat)
   }
-
+  // google map api to set map markers and user's position
+  // show map in iframe 
   render() {
     return (
       <section id="map" className="col-sm col-md-7 col-lg-8 card p-3 mt-3">

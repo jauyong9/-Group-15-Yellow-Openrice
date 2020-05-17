@@ -13,6 +13,7 @@ class Favourite extends React.Component {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'authorization': this.props.token }
     };
+    // Send get request of favourite restaurants of the user to the server
     fetch(this.props.URL + '/favourite', requestOptions)
       .then(data => data.json())
       .then((data) => {
@@ -23,7 +24,7 @@ class Favourite extends React.Component {
 
       this.getRests = this.getRests.bind(this);
   }
-
+  // Return list of user's favourite restaurants
   getRests() {
     let fav_list = this.state.data;
     if(fav_list.length == 0){
@@ -37,7 +38,7 @@ class Favourite extends React.Component {
     }
 
   }
-
+  // List of user's favourite restaurants' names
   render() {
     return (
       <div>

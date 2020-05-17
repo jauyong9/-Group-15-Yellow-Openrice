@@ -18,15 +18,19 @@ class Nav extends React.Component{
     this.ClickLogin = this.ClickLogin.bind(this);
     this.ClickRegister = this.ClickRegister.bind(this);
   }
+  // Set page attributes for logout
   LogoutUser(){
     this.props.handleChangeToken('');
     this.setState({username: null });
     this.ToHome();
   }
-
+  // Set page attributes for login
   SetUserName(name){
     this.setState({username: name});
   }
+  /*
+    Set page attribute to show different page view
+  */
   ToProfile() {
     this.props.handleChangePage('Profile');
   }
@@ -42,6 +46,7 @@ class Nav extends React.Component{
   ToManageUser(){
     this.props.handleChangePage('ManageUser');
   }
+  // Return nav bar according to user type
   LoginUser(){
     const typeStyle = {
       color: '#9b870c'
@@ -72,21 +77,24 @@ class Nav extends React.Component{
     }
     return <a className="btn navbar-brand mx-2" onClick={this.ClickLogin}><span className="nav-btn">Login</span></a>;
   }
-
+// Show login form
 ClickLogin() {
 $("#loginForm").fadeIn();
 this.props.handleToggleMask();
 }
+//Show register form
 ClickRegister() {
 $("#registerForm").fadeIn();
 this.props.handleToggleMask();
 }
+  // Return register button on nav bar
   ShowRegister(){
     if(this.props.username){
       return ;
     }
     return <a className="btn navbar-brand mx-2" onClick={this.ClickRegister}><span className="nav-btn">Register</span></a>;
   }
+  // Render nav bar
   render(){
     return(
       <nav className="container navbar navbar-light bg-light justify-content-between nav">

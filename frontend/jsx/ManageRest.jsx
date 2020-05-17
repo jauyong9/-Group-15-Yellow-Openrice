@@ -50,11 +50,11 @@
         // Hide add rest form
         $(".form2").hide();
       }
-
+      // Show form to add restaurant
       ClickAddRest() {
         $("#addRestForm").fadeIn();
       }
-
+      // Hide add restaurant from
       cancel() {
         $("#addRestForm").fadeOut();
       }
@@ -67,7 +67,7 @@
               [name]: value
           });
       }
-
+      // Check for input error in the form and set error message
       generateError() {
         let hasError = false;
 
@@ -102,7 +102,7 @@
 
         return hasError;
       }
-
+      // Send create restaurant request to server
       addRest() {
 
         var hasError = this.generateError();
@@ -144,7 +144,7 @@
           window.location.reload();
         }
       }
-
+      // Set form value on user's input
       handleInputChange(e){
           const target = e.target;
           const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -153,7 +153,7 @@
               [name]: value
           });
       }
-
+      // Return popup form to add restaurant
       getForm() {
         return <div id="newRestTab" className="">
                 <form>
@@ -174,7 +174,7 @@
                 </form>
               </div>
       }
-
+      // Set form value for editing restaurant according to the selected restaurant
       replaceModalItem(index, rest) {
         this.setState({
           requiredItem: index,
@@ -185,7 +185,7 @@
           edit_description: rest.description
         });
       }
-
+      // Send update restaurant request to server
       saveModalDetails(restId, item) {
 
         const requestOptions = {
@@ -212,7 +212,7 @@
               }
             });
       }
-
+      // Get table of all restaurants
       getRests() {
         return this.state.data.map((rest, index) =>
           <tr>
@@ -237,7 +237,7 @@
           </tr>
         );
     }
-
+      // Send delete request of a restaurant to server
       handleDelete(id) {
         var restId = id;
         const url = this.props.URL + '/rest/' + restId;
@@ -259,7 +259,7 @@
             });
         window.location.reload();
       }
-
+      // List of all restaurants with buttons for CRUD for each restaurant
       render() {
         let inputError = {
           fontSize: 'small',
